@@ -1,0 +1,5 @@
+#ifndef ZWM_VERSION_H
+#define ZWM_VERSION_H
+#define APP_NAME "@APP_NAME@"
+#define APP_VERSION "@APP_VERSION@"
+#endif /* ZWM_VERSION_H */

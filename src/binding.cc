@@ -1,0 +1,131 @@
+// zwm - a simple dynamic tiling window manager for X11
+//
+// Copyright (c) 2025 cmanv
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+#include <cstdlib>
+#include <iostream>
+#include <string>
+#include <vector>
+#include "util.h"
+#include "config.h"
+#include "winmgr.h"
+#include "wmfunc.h"
+#include "binding.h"
+
+std::vector<ModKeyDef> Binding::modkey_defs = {
+	{ 'S',  ShiftMask },
+	{ 'C',  ControlMask },
+	{ 'M',  Mod1Mask },
+	{ '4',  Mod4Mask },
+	{ '5',  Mod5Mask }
+};
+
+Binding::Binding( BindingDef& binddef, EventType eventtype)
+{
+	valid = false;
+	modmask = 0;
+
+	keycombo = binddef.keycombo;
+	std::string symbol;
+
+ 	int pos = keycombo.find('-');
+	if (pos != keycombo.npos) {
+		for (int i=0; i<pos; i++) {
+			bool modkey = false;
+			for (ModKeyDef &def : modkey_defs) {
+				if (keycombo[i] == def.ch) {
+					modmask |= def.mask;
+					modkey = true;	
+					break;
+				}
+			}
+			if (!modkey) {
+				std::cerr << __func__ << ": Modkey (" << keycombo 
+					<< ") is not valid!\n";
+				return;
+			}
+		}
+		symbol = keycombo.substr(pos+1);
+	} else
+		symbol = keycombo;
+
+	if (eventtype == EventType::Key) {
+		keysym = XStringToKeysym(symbol.c_str());
+		if (keysym == NoSymbol) {
+			std::cerr << __func__ << ": Keysym (" << symbol.c_str() 
+				<< ") was not found!\n";
+			return;
+		}
+	} else {
+		button = std::strtol(symbol.c_str(), NULL, 10);
+		if ((button <1) || (button>5)) {
+			std::cerr << __func__ << ": Mouse button (" << button 
+				<< ") is not valid!\n";
+			return;
+		}
+	}
+
+	for (wmfunc::FuncDef &funcdef : wmfunc::funcdefs) {
+		if (!funcdef.namefunc.compare(binddef.namefunc)) {
+			function = binddef.namefunc;
+			context = funcdef.context;
+			valid = true;
+
+			switch (context) {
+			case Context::Root:
+				fscreen = funcdef.fscreen;
+				param = funcdef.param;
+				break;
+			case Context::Window:
+				fclient = funcdef.fclient;
+				param = funcdef.param;
+				break;
+			case Context::TitleBar:
+			case Context::LeftButton:
+			case Context::RightButton:
+			case Context::LeftHandle:
+			case Context::MiddleHandle:
+			case Context::RightHandle:
+				fdecor = funcdef.fdecor;
+				break;
+			case Context::Function:
+				fcall = funcdef.fcall;
+				param = funcdef.param;
+				break;
+			case Context::Command:
+				fexec = funcdef.fexec;
+				path = binddef.path;
+				break;
+			default:
+				valid = false;
+			}
+			break;
+		}
+	}
+	if (!valid) {
+		std::cerr << util::gettime() << " [Binding::" << __func__ << "] function (" 
+			<< binddef.namefunc << ") is not defined!\n";
+	}
+	else if (conf::debug) {
+		std::cout << util::gettime() << " [Binding::" << __func__ << "] define {" 
+			<< keycombo << "} -> " << function << "(" << path << ")\n";
+	}
+}
