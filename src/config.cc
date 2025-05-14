@@ -237,7 +237,7 @@ void conf::init()
 		if (tokens.size() < 2)
 			continue;
 
-		if (!tokens[0].compare("debugl-evel")) {
+		if (!tokens[0].compare("debug-level")) {
 			debug = std::strtol(tokens[1].c_str(), NULL, 10);
 			continue;
 		}
