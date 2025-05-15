@@ -37,7 +37,6 @@ namespace XEvents {
 	static void key_press(XEvent *);
 	static void key_release(XEvent *);
 	static void button_press(XEvent *);
-	static void button_release(XEvent *);
 	static void enter_notify(XEvent *);
 	static void expose(XEvent *);
 	static void destroy_notify(XEvent *);
@@ -130,9 +129,7 @@ static void XEvents::key_press(XEvent *ee)
 	}
 }
 
-/*
- * This is only used for the modifier suppression detection.
- */
+// This is only used for the modifier suppression detection.
 static void XEvents::key_release(XEvent *ee)
 {
 	XKeyEvent		*e = &ee->xkey;
@@ -219,16 +216,6 @@ static void XEvents::button_press(XEvent *ee)
 		(*mb->fdecor)(client);
 		break;
 	default: ;
-	}
-}
-
-// XXX This is not needed for now
-static void XEvents::button_release(XEvent *ee)
-{
-	XButtonEvent	*e = &ee->xbutton;
-	if (conf::debug>2) {
-		std::cout << util::gettime() << " [XEvents::" << __func__
-			<< "] root 0x" << std::hex << e->root << " window 0x" << e->window << '\n';
 	}
 }
 
@@ -446,10 +433,8 @@ static void XEvents::client_message(XEvent *e)
 	}
 }
 
-/*
- * Called when the keymap has changed.
- * Ungrab all keys, reload keymap and then regrab
- */
+// Called when the keymap has changed.
+// Ungrab all keys, reload keymap and then regrab
 static void XEvents::mappping_notify(XEvent *e)
 {
 	XMappingEvent		*xev = &e->xmapping;
@@ -512,9 +497,6 @@ void XEvents::process(void)
 			break;
 		case ButtonPress:
 			button_press(&e);
-			break;
-		case ButtonRelease:
-			button_release(&e);
 			break;
 		case EnterNotify:
 			enter_notify(&e);
