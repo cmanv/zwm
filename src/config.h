@@ -40,11 +40,11 @@ namespace conf {
 	extern std::string 			 shutdownscript;
 
 	extern int				 debug;
-	extern int				 borderwidth;
+	extern int				 border_float;
+	extern int				 border_tile;
+	extern int				 border_menu;
 	extern int				 moveamount;
 	extern int				 snapdist;
-	extern bool				 tileheader;
-	extern int 			 	 footerheight;
 	extern BorderGap			 bordergap;
 	extern const int			 ndesktops;
 

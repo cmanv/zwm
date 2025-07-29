@@ -270,11 +270,16 @@ static void wm::x_startup()
 	int n;
 	xrandr = XRRQueryExtension(display, &xrandr_event_base, &n);
 
-	cursors[Pointer::ShapeNormal] 	= XCreateFontCursor(display, XC_left_ptr);
-	cursors[Pointer::ShapeMove] 	= XCreateFontCursor(display, XC_fleur);
-	cursors[Pointer::ShapeResizeSouth] = XCreateFontCursor(display, XC_bottom_side);
-	cursors[Pointer::ShapeResizeSW]	= XCreateFontCursor(display, XC_bottom_left_corner);
-	cursors[Pointer::ShapeResizeSE]	= XCreateFontCursor(display, XC_bottom_right_corner);
+	cursors[Pointer::ShapeNormal] = XCreateFontCursor(display, XC_left_ptr);
+	cursors[Pointer::ShapeMove] = XCreateFontCursor(display, XC_fleur);
+	cursors[Pointer::ShapeNorth] = XCreateFontCursor(display, XC_top_side);
+	cursors[Pointer::ShapeEast] = XCreateFontCursor(display, XC_right_side);
+	cursors[Pointer::ShapeSouth] = XCreateFontCursor(display, XC_bottom_side);
+	cursors[Pointer::ShapeWest] = XCreateFontCursor(display, XC_left_side);
+	cursors[Pointer::ShapeNE] = XCreateFontCursor(display, XC_top_right_corner);
+	cursors[Pointer::ShapeSE] = XCreateFontCursor(display, XC_bottom_right_corner);
+	cursors[Pointer::ShapeSW] = XCreateFontCursor(display, XC_bottom_left_corner);
+	cursors[Pointer::ShapeNW] = XCreateFontCursor(display, XC_top_left_corner);
 
 	setup_wmhints();
 	setup_ewmhnts();

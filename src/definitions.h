@@ -86,17 +86,16 @@ enum State {
 	FullScreen	= 0x000100,
 	HMaximized	= 0x000200,
 	VMaximized	= 0x000400,
-	Floated		= 0x000800,
-	Tiled		= 0x001000,
-	NoHeader	= 0x002000,
-	NoFooter	= 0x004000,
+	Floated		= 0x001000,
+	Tiled		= 0x002000,
+	FixedSize	= 0x004000,
+	NoBorder	= 0x008000,
 	WMDeleteWindow	= 0x010000,
 	WMTakeFocus	= 0x020000,
 	Maximized	= HMaximized|VMaximized,
-	NoDecor		= NoHeader|NoFooter,
 	Ignored		= SkipPager|SkipTaskbar,
 	SkipCycle	= Hidden|Ignored,
-	Docked		= Sticky|Frozen|Ignored|NoDecor,
+	Docked		= Sticky|Frozen|Ignored|NoBorder,
 };
 
 enum Motif {
@@ -115,15 +114,9 @@ enum Motif {
 };
 
 enum Color {
-	WindowBackground,
 	WindowBorderActive,
 	WindowBorderInactive,
 	WindowBorderUrgent,
-	WindowTextActive,
-	WindowTextInactive,
-	WindowDecorActive,
-	WindowDecorInactive,
-	WindowDecorHighlight,
 	MenuBackground,
 	MenuBorder,
 	MenuHighlight,
@@ -137,9 +130,14 @@ enum Color {
 enum Pointer {
 	ShapeNormal,
 	ShapeMove,
-	ShapeResizeSouth,
-	ShapeResizeSW,
-	ShapeResizeSE,
+	ShapeNorth,
+	ShapeEast,
+	ShapeSouth,
+	ShapeWest,
+	ShapeNE,
+	ShapeSE,
+	ShapeSW,
+	ShapeNW,
 	NumShapes
 };
 
@@ -150,6 +148,7 @@ enum ProgramStatus {
 };
 
 enum Direction {
+	Pointer		= 0x00L,
 	North		= 0x01L,
 	South		= 0x02L,
 	West		= 0x04L,
@@ -170,18 +169,6 @@ enum class Context {
 	Function,	
 	Root,
 	Window,
-	TitleBar,
-	LeftButton,
-	RightButton,
-	LeftHandle,
-	MiddleHandle,
-	RightHandle,
-};
-
-enum class Handle {
-	Left,
-	Middle,
-	Right
 };
 
 enum class EventType {

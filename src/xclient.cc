@@ -32,8 +32,8 @@
 #include "xscreen.h"
 #include "xclient.h"
 
-const long XClient::ButtonMask	= ButtonPressMask|ButtonReleaseMask;
-const long XClient::MouseMask	= ButtonMask|PointerMotionMask;
+const long XClient::MouseMask	= ButtonReleaseMask|PointerMotionMask;
+const long XClient::ModifierMask = ControlMask|Mod1Mask|Mod4Mask|ShiftMask;
 
 XClient::XClient(Window w, XScreen *s, bool query): m_window(w), m_screen(s)
 {
@@ -52,11 +52,7 @@ XClient::XClient(Window w, XScreen *s, bool query): m_window(w), m_screen(s)
 
 	m_rootwin = m_screen->get_window();
 	m_font = m_screen->get_window_font();
-	m_border_w = 1;
-	m_header_h = m_font->ascent + m_font->descent;
-	m_footer_h = conf::footerheight;
-	m_button_w = m_header_h;
-	m_handle_w = m_header_h * 1.5;
+	m_border_w = conf::border_float;
 	m_parent = None;
 	m_states = 0;
 	m_initial_state = 0;
@@ -82,24 +78,17 @@ XClient::XClient(Window w, XScreen *s, bool query): m_window(w), m_screen(s)
 	get_transient(); 		// Set transient windows to ignore
 	get_motif_hints();		// Check if window wants no border
 
-	apply_configured_states();	// Apply user configured states
+	apply_user_states();	// Apply user configured states
 
 	// Enable tiling on non-floated windows
-	if (!(m_states & State::Floated)) {
-		m_states |= State::Tiled|State::Frozen;
-	}
+	if (!has_state(State::Floated))
+		set_states(State::Tiled|State::Frozen);
 
-	// No border or headers on ignored windows
-	if (m_states & State::Ignored) {
-		m_states |= State::NoDecor;
+	if (has_state(State::Ignored) && has_state(State::NoBorder)) {
+		m_border_w = 0;
+	} else if (has_states(State::Docked)) {
 		m_border_w = 0;
 	}
-
-	if (m_states & State::NoHeader)
-		m_header_h = 0;
-
-	if (m_states & State::NoFooter)
-		m_footer_h = 0;
 
 	// Pointer position
 	m_ptr = m_geom_child.get_center(Coordinates::Window);
@@ -111,14 +100,14 @@ XClient::XClient(Window w, XScreen *s, bool query): m_window(w), m_screen(s)
 	}
 
 	// Request some types of event from X server
-	XSelectInput(wm::display, m_window, EnterWindowMask|PropertyChangeMask|KeyReleaseMask);
+	XSelectInput(wm::display, m_window, EnterWindowMask|PropertyChangeMask);
 
 	send_configure_event();
 	m_states = wm::get_net_wm_states(m_window, m_states);
 
 	// Set the desktop index.
 	m_deskindex = -1;
-	if (!(m_states & State::Sticky)) {
+	if (!has_state(State::Sticky)) {
 		if (!query) m_deskindex = get_configured_desktop();
 		else m_deskindex = get_net_wm_desktop();
 		if (m_deskindex == -1) m_deskindex = m_screen->get_active_desktop();
@@ -140,6 +129,7 @@ XClient::~XClient()
 
 	// Disable processing of X requests
 	XGrabServer(wm::display);
+	XUngrabButton(wm::display, AnyButton, AnyModifier, m_parent);
 
 	if (m_removed) {
 		// The client has been unmapped
@@ -151,25 +141,6 @@ XClient::~XClient()
 	XReparentWindow(wm::display, m_window, m_rootwin, m_geom.x, m_geom.y);
 	XSetWindowBorderWidth(wm::display, m_window, m_old_border);
 	XRemoveFromSaveSet(wm::display, m_window);
-	if (m_header !=  None) {
-		XFreeGC(wm::display, m_left_gc);
-		XFreeGC(wm::display, m_right_gc);
-		XftDrawDestroy(m_title_draw);
-		XFreePixmap(wm::display, m_left_pixmap);
-		XFreePixmap(wm::display, m_right_pixmap);
-		XFreePixmap(wm::display, m_title_pixmap);
-
-		XDestroyWindow(wm::display, m_left_button);
-		XDestroyWindow(wm::display, m_title_bar);
-		XDestroyWindow(wm::display, m_right_button);
-		XDestroyWindow(wm::display, m_header);
-	}
-	if (m_footer != None) {
-		XDestroyWindow(wm::display, m_left_handle);
-		XDestroyWindow(wm::display, m_middle_handle);
-		XDestroyWindow(wm::display, m_right_handle);
-		XDestroyWindow(wm::display, m_footer);
-	}
 	XDestroyWindow(wm::display, m_parent);
 
 	// Resume processing of X requests
@@ -182,268 +153,49 @@ void XClient::reparent_window()
 	XSetWindowAttributes wattr;
 	wattr.border_pixel = m_screen->get_pixel(Color::WindowBorderInactive);
 	wattr.override_redirect = True;
-	wattr.event_mask = SubstructureRedirectMask|SubstructureNotifyMask|
-			ExposureMask|ButtonPressMask|EnterWindowMask;
+	wattr.event_mask = SubstructureRedirectMask | SubstructureNotifyMask
+		| ButtonPressMask | EnterWindowMask;
 
 	m_geom = m_geom_child;
 	m_geom_floated = m_geom;
-	m_geom.h += (m_header_h + m_footer_h);
 
-	m_parent = XCreateWindow(wm::display, m_rootwin,
-			m_geom.x, m_geom.y, m_geom.w, m_geom.h, m_border_w,
-			DefaultDepth(wm::display, m_screen->get_screenid()), CopyFromParent,
+	m_parent = XCreateWindow(wm::display, m_rootwin, m_geom.x, m_geom.y, 
+			m_geom.w, m_geom.h, m_border_w, 
+			DefaultDepth(wm::display, m_screen->get_screenid()), 
+			CopyFromParent, 
 			DefaultVisual(wm::display, m_screen->get_screenid()),
 			CWOverrideRedirect|CWBorderPixel|CWEventMask, &wattr);
 
-	m_header = None;
-	if (m_header_h)
-		create_header();
-
-	m_footer = None;
-	if (m_footer_h)
-		create_footer();
-
 	XAddToSaveSet(wm::display, m_window);
 	XSetWindowBorderWidth(wm::display, m_window, 0);
-	XReparentWindow(wm::display, m_window, m_parent, 0, m_header_h);
+	XReparentWindow(wm::display, m_window, m_parent, 0, 0);
+	grab_mouse_bindings();
+
 	XMapWindow(wm::display, m_parent);
 	XMapWindow(wm::display, m_window);
 }
 
-void XClient::create_header()
+void XClient::grab_mouse_bindings()
 {
-	XGCValues gcvalues;
-	XSetWindowAttributes wattr;
-	wattr.override_redirect = True;
-	wattr.background_pixel = m_screen->get_pixel(Color::WindowBackground);
-	wattr.event_mask = ExposureMask;
-
-	m_header = XCreateWindow(wm::display, m_parent,
-			0, 0, m_geom.w, m_header_h, 0,
-			DefaultDepth(wm::display, m_screen->get_screenid()), CopyFromParent,
-			DefaultVisual(wm::display, m_screen->get_screenid()),
-			CWOverrideRedirect|CWBackPixel|CWEventMask, &wattr);
-
-	wattr.event_mask = ExposureMask|ButtonPressMask;
-
-	// Left button
-	m_left_button = XCreateWindow(wm::display, m_header, 0, 0,
-			m_button_w, m_header_h, 0,
-			DefaultDepth(wm::display, m_screen->get_screenid()), CopyFromParent,
-			DefaultVisual(wm::display, m_screen->get_screenid()),
-			CWOverrideRedirect|CWEventMask, &wattr);
-
-	m_left_pixmap = XCreatePixmap(wm::display, m_left_button, m_button_w,
-			m_header_h, DefaultDepth(wm::display, m_screen->get_screenid()));
-
-	m_left_gc = XCreateGC(wm::display, m_left_pixmap, 0, &gcvalues);
-	XSetWindowBackgroundPixmap(wm::display, m_left_button, m_left_pixmap);
-
-	// Title bar
-	m_title_bar = XCreateWindow(wm::display, m_header, m_button_w + 2, 0,
-			m_geom.w - 2 * m_button_w - 4, m_header_h, 0,
-			DefaultDepth(wm::display, m_screen->get_screenid()), CopyFromParent,
-			DefaultVisual(wm::display, m_screen->get_screenid()),
-			CWOverrideRedirect|CWEventMask, &wattr);
-
-	m_title_width = m_geom.w;
-	m_title_pixmap = XCreatePixmap(wm::display, m_title_bar, m_title_width,
-			m_header_h, DefaultDepth(wm::display, m_screen->get_screenid()));
-
-	m_title_draw = XftDrawCreate(wm::display, m_title_pixmap, m_screen->get_visual(),
-			m_screen->get_colormap());
-	XSetWindowBackgroundPixmap(wm::display, m_title_bar, m_title_pixmap);
-
-	// Right button
-	m_right_button = XCreateWindow(wm::display, m_header, m_geom.w - m_button_w, 0,
-			m_button_w, m_header_h, 0,
-			DefaultDepth(wm::display, m_screen->get_screenid()), CopyFromParent,
-			DefaultVisual(wm::display, m_screen->get_screenid()),
-			CWOverrideRedirect|CWEventMask, &wattr);
-
-	m_right_pixmap = XCreatePixmap(wm::display, m_right_button, m_button_w,
-			m_header_h, DefaultDepth(wm::display, m_screen->get_screenid()));
-
-	m_right_gc = XCreateGC(wm::display, m_right_pixmap, 0, &gcvalues);
-	XSetWindowBackgroundPixmap(wm::display, m_right_button, m_right_pixmap);
-
-	draw_title();
-	draw_left_button(false);
-	draw_right_button(false);
-	XMapWindow(wm::display, m_left_button);
-	XMapWindow(wm::display, m_title_bar);
-	XMapWindow(wm::display, m_right_button);
-	XMapWindow(wm::display, m_header);
-}
-
-void XClient::create_footer()
-{
-	XSetWindowAttributes wattr;
-	wattr.override_redirect = True;
-	wattr.background_pixel = m_screen->get_pixel(Color::WindowBackground);
-	wattr.event_mask = ExposureMask;
-
-	m_footer = XCreateWindow(wm::display, m_parent,
-		0, m_geom.h - m_footer_h, m_geom.w, m_footer_h, 0,
-		DefaultDepth(wm::display, m_screen->get_screenid()), CopyFromParent,
-		DefaultVisual(wm::display, m_screen->get_screenid()),
-		CWOverrideRedirect|CWBackPixel|CWEventMask, &wattr);
-
-	wattr.background_pixel = m_screen->get_pixel(Color::WindowDecorActive);
-	wattr.event_mask = ExposureMask|ButtonPressMask;
-
-	wattr.cursor = wm::cursors[Pointer::ShapeResizeSW];
-	m_left_handle = XCreateWindow(wm::display, m_footer,
-		0, 0, m_handle_w, m_footer_h, 0,
-		DefaultDepth(wm::display, m_screen->get_screenid()), CopyFromParent,
-		DefaultVisual(wm::display, m_screen->get_screenid()),
-		CWOverrideRedirect|CWBackPixel|CWCursor|CWEventMask, &wattr);
-
-	wattr.cursor = wm::cursors[Pointer::ShapeResizeSE];
-	m_right_handle = XCreateWindow(wm::display, m_footer,
-		m_geom.w - m_handle_w, 0, m_handle_w, m_footer_h, 0,
-		DefaultDepth(wm::display, m_screen->get_screenid()), CopyFromParent,
-		DefaultVisual(wm::display, m_screen->get_screenid()),
-		CWOverrideRedirect|CWBackPixel|CWCursor|CWEventMask, &wattr);
-
-	wattr.cursor = wm::cursors[Pointer::ShapeResizeSouth];
-	m_middle_handle = XCreateWindow(wm::display, m_footer,
-		m_handle_w + 4, 0, m_geom.w - 2 * m_handle_w - 8, m_footer_h, 0,
-		DefaultDepth(wm::display, m_screen->get_screenid()), CopyFromParent,
-		DefaultVisual(wm::display, m_screen->get_screenid()),
-		CWOverrideRedirect|CWBackPixel|CWCursor|CWEventMask, &wattr);
-
-	XMapWindow(wm::display, m_left_handle);
-	XMapWindow(wm::display, m_middle_handle);
-	XMapWindow(wm::display, m_right_handle);
-	XMapWindow(wm::display, m_footer);
-}
-
-void XClient::draw_window()
-{
-	draw_window_border();
-	if (m_header_h)
-		draw_window_header();
-	if (m_footer_h)
-		draw_window_footer();
-}
-
-void XClient::draw_window_header()
-{
-	if (m_states & State::NoHeader) return;
-	draw_title();
-	draw_left_button(false);
-	draw_right_button(false);
-}
-
-void XClient::draw_title()
-{
-	XGlyphInfo 	 extents;
-	XftColor 	*bgcolor, *textcolor;
-	unsigned long	 pixel;
-
-	if (m_states & State::Active) {
-		pixel = m_screen->get_pixel(Color::WindowDecorActive);
-		bgcolor = m_screen->get_color(Color::WindowDecorActive);
-		textcolor = m_screen->get_color(Color::WindowTextActive);
-	} else {
-		pixel = m_screen->get_pixel(Color::WindowDecorInactive);
-		bgcolor = m_screen->get_color(Color::WindowDecorInactive);
-		textcolor = m_screen->get_color(Color::WindowTextInactive);
+	for (Binding& mb : conf::mousebindings) {
+		if (mb.context != Context::Window) continue;
+		for (auto mod : wm::ignore_mods)
+			XGrabButton(wm::display, mb.button, (mb.modmask | mod), 
+					m_parent, False, ButtonPressMask,
+					GrabModeAsync, GrabModeAsync, None, None);
 	}
-
-	int len = m_geom.w - 2 * m_header_h - 4;
-	XftDrawRect(m_title_draw, bgcolor, 0, 0, len, m_header_h);
-	XftTextExtentsUtf8(wm::display, m_font, (XftChar8 *)(m_name.c_str()),
-					m_name.size(), &extents);
-	int xpos = (len - extents.width) / 2;
-	if (xpos < 0) xpos = 4;
-	XftDrawStringUtf8(m_title_draw, textcolor, m_font, xpos, m_font->ascent,
-	    		(const FcChar8*)m_name.c_str(), m_name.size());
-	XClearWindow(wm::display, m_title_bar);
-}
-
-void XClient::draw_left_button(bool highlight)
-{
-	XGCValues gcvalues;
-	if (highlight)
-		gcvalues.foreground = m_screen->get_pixel(Color::WindowDecorHighlight);
-	else if (m_states & State::Active)
-		gcvalues.foreground = m_screen->get_pixel(Color::WindowDecorActive);
-	else
-		gcvalues.foreground = m_screen->get_pixel(Color::WindowDecorInactive);
-
-	XChangeGC(wm::display, m_left_gc, GCForeground, &gcvalues);
-	XFillRectangle(wm::display, m_left_pixmap, m_left_gc, 0, 0, m_button_w, m_header_h);
-
-	gcvalues.foreground = m_screen->get_pixel(Color::WindowBackground);
-	gcvalues.line_width = 4;
-	gcvalues.line_style = LineSolid;
-	XChangeGC(wm::display, m_left_gc, GCForeground|GCLineWidth|GCLineStyle, &gcvalues);
-	XDrawRectangle(wm::display, m_left_pixmap, m_left_gc, 5, 5, m_button_w - 10 , m_header_h - 10);
-	XDrawLine(wm::display, m_left_pixmap, m_left_gc, 5, 8, m_button_w - 5 , 8);
-	XClearWindow(wm::display, m_left_button);
-}
-
-void XClient::draw_right_button(bool highlight)
-{
-	XGCValues gcvalues;
-	if (highlight)
-		gcvalues.foreground = m_screen->get_pixel(Color::WindowDecorHighlight);
-	else if (m_states & State::Active)
-		gcvalues.foreground = m_screen->get_pixel(Color::WindowDecorActive);
-	else
-		gcvalues.foreground = m_screen->get_pixel(Color::WindowDecorInactive);
-
-	XChangeGC(wm::display, m_right_gc, GCForeground, &gcvalues);
-	XFillRectangle(wm::display, m_right_pixmap, m_right_gc, 0, 0, m_button_w, m_header_h);
-
-	gcvalues.foreground = m_screen->get_pixel(Color::WindowBackground);
-	gcvalues.line_width = 4;
-	gcvalues.line_style = LineSolid;
-	XChangeGC(wm::display, m_right_gc, GCForeground|GCLineWidth|GCLineStyle, &gcvalues);
-	XDrawLine(wm::display, m_right_pixmap, m_right_gc, 4, 4, m_button_w - 6 , m_header_h - 6);
-	XDrawLine(wm::display, m_right_pixmap, m_right_gc, 4, m_header_h - 6, m_button_w - 6 , 4);
-	XClearWindow(wm::display, m_right_button);
-}
-
-void XClient::draw_window_footer()
-{
-	if (m_states & State::NoFooter) return;
-	unsigned long	pixel;
-
-	if (m_states & State::Active) {
-		pixel = m_screen->get_pixel(Color::WindowDecorActive);
-	} else {
-		pixel = m_screen->get_pixel(Color::WindowDecorInactive);
-	}
-	XSetWindowBackground(wm::display, m_left_handle, pixel);
-	XClearWindow(wm::display, m_left_handle);
-	XSetWindowBackground(wm::display, m_middle_handle, pixel);
-	XClearWindow(wm::display, m_middle_handle);
-	XSetWindowBackground(wm::display, m_right_handle, pixel);
-	XClearWindow(wm::display, m_right_handle);
 }
 
 void XClient::draw_window_border()
 {
 	unsigned long	pixel;
 
-	if (m_states & State::Tiled) {
-		if (m_states & State::Urgent)
-			pixel = m_screen->get_pixel(Color::WindowBorderUrgent);
-		else if (m_states & State::Active)
-			pixel = m_screen->get_pixel(Color::WindowBorderActive);
-		else
-			pixel = m_screen->get_pixel(Color::WindowBorderInactive);
-	} else {
-		if (m_states & State::Urgent)
-			pixel = m_screen->get_pixel(Color::WindowBorderUrgent);
-		else if (m_states & State::Active)
-			pixel = m_screen->get_pixel(Color::WindowDecorActive);
-		else
-			pixel = m_screen->get_pixel(Color::WindowDecorInactive);
-	}
+	if (has_state(State::Urgent))
+		pixel = m_screen->get_pixel(Color::WindowBorderUrgent);
+	else if (has_state(State::Active))
+		pixel = m_screen->get_pixel(Color::WindowBorderActive);
+	else
+		pixel = m_screen->get_pixel(Color::WindowBorderInactive);
 
 	XSetWindowBorderWidth(wm::display, m_parent, (unsigned int)m_border_w);
 	XSetWindowBorder(wm::display, m_parent, pixel | (0xffu << 24));
@@ -454,14 +206,6 @@ bool XClient::has_window(Window w)
 	if (w == None) return false;
 	if (w == m_window) return true;
 	if (w == m_parent) return true;
-	if (w == m_header) return true;
-	if (w == m_left_button) return true;
-	if (w == m_title_bar) return true;
-	if (w == m_right_button) return true;
-	if (w == m_footer) return true;
-	if (w == m_left_handle) return true;
-	if (w == m_middle_handle) return true;
-	if (w == m_right_handle) return true;
 	return false;
 }
 
@@ -486,7 +230,6 @@ void XClient::get_net_wm_name()
 void XClient::update_net_wm_name()
 {
 	get_net_wm_name();
-	draw_window_header();
 	update_statusbar_title();
 }
 
@@ -504,23 +247,23 @@ void XClient::get_net_wm_window_type()
 	wm::get_net_wm_window_type(m_window, atoms);
 	for (Atom atom : atoms) {
 		if (atom == wm::ewmh[_NET_WM_WINDOW_TYPE_DOCK]) {
-			m_states |= (State::Docked|State::NoDecor);
+			set_states(State::Docked);
 			break;
 		}
 		if (atom == wm::ewmh[_NET_WM_WINDOW_TYPE_DIALOG]) {
-			m_states |= (State::Floated|State::NoDecor);
+			set_states(State::Floated);
 			break;
 		}
 		if (atom == wm::ewmh[_NET_WM_WINDOW_TYPE_SPLASH]) {
-			m_states |= (State::Floated|State::NoDecor);
+			set_states(State::Floated|State::FixedSize);
 			break;
 		}
 		if (atom == wm::ewmh[_NET_WM_WINDOW_TYPE_TOOLBAR]) {
-			m_states |= (State::Floated|State::NoDecor);
+			set_states(State::Floated);
 			break;
 		}
 		if (atom == wm::ewmh[_NET_WM_WINDOW_TYPE_UTILITY]) {
-			m_states |= (State::Floated|State::NoDecor);
+			set_states(State::Floated);
 			break;
 		}
 	}
@@ -557,9 +300,9 @@ void XClient::get_wm_hints()
 
 	if ((wmh = XGetWMHints(wm::display, m_window)) != NULL) {
 		if ((wmh->flags & InputHint) && (wmh->input))
-			m_states |= State::Input;
+			set_states(State::Input);
 		if ((wmh->flags & XUrgencyHint))
-			m_states |= State::Urgent;	
+			set_states(State::Urgent);	
 		if ((wmh->flags & StateHint))
 			m_initial_state = wmh->initial_state;
 		XFree(wmh);
@@ -574,9 +317,9 @@ void XClient::get_wm_protocols()
 	if (XGetWMProtocols(wm::display, m_window, &protocol, &n)) {
 		for (i = 0; i < n; i++) {
 			if (protocol[i] == wm::hints[WM_DELETE_WINDOW])
-				m_states |= State::WMDeleteWindow;
+				set_states(State::WMDeleteWindow);
 			else if (protocol[i] == wm::hints[WM_TAKE_FOCUS])
-				m_states |= State::WMTakeFocus;
+				set_states(State::WMTakeFocus);
 		}
 		XFree(protocol);
 	}
@@ -590,8 +333,8 @@ void XClient::get_transient()
 
 	if (XGetTransientForHint(wm::display, m_window, &trans)) {
 		if ((tc = XScreen::find_client(trans)) != NULL) {
-			if (tc->m_states & State::Ignored) {
-				m_states |= State::Floated|State::Ignored;
+			if (tc->has_state(State::Ignored)) {
+				set_states(State::Floated|State::Ignored);
 				m_border_w = tc->m_border_w;
 			}
 		}
@@ -613,10 +356,8 @@ void XClient::get_motif_hints()
 	if ((hints->flags & Motif::HintDecorations) &&
 	    !(hints->decorations & Motif::DecorAll)) {
 		if (!(hints->decorations & Motif::DecorBorder)) {
-			m_states |= State::Floated|State::NoDecor;
+			set_states(State::Floated|State::NoBorder);
 			m_border_w = 0;
-			m_header_h = 0;
-			m_footer_h = 0;
 		}
 	}
 	XFree(hints);
@@ -628,7 +369,7 @@ void XClient::set_initial_placement()
 	if (m_hints.flags & (USPosition | PPosition)) {
 		Geometry view = m_screen->get_view();
 		m_geom_child.set_user_placement(view, m_border_w);
-		if (m_states & State::Ignored)
+		if (has_state(State::Ignored))
 			m_geom_child.adjust_for_maximized(view, m_old_border);
 	} else {
 		Position pos = xutil::get_pointer_pos(m_rootwin);
@@ -651,7 +392,7 @@ void XClient::get_wm_normal_hints()
 }
 
 // Apply user defined state configurations
-void XClient::apply_configured_states()
+void XClient::apply_user_states()
 {
 	for (DefaultStates &def : conf::defstateslist) {
 		bool match = true;
@@ -659,7 +400,7 @@ void XClient::apply_configured_states()
 			match = false;
 		if (!def.resclass.empty() && def.resclass.compare(m_res_class))
 			match = false;
-		if (match) m_states |= def.states;
+		if (match) set_states(def.states);
 	}
 }
 
@@ -689,7 +430,7 @@ void XClient::configure_window(XConfigureRequestEvent *e)
 		m_geom_child.h = e->height;
 
 	m_geom.w = m_geom_child.w;
-	m_geom.h = m_geom_child.h + m_header_h + m_footer_h;
+	m_geom.h = m_geom_child.h;
 
 	resize_window();
 }
@@ -716,27 +457,27 @@ void XClient::send_configure_event()
 void XClient::set_window_active()
 {
 
-	if ((m_states & State::Active) || has_states(State::Docked) || (m_states & State::Hidden))
+	if (has_state(State::Active|State::Hidden) || has_states(State::Docked))
 		return;
 
 	XInstallColormap(wm::display, m_colormap);
 
-	if ((m_states & State::Input) || (!(m_states & State::WMTakeFocus)))
+	if (has_state(State::Input) || !has_state(State::WMTakeFocus))
 		XSetInputFocus(wm::display, m_window, RevertToPointerRoot, CurrentTime);
 	
-	if (m_states & State::WMTakeFocus)
+	if (has_state(State::WMTakeFocus))
 		wm::send_client_message(m_window, wm::hints[WM_TAKE_FOCUS],
 						wm::last_event_time);
 
 	XClient *prev_client = m_screen->get_active_client();
 	if (prev_client) {
-		prev_client->m_states &= ~State::Active;
-		prev_client->draw_window();
+		prev_client->clear_states(State::Active);
+		prev_client->draw_window_border();
 	}
 
-	m_states |= State::Active;
-	m_states &= ~State::Urgent;
-	draw_window();
+	set_states(State::Active);
+	clear_states(State::Urgent);
+	draw_window_border();
 	m_screen->raise_client(this);
 	wm::set_net_active_window(m_rootwin, m_window);
 	update_statusbar_title();
@@ -744,29 +485,30 @@ void XClient::set_window_active()
 
 void XClient::show_window()
 {
-	m_states &= ~State::Hidden;
+	clear_states(State::Hidden);
 	wm::set_net_wm_states(m_window, m_states);
 	wm::set_wm_state(m_window, NormalState);
 	XMapWindow(wm::display, m_parent);
-	draw_window();
+	draw_window_border();
 }
 
 void XClient::hide_window()
 {
 	XUnmapWindow(wm::display, m_parent);
-	if (m_states & State::Active) {
-		m_states &= ~State::Active;
+	if (has_state(State::Active)) {
+		clear_states(State::Active);
 		wm::set_net_active_window(m_rootwin, None);
 	}
-	m_states |= State::Hidden;
+	set_states(State::Hidden);
 	wm::set_net_wm_states(m_window, m_states);
 	wm::set_wm_state(m_window, IconicState);
 }
 
 void XClient::close_window()
 {
-	if (m_states & State::WMDeleteWindow)
-		wm::send_client_message(m_window, wm::hints[WM_DELETE_WINDOW], CurrentTime);
+	if (has_state(State::WMDeleteWindow))
+		wm::send_client_message(m_window, wm::hints[WM_DELETE_WINDOW], 
+					CurrentTime);
 	else
 		XKillClient(wm::display, m_window);
 }
@@ -784,7 +526,7 @@ void XClient::lower_window()
 
 void XClient::move_window_with_keyboard(long direction)
 {
-	if (m_states & State::Frozen)
+	if (has_state(State::Frozen))
 		return;
 
 	Geometry view = m_screen->get_view();
@@ -799,94 +541,18 @@ void XClient::move_window_with_keyboard(long direction)
 	XSync(wm::display, True);
 }
 
-void XClient::hide_window_with_button()
-{
-	XEvent		 ev;
-	Position	 p;
-	bool		 is_inside = true;
-	bool		 is_pressed = true;
-
-	if (conf::debug) {
-		std::cout << util::gettime() << " [XClient::" << __func__
-			<< "]" << std::endl;
-	}
-	raise_window();
-	draw_left_button(true);
-
-	if (XGrabPointer(wm::display, m_left_button, False, MouseMask,
-	    	GrabModeAsync, GrabModeAsync, None, wm::cursors[Pointer::ShapeNormal],
-	   	 CurrentTime) != GrabSuccess) return;
-
-	while (is_inside && is_pressed) {
-		XMaskEvent(wm::display, MouseMask, &ev);
-		switch (ev.type) {
-		case MotionNotify:
-			p.x = ev.xmotion.x;
-			p.y = ev.xmotion.y;
-			if ((ev.xmotion.x < 0) || (ev.xmotion.y < 0) ||
-				(ev.xmotion.x > m_button_w) || (ev.xmotion.y > m_header_h))
-				is_inside = false;
-			break;
-		case ButtonRelease:
-			is_pressed = false;
-			break;
-		}
-	}
-	XUngrabPointer(wm::display, CurrentTime);
-	draw_left_button(false);
-	if (!is_inside) return;
-	hide_window();
-}
-
-void XClient::close_window_with_button()
-{
-	XEvent		 ev;
-	Position	 p;
-	bool		 is_inside = true;
-	bool		 is_pressed = true;
-
-	if (conf::debug) {
-		std::cout << util::gettime() << " [XClient::" << __func__
-			<< "]" << std::endl;
-	}
-	raise_window();
-	draw_right_button(true);
-
-	if (XGrabPointer(wm::display, m_right_button, False, MouseMask,
-	    	GrabModeAsync, GrabModeAsync, None, wm::cursors[Pointer::ShapeNormal],
-	   	 CurrentTime) != GrabSuccess) return;
-
-	while (is_inside && is_pressed) {
-		XMaskEvent(wm::display, MouseMask, &ev);
-		switch (ev.type) {
-		case MotionNotify:
-			p.x = ev.xmotion.x;
-			p.y = ev.xmotion.y;
-			if ((ev.xmotion.x < 0) || (ev.xmotion.y < 0) ||
-				(ev.xmotion.x > m_button_w) || (ev.xmotion.y > m_header_h))
-				is_inside = false;
-			break;
-		case ButtonRelease:
-			is_pressed = false;
-			break;
-		}
-	}
-	XUngrabPointer(wm::display, CurrentTime);
-	draw_right_button(false);
-	if (!is_inside) return;
-	close_window();
-}
-
 void XClient::move_window_with_pointer()
 {
 	XEvent		 ev;
 	Time		 ltime = 0;
-	int		 move = 1;
 	Geometry 	 area;
 	Position 	 pos;
 
-	if (m_states & State::Frozen)
-		return;
+	if (conf::debug) {
+		std::cout << util::gettime() << " [XClient::" << __func__
+			<< "] Move window 0x" << std::hex << m_window << std::endl;
+	}
+	if (has_state(State::Frozen)) return;
 
 	raise_window();
 	move_pointer_inside();
@@ -899,7 +565,8 @@ void XClient::move_window_with_pointer()
 	std::string label = std::to_string(m_geom.x) + " . " + std::to_string(m_geom.y);
 	propwin.draw(label, m_geom.w/2, m_geom.h/2);
 
-	while (move) {
+	bool buttonpress = true;
+	while (buttonpress) {
 		XMaskEvent(wm::display, MouseMask, &ev);
 		switch (ev.type) {
 		case MotionNotify:
@@ -922,7 +589,7 @@ void XClient::move_window_with_pointer()
 
 			break;
 		case ButtonRelease:
-			move = 0;
+			buttonpress = false;
 			break;
 		}
 	}
@@ -939,8 +606,7 @@ void XClient::move_window()
 
 void XClient::resize_window_with_keyboard(long direction)
 {
-	if (m_states & State::Frozen)
-		return;
+	if (has_state(State::Frozen|State::FixedSize)) return;
 
 	m_geom.resize(direction, m_hints, m_border_w);
 	resize_window();
@@ -948,34 +614,59 @@ void XClient::resize_window_with_keyboard(long direction)
 	XSync(wm::display, True);
 }
 
-void XClient::resize_window_with_pointer(Handle h)
+void XClient::resize_window_with_pointer()
 {
-	XEvent	 	ev;
-	Time	 	ltime = 0;
-	Cursor		cursor;
-
-	if (m_states & State::Frozen) return;
+	if (has_state(State::Frozen|State::FixedSize)) return;
 
 	if (conf::debug>1) {
 		std::cout << util::gettime() << " [XClient::" << __func__ << "]\n";
 	}
 
 	raise_window();
+	m_ptr = xutil::get_pointer_pos(m_parent);
 
-	switch(h) {
-	case Handle::Left:
-		cursor = wm::cursors[Pointer::ShapeResizeSW];
-		break;
-	case Handle::Middle:
-		cursor = wm::cursors[Pointer::ShapeResizeSouth];
-		break;
-	case Handle::Right:
-		cursor = wm::cursors[Pointer::ShapeResizeSE];
-		break;
+	// Pointer position determines the direction of the resize
+	Direction	direction;
+	Cursor		cursor;
+	int limitleft = m_geom.w/4;
+	int limitright = 3 * m_geom.w/4;
+	int limittop = m_geom.h/4;
+	int limitbottom = 3 * m_geom.h/4;
+
+	direction = Pointer;
+	cursor = wm::cursors[Pointer::ShapeMove];
+	if ((m_ptr.x > limitright) && (m_ptr.y > limitbottom)) {
+		direction = SouthEast;
+		cursor = wm::cursors[Pointer::ShapeSE];
+	} else if ((m_ptr.x > limitright) && (m_ptr.y <= limittop)) {
+		direction = NorthEast;
+		cursor = wm::cursors[Pointer::ShapeNE];
+	} else if ((m_ptr.x <= limitleft) && (m_ptr.y > limitbottom)) {
+		direction = SouthWest;
+		cursor = wm::cursors[Pointer::ShapeSW];
+	} else if ((m_ptr.x <= limitleft) && (m_ptr.y <= limittop)) { 
+		direction = NorthWest;
+		cursor = wm::cursors[Pointer::ShapeNW];
+	} else if ((m_ptr.x > limitleft) && (m_ptr.x < limitright) 
+		&& (m_ptr.y < limittop)) {
+		direction = North;
+		cursor = wm::cursors[Pointer::ShapeNorth];
+	} else if ((m_ptr.x > limitleft) && (m_ptr.x < limitright) 
+		&& (m_ptr.y > limitbottom)) {
+		direction = South;
+		cursor = wm::cursors[Pointer::ShapeSouth];
+	} else if ((m_ptr.y > limittop) && (m_ptr.y < limitbottom) 
+		&& (m_ptr.x < limitleft)) {
+		direction = West;
+		cursor = wm::cursors[Pointer::ShapeWest];
+	} else if ((m_ptr.y > limittop) && (m_ptr.y < limitbottom) 
+		&& (m_ptr.x > limitright)) {
+		direction = East;
+		cursor = wm::cursors[Pointer::ShapeEast];
 	}
 
-	if (XGrabPointer(wm::display, m_parent, False, MouseMask,
-	    	GrabModeAsync, GrabModeAsync, None, cursor, CurrentTime) != GrabSuccess) return;
+	if (XGrabPointer(wm::display, m_parent, False, MouseMask, GrabModeAsync, 
+		GrabModeAsync, None, cursor, CurrentTime) != GrabSuccess) return;
 
 	PropWindow propwin(m_screen, m_parent);
 	int width = (m_geom.w - m_hints.basew) / m_hints.incw;
@@ -983,9 +674,12 @@ void XClient::resize_window_with_pointer(Handle h)
 	std::string label = std::to_string(width) + " x " + std::to_string(height);
 	propwin.draw(label, m_geom.w/2, m_geom.h/2);
 
-	int xmax = m_geom.x + m_geom.w;
-	bool resize = true;
-	while (resize) {
+	XEvent 	ev;
+	Time 	ltime = 0;
+	bool	buttonpress = true;
+	int 	xmax = m_geom.x + m_geom.w;
+	int 	ymax = m_geom.y + m_geom.h;
+	while (buttonpress) {
 		XMaskEvent(wm::display, MouseMask, &ev);
 		switch (ev.type) {
 		case MotionNotify:
@@ -993,21 +687,47 @@ void XClient::resize_window_with_pointer(Handle h)
 			if ((ev.xmotion.time - ltime) <= (1000 / 60))
 				continue;
 			ltime = ev.xmotion.time;
-
-			switch(h) {
-			case Handle::Left:
+			switch(direction) {
+			case Direction::Pointer:
+				m_geom.x = ev.xmotion.x_root - m_ptr.x - m_border_w;
+				m_geom.y = ev.xmotion.y_root - m_ptr.y - m_border_w;
+				break;
+			case Direction::North:
+				m_geom.y = ev.xmotion.y_root;
+				m_geom.h = ymax - m_geom.y;
+				break;
+			case Direction::South:
+				m_geom.h = ev.xmotion.y;
+				break;
+			case Direction::East:
+				m_geom.w = ev.xmotion.x;
+				break;
+			case Direction::West:
+				m_geom.x = ev.xmotion.x_root;
+				m_geom.w = xmax - m_geom.x;
+				break;
+			case Direction::NorthEast:
+				m_geom.w = ev.xmotion.x;
+				m_geom.y = ev.xmotion.y_root;
+				m_geom.h = ymax - m_geom.y;
+				break;
+			case Direction::SouthEast:
+				m_geom.w = ev.xmotion.x;
+				m_geom.h = ev.xmotion.y;
+				break;
+			case Direction::SouthWest:
 				m_geom.x = ev.xmotion.x_root;
 				m_geom.w = xmax - m_geom.x;
 				m_geom.h = ev.xmotion.y;
 				break;
-			case Handle::Middle:
-				m_geom.h = ev.xmotion.y;
-				break;
-			case Handle::Right:
-				m_geom.w = ev.xmotion.x;
-				m_geom.h = ev.xmotion.y;
+			case Direction::NorthWest:
+				m_geom.x = ev.xmotion.x_root;
+				m_geom.y = ev.xmotion.y_root;
+				m_geom.w = xmax - m_geom.x;
+				m_geom.h = ymax - m_geom.y;
 				break;
 			}
+
 			m_geom.apply_size_hints(m_hints);
 			resize_window();
 
@@ -1017,7 +737,7 @@ void XClient::resize_window_with_pointer(Handle h)
 			propwin.draw(label, m_geom.w/2, m_geom.h/2);
 			break;
 		case ButtonRelease:
-			resize = false;
+			buttonpress = false;
 			break;
 		}
 	}
@@ -1033,48 +753,20 @@ void XClient::resize_window()
 {
 	XMoveResizeWindow(wm::display, m_parent, m_geom.x, m_geom.y, m_geom.w, m_geom.h);
 
-	if (m_header_h) {
-		XMoveResizeWindow(wm::display, m_left_button, 0, 0, m_button_w, m_header_h);
-		XMoveResizeWindow(wm::display, m_title_bar, m_button_w + 2, 0,
-					m_geom.w - 2 * m_button_w - 4, m_header_h);
-		XMoveResizeWindow(wm::display, m_right_button, m_geom.w - m_button_w, 0,
-					m_button_w, m_header_h);
-
-		if (m_title_width < m_geom.w - 2 * m_button_w - 4) {
-			m_title_width = m_geom.w + 50;
-			XFreePixmap(wm::display, m_title_pixmap);
-			m_title_pixmap = XCreatePixmap(wm::display, m_title_bar, m_title_width,
-				m_header_h, DefaultDepth(wm::display, m_screen->get_screenid()));
-			XSetWindowBackgroundPixmap(wm::display, m_title_bar, m_title_pixmap);
-			XftDrawChange(m_title_draw, m_title_pixmap);
-		}
-		XMoveResizeWindow(wm::display, m_header, 0, 0, m_geom.w, m_header_h);
-	}
-
 	m_geom_child.x = 0;
-	m_geom_child.y = m_header_h;
+	m_geom_child.y = 0;
 	m_geom_child.w = m_geom.w;
-	m_geom_child.h = m_geom.h - (m_header_h + m_footer_h);
-	XMoveResizeWindow(wm::display, m_window, 0, m_header_h, m_geom_child.w, m_geom_child.h);
-
-	if (m_footer_h) {
-		XMoveResizeWindow(wm::display, m_left_handle, 0, 0, m_handle_w, m_footer_h);
-		XMoveResizeWindow(wm::display, m_middle_handle, m_handle_w + 4, 0,
-					m_geom.w - 2 * m_handle_w - 8, m_footer_h);
-		XMoveResizeWindow(wm::display, m_right_handle, m_geom.w - m_handle_w, 0,
-					m_handle_w, m_footer_h);
-		XMoveResizeWindow(wm::display, m_footer, 0, m_geom.h - m_footer_h,
-					m_geom.w, m_footer_h);
-	}
+	m_geom_child.h = m_geom.h;
+	XMoveResizeWindow(wm::display, m_window, 0, 0, m_geom_child.w, m_geom_child.h);
 	m_geom_floated = m_geom;
 
-	draw_window();
+	draw_window_border();
 	send_configure_event();
 }
 
 void XClient::snap_window(long direction)
 {
-	if (m_states & State::Frozen) return;
+	if (has_state(State::Frozen)) return;
 	Position pos = m_geom.get_center(Coordinates::Root);
 	Geometry area = m_screen->get_area(pos, true);
 	m_geom.warp_to_edge(direction, area, m_border_w);
@@ -1106,34 +798,30 @@ void XClient::save_pointer()
 
 void XClient::set_tiling(Geometry &tiled)
 {
-	if (!(m_states & State::Tiled)) return;
-	if (m_states & State::FullScreen)
+	if (!has_state(State::Tiled)) return;
+	if (has_state(State::FullScreen))
 		remove_fullscreen();
 
-	if (!conf::tileheader)
-		m_header_h = 0;
-	m_footer_h = 0;
 	m_geom = tiled;
 
-	m_states |= State::Frozen;	
+	set_states(State::Frozen);	
 	wm::set_net_wm_states(m_window, m_states);
 	resize_window();
 }
 
 void XClient::set_floated()
 {
-	if (m_states & State::FullScreen)
+	if (has_state(State::FullScreen))
 		remove_fullscreen();
 
-	m_states &= ~(State::Tiled|State::Frozen|State::Maximized);
+	clear_states(State::Tiled|State::Frozen|State::Maximized);
 	m_geom = m_geom_floated;
-	if (!(m_states & State::NoHeader))
-		m_header_h = m_font->ascent + m_font->descent;
-	if (!(m_states & State::NoFooter))
-		m_footer_h = conf::footerheight;
-	if (!(m_states & State::NoDecor))
-		m_border_w = conf::borderwidth;
-
+	if (has_state(State::NoBorder))
+		m_border_w = 0;
+	else 
+		m_border_w = conf::border_float;
+	
+	
 	resize_window();
 }
 
@@ -1145,11 +833,11 @@ void XClient::change_states(int action, Atom a, Atom b)
 			continue;
 		switch(action) {
 		case _NET_WM_STATE_ADD:
-			if (!(m_states & sm.state))
+			if (!(has_state(sm.state)))
 				toggle_state(sm.state);
 			break;
 		case _NET_WM_STATE_REMOVE:
-			if (m_states & sm.state)
+			if (has_state(sm.state))
 				toggle_state(sm.state);
 			break;
 		case _NET_WM_STATE_TOGGLE:
@@ -1160,32 +848,32 @@ void XClient::change_states(int action, Atom a, Atom b)
 	}
 }
 
-void XClient::toggle_state(long flag)
+void XClient::toggle_state(long flags)
 {
-	switch(flag) {
+	switch(flags) {
 	case State::Urgent:
-		if (!(m_states & State::Active))
-			m_states |= State::Urgent;
+		if (!has_state(State::Active))
+			set_states(State::Urgent);
 		break;
 	case State::Hidden:
 	case State::SkipPager:
 	case State::SkipTaskbar:
-		m_states ^= flag;
+		m_states ^= flags;
 		break;
 	case State::Sticky:
-		if (m_states & State::Sticky)
+		if (has_state(State::Sticky))
 			m_screen->assign_client_to_desktop(this, 
 				 m_screen->get_active_desktop(), true);
 		else
 			m_screen->assign_client_to_desktop(this, -1, true);
-		m_states ^= flag;
+		m_states ^= flags;
 		break;
 	case State::Tiled:
-		if (m_states & State::Tiled) {
+		if (has_state(State::Tiled)) {
 			m_screen->remove_window_tile_from_desktop(this);
 			set_floated();
 		} else {
-			m_states |= (State::Tiled|State::Frozen);
+			set_states(State::Tiled|State::Frozen);
 			m_screen->add_window_tile_to_desktop(this);
 		}	
 		break;
@@ -1198,13 +886,13 @@ void XClient::toggle_state(long flag)
 
 void XClient::toggle_fullscreen()
 {
-	if ((m_states & State::Frozen) && !(m_states & (State::FullScreen|State::Tiled)))
+	if (has_state(State::Frozen) && !has_state(State::FullScreen|State::Tiled))
 		return;
 
-	if (m_states & State::FullScreen)
+	if (has_state(State::FullScreen))
 		remove_fullscreen();
 	else {
-		if (m_states & State::Tiled)
+		if (has_state(State::Tiled))
 			m_geom_tiling = m_geom;
 		else
 			m_geom_floated = m_geom;
@@ -1212,10 +900,8 @@ void XClient::toggle_fullscreen()
 		Position pos = m_geom.get_center(Coordinates::Root);
 		Geometry area = m_screen->get_area(pos, false);
 		m_border_w = 0;
-		m_header_h = 0;
-		m_footer_h = 0;
 		m_geom = area;
-		m_states |= (State::FullScreen|State::Frozen);
+		set_states(State::FullScreen|State::Frozen);
 		raise_window();
 	}
 
@@ -1225,22 +911,17 @@ void XClient::toggle_fullscreen()
 
 void XClient::remove_fullscreen()
 {
-	if (!(m_states & State::NoHeader))
-		m_header_h = m_font->ascent + m_font->descent;
-	if (!(m_states & State::NoFooter))
-		m_footer_h = conf::footerheight;
-	if (!(m_states & State::NoDecor))
-		m_border_w = 1;
+	if (has_state(State::NoBorder))
+		m_border_w = 0; 
+	else
+		m_border_w = conf::border_float;
 
-	if (m_states & State::Tiled) {
-		m_border_w = conf::borderwidth;	
-		m_footer_h = 0;	
-		if (!conf::tileheader)
-			m_header_h = 0;
+
+	if (has_state(State::Tiled)) {
 		m_geom = m_geom_tiling;
 	} else {
 		m_geom = m_geom_floated;
-		m_states &= ~State::Frozen;
+		clear_states(State::Frozen);
 	}
-	m_states &= ~State::FullScreen;
+	clear_states(State::FullScreen);
 }

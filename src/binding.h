@@ -64,7 +64,6 @@ struct Binding {
 		void		(*fscreen)(XScreen *, long);
 		void		(*fclient)(XClient *, long);
 		void		(*froot)(XScreen *);
-		void		(*fdecor)(XClient *);
 	};
 	long			param;
 	std::string		path;

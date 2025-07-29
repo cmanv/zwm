@@ -1,3 +1,8 @@
+2025-07-27
+	* Supprime les décorations sur les fenêtres flottantes.
+	* Nouvelle version de resize_window_with_pointer
+	* Version alpha10
+
 2025-05-13
 	* Ajoute de la documentation
 	* Modifie les noms de quelques fonctions

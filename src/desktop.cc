@@ -50,7 +50,7 @@ void Desktop::add_window(XClient *client)
 	}
 
 	m_clientstack.push_back(client);
-	if (client->and_state(State::Tiled)) 
+	if (client->has_state(State::Tiled)) 
 		add_window_tile(client);
 }
 
@@ -131,7 +131,7 @@ XClient *Desktop::next_window(XClient *client)
 	if (current == m_clientstack.rend()) 
 		return client;
 
-	auto isNext = [](XClient *c) { return (!c->and_state(State::SkipCycle)); };
+	auto isNext = [](XClient *c) { return (!c->has_state(State::SkipCycle)); };
 	auto next = std::find_if(current+1, m_clientstack.rend(), isNext);
 	if (next == m_clientstack.rend())
 		next = std::find_if(m_clientstack.rbegin(), current, isNext);
@@ -148,7 +148,7 @@ XClient *Desktop::prev_window(XClient *client)
 	if (current == m_clientstack.end()) 
 		return client;
 
-	auto isPrev = [](XClient *c) { return (!c->and_state(State::SkipCycle)); };
+	auto isPrev = [](XClient *c) { return (!c->has_state(State::SkipCycle)); };
 	auto prev = std::find_if(current+1, m_clientstack.end(), isPrev);
 	if (prev == m_clientstack.end())
 		prev = std::find_if(m_clientstack.begin(), current, isPrev);
@@ -225,7 +225,7 @@ void Desktop::rotate_mode(long direction)
 bool Desktop::has_hidden_only()
 {
 	for (XClient *client : m_clientstack) {
-		if (!(client->has_states(State::Hidden)))
+		if (!(client->has_state(State::Hidden)))
 			return false;
 	}
 	return true;
@@ -237,7 +237,7 @@ void Desktop::tile_horizontal()
 	
 	Position p = xutil::get_pointer_pos(m_screen->get_window());
 	Geometry area = m_screen->get_area(p, true);
-	int border = conf::borderwidth;
+	int border = conf::border_tile;
 
 	float mh = area.h;
 	int nwins = m_clienttile.size();
@@ -270,7 +270,7 @@ void Desktop::tile_horizontal()
 	}
 
 	for (XClient *client : m_clientstack) {
-		if (!client->and_state(State::Tiled)) {
+		if (!client->has_state(State::Tiled)) {
 			client->show_window();
 			client->raise_window();
 		}
@@ -283,7 +283,7 @@ void Desktop::tile_vertical()
 
 	Position p = xutil::get_pointer_pos(m_screen->get_window());
 	Geometry area = m_screen->get_area(p, true);
-	int border = conf::borderwidth;
+	int border = conf::border_tile;
 
 	float mw = area.w;
 	int nwins = m_clienttile.size();
@@ -316,7 +316,7 @@ void Desktop::tile_vertical()
 	}
 
 	for (XClient *client : m_clientstack) {
-		if (!client->and_state(State::Tiled)) {
+		if (!client->has_state(State::Tiled)) {
 			client->show_window();
 			client->raise_window();
 		}
@@ -342,7 +342,7 @@ void Desktop::tile_maximized()
 {
 	Position p = xutil::get_pointer_pos(m_screen->get_window());
 	Geometry area = m_screen->get_area(p, true);
-	int border = conf::borderwidth;
+	int border = conf::border_tile;
 
 	Geometry maximized(area.x, area.y, area.w - 2 * border, area.h - 2 * border);
 	bool master = true;
@@ -364,7 +364,7 @@ void Desktop::tile_maximized()
 	}
 
 	for (XClient *client : m_clientstack) {
-		if (!client->and_state(State::Tiled)) {
+		if (!client->has_state(State::Tiled)) {
 			client->show_window();
 			client->raise_window();
 		}

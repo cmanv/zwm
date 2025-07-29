@@ -158,7 +158,7 @@ void XScreen::grab_keybindings()
 XClient *XScreen::get_active_client()
 {
 	for (XClient *client : m_clientlist)
-		if (client->has_states(State::Active)) return client;
+		if (client->has_state(State::Active)) return client;
 	return NULL;
 }
 
@@ -298,7 +298,7 @@ void XScreen::remove_sticky(XClient *client)
 void XScreen::raise_client(XClient *client)
 {
 	if (m_cycling) return; 	// Dont change order of clients while cycling
-	if (client->has_states(State::Tiled)) return; // Dont change the order in tiling mode.
+	if (client->has_state(State::Tiled)) return; // Dont change the order in tiling mode.
 	m_desktoplist[m_desktop_active].raise_window(client);
 }
 
@@ -574,7 +574,7 @@ void XScreen::run_rootmenu_window()
 	for (XClient *client : m_stickylist) {
 		char ws = '+';
 		if (client->has_states(State::Docked)) continue;
-		if (client->has_states(State::Hidden)) ws = '.';
+		if (client->has_state(State::Hidden)) ws = '.';
 		std::stringstream ss;
 		ss << "[s]" << ws  << ' ' << client->get_name();
 		std::string s(ss.str().substr(0,127));
@@ -584,8 +584,8 @@ void XScreen::run_rootmenu_window()
 	for (int i = 0; i < m_ndesktops; i++) {
 		for (XClient *client : m_desktoplist[i].get_clients()) {
 			char ws = '+';
-			if (client->has_states(State::Active)) ws = '#';
-			if (client->has_states(State::Hidden)) ws = '.';
+			if (client->has_state(State::Active)) ws = '#';
+			if (client->has_state(State::Hidden)) ws = '.';
 			std::stringstream ss;
 			ss << "[" << client->get_desktop_index()+1 << "]" << ws  
 				<< ' ' << client->get_name();
@@ -616,7 +616,7 @@ XClient *XScreen::find_active_client()
 {
 	for (XScreen *screen : wm::screenlist)
 		for (XClient *client : screen->m_clientlist)
-			if (client->has_states(State::Active)) return client;
+			if (client->has_state(State::Active)) return client;
 	return NULL;
 }
 

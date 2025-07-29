@@ -98,14 +98,6 @@ Binding::Binding( BindingDef& binddef, EventType eventtype)
 				fclient = funcdef.fclient;
 				param = funcdef.param;
 				break;
-			case Context::TitleBar:
-			case Context::LeftButton:
-			case Context::RightButton:
-			case Context::LeftHandle:
-			case Context::MiddleHandle:
-			case Context::RightHandle:
-				fdecor = funcdef.fdecor;
-				break;
 			case Context::Function:
 				fcall = funcdef.fcall;
 				param = funcdef.param;

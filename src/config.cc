@@ -99,14 +99,8 @@ namespace conf {
 		{ "1",		"root-menu-window" },
 		{ "2",		"root-menu-desktop" },
 		{ "3",		"root-menu-app" },
-		{ "1",		"window-button-close" },
-		{ "1",		"window-button-hide" },
-		{ "1",		"window-titlebar-move" },
-		{ "4",		"window-titlebar-raise" },
-		{ "5",		"window-titlebar-lower" },
-		{ "1",		"window-left-resize" },
-		{ "1",		"window-middle-resize" },
-		{ "1",		"window-right-resize" },
+		{ "M-1",	"window-move" },
+		{ "M-3",	"window-resize" },
 	};
 
 	std::vector<std::string> cfilenames = {
@@ -131,11 +125,11 @@ namespace conf {
 
 	int			debug = 0;
 	const int		ndesktops = desktopdefs.size();
-	int 			footerheight = 8;
-	int			borderwidth = 2;
+	int			border_menu = 1;
+	int			border_tile = 2;
+	int			border_float = 5;
 	int			moveamount = 10;
 	int			snapdist = 9;
-	bool			tileheader = false;
 	BorderGap		bordergap = { 1, 1, 1, 1 };
 
 	std::vector<Binding>		keybindings;
@@ -170,15 +164,9 @@ void conf::init()
 	}
 
 	colordefs.resize(Color::NumColors);
-	colordefs[Color::WindowBackground] 	= "black";
 	colordefs[Color::WindowBorderActive] 	= "tan";
 	colordefs[Color::WindowBorderInactive] 	= "grey40";
 	colordefs[Color::WindowBorderUrgent] 	= "red";
-	colordefs[Color::WindowDecorActive]	= "SkyBlue4";
-	colordefs[Color::WindowDecorInactive]	= "snow4";
-	colordefs[Color::WindowDecorHighlight]	= "azure3";
-	colordefs[Color::WindowTextActive]	= "WhiteSmoke";
-	colordefs[Color::WindowTextInactive]	= "black";
 	colordefs[Color::MenuBackground] 	= "grey21";
 	colordefs[Color::MenuBorder] 		= "SkyBlue4";
 	colordefs[Color::MenuHighlight] 	= "SteelBlue4";
@@ -224,15 +212,6 @@ void conf::init()
 	while (get_line(configfile, line)) {
 		if (!get_tokens(line, tokens)) continue;
 
-		if (!tokens[0].compare("tile-header")) {
-			tileheader = true;
-			continue;
-		}
-		if (!tokens[0].compare("no-tile-header")) {
-			tileheader = false;
-			continue;
-		}
-
 		// Rest need at least 2 tokens
 		if (tokens.size() < 2)
 			continue;
@@ -241,12 +220,8 @@ void conf::init()
 			debug = std::strtol(tokens[1].c_str(), NULL, 10);
 			continue;
 		}
-		if (!tokens[0].compare("border-width")) {
-			borderwidth = std::strtol(tokens[1].c_str(), NULL, 10);
-			continue;
-		}
-		if (!tokens[0].compare("footer-height")) {
-			footerheight = std::strtol(tokens[1].c_str(), NULL, 10);
+		if (!tokens[0].compare("border-float")) {
+			border_float = std::strtol(tokens[1].c_str(), NULL, 10);
 			continue;
 		}
 		if (!tokens[0].compare("border-gap")) {
@@ -323,18 +298,6 @@ void conf::init()
 				colordefs[Color::WindowBorderInactive] = tokens[2];
 			else if (!tokens[1].compare("window-border-urgent"))
 				colordefs[Color::WindowBorderUrgent] = tokens[2];
-			else if (!tokens[1].compare("window-decor-active"))
-				colordefs[Color::WindowDecorActive] = tokens[2];
-			else if (!tokens[1].compare("window-decor-inactive"))
-				colordefs[Color::WindowDecorInactive] = tokens[2];
-			else if (!tokens[1].compare("window-decor-highlight"))
-				colordefs[Color::WindowDecorHighlight] = tokens[2];
-			else if (!tokens[1].compare("window-text-active"))
-				colordefs[Color::WindowTextActive] = tokens[2];
-			else if (!tokens[1].compare("window-text-inactive"))
-				colordefs[Color::WindowTextInactive] = tokens[2];
-			else if (!tokens[1].compare("window-background"))
-				colordefs[Color::WindowBackground] = tokens[2];
 			else if (!tokens[1].compare("menu-background"))
 				colordefs[Color::MenuBackground] = tokens[2];
 			else if (!tokens[1].compare("menu-border"))
@@ -510,11 +473,11 @@ void conf::add_window_states(std::string &rname, std::string &rclass,
 	long statemask = 0;
 	for (std::string &state : states) {
 		if (!state.compare("docked")) statemask |= State::Docked;
+		if (!state.compare("fixedsize")) statemask |= State::FixedSize;
 		if (!state.compare("floated")) statemask |= State::Floated;
 		if (!state.compare("frozen")) statemask |= State::Frozen;
 		if (!state.compare("ignored")) statemask |= State::Ignored;
-		if (!state.compare("nodecor")) statemask |= State::NoDecor;
-		if (!state.compare("noresize")) statemask |= State::NoFooter;
+		if (!state.compare("noborder")) statemask |= State::NoBorder;
 		if (!state.compare("sticky")) statemask |= State::Sticky;
 	}
 

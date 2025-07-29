@@ -52,7 +52,7 @@ Menu::Menu(XScreen *s, MenuDef &md, Menu *p): m_data(md)
 	m_hicolor = m_screen->get_color(Color::MenuHighlight);
 	m_bordercolor = m_screen->get_color(Color::MenuBorder);
 
-	m_border = conf::borderwidth;
+	m_border = conf::border_menu;
 	m_entry_height = m_font->ascent + m_font->descent;
 
 	Position pos = xutil::get_pointer_pos(m_rootwin);
@@ -299,7 +299,7 @@ void Menu::activate_window()
 	int active_desktop = m_screen->get_active_desktop();
 	if ((index != -1) && (index != active_desktop)) 
 		m_screen->switch_to_desktop(index);
- 	if (client->has_states(State::Hidden)) 
+ 	if (client->has_state(State::Hidden)) 
 		client->show_window();
  	if (!(client->has_states(State::Ignored))) {
 		client->raise_window();

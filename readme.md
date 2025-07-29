@@ -94,40 +94,21 @@ This section describe all options that can be set in the configuration files.
 
 ## WINDOWS OPTIONS
 
-* **border-width** _width_
+* **border-float** _width_
 
-> Specifies the border width of the windows. (default: 0)
+> Specifies the border width of floating windows. (default: 5)
+
+* **border-tile** _width_
+
+> Specifies the border width of tiled windows. (default: 2)
 
 * **color** _element color_
 
-> Sets the color of various UI elements.  
-> For tiled windows:
+> Sets the color of the windows border.  
 
 > > _window-border-active_  
 > > _window-border-inactive_  
 > > _window-border-urgent_  
-
-> For floated windows with decor attributes:
-
-> > _window-decor-active_  
-> > _window-decor-inactive_  
-> > _window-decor-highlight_  
-> > _window-text-active_  
-> > _window-text-inactive_  
-> > _window-background_  
-
-* **footer-height** _height_  
-
-> Sets the height in pixels of the resize handles at the bottom of the floated windows.
-> (default: 8)
-
-* **tile-header**
-
-> Adds an header to the tiled windows for the purpose of displaying the title. (default is unset)
-
-* **window-font**  _font_
-
-> Sets the font used for displaying window titles. (default is "Mono:size=10")
 
 ## MENU OPTIONS
 
@@ -212,17 +193,17 @@ series of _menu-item_ lines and end with a _menu-end_ line.
 
 > > > The window is locked at its current position.
 
+> > _fixedsize_ 
+
+> > > The window cannot be resized (applicable to _floated_ windows only).
+
 > > _ignored_
 
 > > > Do not add the window to the task list or the window list.
 
-> > _nodecor_ 
+> > _noborder_ 
 
-> > > The window does not have any window manager decoration (_floated_ windows only).
-
-> > _noresize_
-
-> > > The _floated_ window will not have resize handles.
+> > > The window has minimalisiic border (_floated_ windows only).
 
 > > _sticky_ 
 
@@ -230,7 +211,7 @@ series of _menu-item_ lines and end with a _menu-end_ line.
 
 > > _docked_ 
 
-> > > Equivalent to _frozen_,_sticky_,_ignore_,_nodecor_. Any client with the property _\_NET\_WM\_WINDOW\_TYPE\_DOCK_ will have this state set.
+> > > Equivalent to _frozen_,_sticky_,_ignore_,_noborder_. Any client with the property _\_NET\_WM\_WINDOW\_TYPE\_DOCK_ will have this state set.
 
 ## BINDING OPTIONS
 
@@ -333,38 +314,6 @@ or mouse binding.
 
 > Decrease the proportion of the screen occupied by the master window.
 
-* **window-titlebar-move**
-
-> Not documented
-
-* **window-titlebar-raise**
-
-> Not documented
-
-* **window-titlebar-lower**
-
-> Not documented
-
-* **window-button-hide**
-
-> Not documented
-
-* **window-button-close**
-
-> Not documented
-
-* **window-left-resize**
-
-> Not documented
-
-* **window-middle-resize**
-
-> Not documented
-
-* **window-right-resize**
-
-> Not documented
-
 * **window-lower**
 
 > Lower the position of the current window in the stack. (_floated_ windows only).
@@ -429,6 +378,10 @@ or mouse binding.
 
 > Snap the current window to the top-right corner of the screen. (_floated_ windows only)
 
+* **window-move**
+
+> Move the current window with the pointer. (_floated_ windows only)
+
 * **window-move-up**
 
 > Move the current window toward to the top of the screen. (_floated_ windows only)
@@ -464,6 +417,10 @@ or mouse binding.
 
 > Move the current window toward to the bottom-left corner of the screen. 
 > (_floated_ windows only)
+
+* **window-resize**
+
+> Resize the current window with the pointer.  (_floated_ windows only)
 
 * **window-resize-up**
 
@@ -547,6 +504,8 @@ or mouse binding.
   * **1**	->	_root-menu-window_  
   * **2**	->	_root-menu-desktop_  
   * **3**	->	_root-menu-app_  
+  * **C+1**	->	_move-window_  
+  * **C+3**	->	_resize-window_  
 
 # FILES
 

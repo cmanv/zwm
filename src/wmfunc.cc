@@ -38,14 +38,6 @@ std::vector<FuncDef> funcdefs = {
 	{ "root-menu-window", 		rootmenu_window, Context::Root},
 	{ "root-menu-desktop", 		rootmenu_desktop, Context::Root},
 	{ "root-menu-app", 		rootmenu_app, Context::Root},
-	{ "window-titlebar-move", 	window_titlebar_move, Context::TitleBar},
-	{ "window-titlebar-raise", 	window_titlebar_raise, Context::TitleBar},
-	{ "window-titlebar-lower", 	window_titlebar_lower, Context::TitleBar},
-	{ "window-button-hide", 	window_button_hide, Context::LeftButton},
-	{ "window-button-close", 	window_button_close, Context::RightButton},
-	{ "window-left-resize", 	window_left_resize, Context::LeftHandle},
-	{ "window-middle-resize",	window_middle_resize, Context::MiddleHandle},
-	{ "window-right-resize", 	window_right_resize, Context::RightHandle},
 
 	{ "window-lower", 		window_lower},
 	{ "window-hide", 		window_hide},
@@ -72,10 +64,14 @@ std::vector<FuncDef> funcdefs = {
 	{ "window-snap-up-left", 	window_snap, Direction::NorthWest},
 	{ "window-snap-down-right", 	window_snap, Direction::SouthEast},
 	{ "window-snap-down-left", 	window_snap, Direction::SouthWest},
+
+	{ "window-move", 		window_move, Direction::Pointer},
 	{ "window-move-up", 		window_move, Direction::North},
 	{ "window-move-down", 		window_move, Direction::South},
 	{ "window-move-right", 		window_move, Direction::East},
 	{ "window-move-left", 		window_move, Direction::West},
+
+	{ "window-resize", 		window_resize, Direction::Pointer},
 	{ "window-resize-up", 		window_resize, Direction::North},
 	{ "window-resize-down", 	window_resize, Direction::South},
 	{ "window-resize-right", 	window_resize, Direction::East},
@@ -115,12 +111,18 @@ std::vector<FuncDef> funcdefs = {
 
 void wmfunc::window_move(XClient *client, long direction)
 {
-	client->move_window_with_keyboard(direction);
+	if (direction == Direction::Pointer) 
+		client->move_window_with_pointer();
+	else 
+		client->move_window_with_keyboard(direction);
 }
 
 void wmfunc::window_resize(XClient *client, long direction)
 {
-	client->resize_window_with_keyboard(direction);
+	if (direction == Direction::Pointer)
+		client->resize_window_with_pointer();
+	else 
+		client->resize_window_with_keyboard(direction);
 }
 
 void wmfunc::window_snap(XClient *client, long direction)
@@ -152,7 +154,7 @@ void wmfunc::window_hide(XClient *client, long)
 void wmfunc::window_state(XClient *client, long state)
 {
 	client->toggle_state(state);
-	if (!client->has_states(State::FullScreen)) {
+	if (!client->has_state(State::FullScreen)) {
 		XScreen *screen = client->get_screen();
 		screen->show_desktop();
 	}
@@ -208,46 +210,6 @@ void wmfunc::desktop_window_cycle(XScreen *screen, long direction)
 void wmfunc::desktop_rotate_tiles(XScreen *screen, long direction)
 {
 	screen->rotate_desktop_tiles(direction);
-}
-
-void wmfunc::window_button_close(XClient *client)
-{
-	client->close_window_with_button();
-}
-
-void wmfunc::window_button_hide(XClient *client)
-{
-	client->hide_window_with_button();
-}
-
-void wmfunc::window_titlebar_move(XClient *client)
-{
-	client->move_window_with_pointer();
-}
-
-void wmfunc::window_titlebar_lower(XClient *client)
-{
-	client->lower_window();
-}
-
-void wmfunc::window_titlebar_raise(XClient *client)
-{
-	client->raise_window();
-}
-
-void wmfunc::window_left_resize(XClient *client)
-{
-	client->resize_window_with_pointer(Handle::Left);
-}
-
-void wmfunc::window_middle_resize(XClient *client)
-{
-	client->resize_window_with_pointer(Handle::Middle);
-}
-
-void wmfunc::window_right_resize(XClient *client)
-{
-	client->resize_window_with_pointer(Handle::Right);
 }
 
 void wmfunc::rootmenu_app(XScreen *screen)

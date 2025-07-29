@@ -184,20 +184,8 @@ static void XEvents::button_press(XEvent *ee)
 	Binding *mb = NULL;
 	for (Binding& cmb : conf::mousebindings) {
 		if (e->button != cmb.button || e->state != cmb.modmask) continue;
-		if (client && cmb.context == Context::Root) continue;
-		if (!client && cmb.context != Context::Root) continue;
-		if (client && (cmb.context == Context::TitleBar) &&
-		 	(e->window != client->get_title_bar())) continue;	
-		if (client && (cmb.context == Context::LeftButton) &&
-		 	(e->window != client->get_left_button())) continue;	
-		if (client && (cmb.context == Context::RightButton) &&
-		 	(e->window != client->get_right_button())) continue;	
-		if (client && (cmb.context == Context::LeftHandle) &&
-		 	(e->window != client->get_left_handle())) continue;	
-		if (client && (cmb.context == Context::MiddleHandle) &&
-		 	(e->window != client->get_middle_handle())) continue;	
-		if (client && (cmb.context == Context::RightHandle) &&
-		 	(e->window != client->get_right_handle())) continue;	
+		if (client && cmb.context == Context::Root) continue;	
+		if (!client && cmb.context == Context::Window) continue;
 		mb = &cmb;
 		break;
 	}
@@ -207,13 +195,8 @@ static void XEvents::button_press(XEvent *ee)
 	case Context::Root:
 		(*mb->froot)(screen);
 		break;
-	case Context::TitleBar:
-	case Context::LeftButton:
-	case Context::RightButton:
-	case Context::LeftHandle:
-	case Context::MiddleHandle:
-	case Context::RightHandle:
-		(*mb->fdecor)(client);
+	case Context::Window:
+		(*mb->fclient)(client, mb->param);
 		break;
 	default: ;
 	}
@@ -244,7 +227,7 @@ static void XEvents::expose(XEvent *ee)
 
 	XClient *client = XScreen::find_client(e->window);
 	if ((client) && e->count == 0)
-		client->draw_window();
+		client->draw_window_border();
 }
 
 static void XEvents::destroy_notify(XEvent *ee)
@@ -276,7 +259,7 @@ static void XEvents::ummap_notify(XEvent *ee)
 		if (e->send_event) {
 			wm::set_wm_state(e->window, WithdrawnState);
 		} else {
-			if (!(client->has_states(State::Hidden))) {
+			if (!(client->has_state(State::Hidden))) {
 				if (client->ignore_unmap()) return;
 				XScreen *screen = client->get_screen();
 				screen->remove_client(client);
@@ -358,11 +341,11 @@ static void XEvents::property_notify(XEvent *ee)
 			break;
 		case XA_WM_HINTS:
 			client->get_wm_hints();
-			client->draw_window();
+			client->draw_window_border();
 			break;
 		case XA_WM_TRANSIENT_FOR:
 			client->get_transient();
-			client->draw_window();
+			client->draw_window_border();
 			index = client->get_desktop_index();
 			if (index > -1)
 				screen->move_client_to_desktop(client, index);

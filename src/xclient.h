@@ -36,25 +36,6 @@ class XClient {
 	Window	  	 	 m_parent;
 	Window	  	 	 m_window;
 
-	Window	  	 	 m_header;
-	Window	  	 	 m_left_button;
-	Window	  	 	 m_title_bar;
-	Window	  	 	 m_right_button;
-
-	Window	  	 	 m_footer;
-	Window	  	 	 m_left_handle;
-	Window	  	 	 m_middle_handle;
-	Window	  	 	 m_right_handle;
-
-	Pixmap			 m_left_pixmap;
-	Pixmap			 m_title_pixmap;
-	Pixmap			 m_right_pixmap;
-
-	GC			 m_left_gc;
-	GC			 m_right_gc;
-	XftDraw			*m_title_draw;
-	int			 m_title_width;
-
 	XScreen	  		*m_screen;
 	long			 m_deskindex;
 
@@ -72,11 +53,6 @@ class XClient {
 	Position		 m_ptr;
 	SizeHints		 m_hints;
 
-	int			 m_header_h;
-	int			 m_footer_h;
-	int			 m_handle_w;
-	int			 m_button_w;
-
 	int			 m_border_w;
 	int			 m_old_border;		// original border width
 	bool			 m_removed;
@@ -93,20 +69,13 @@ public:
 	Window			 get_rootwin() const { return m_rootwin; }
 	XScreen  		*get_screen() const { return m_screen; }
 
-	Window			 get_title_bar() const { return m_title_bar; }
-	Window			 get_left_button() const { return m_left_button; }
-	Window			 get_right_button() const { return m_right_button; }
-	Window			 get_left_handle() const { return m_left_handle; }
-	Window			 get_middle_handle() const { return m_middle_handle; }
-	Window			 get_right_handle() const { return m_right_handle; }
-
 	std::string		&get_name() { return m_name; }
 	Position		&get_saved_pointer() { return m_ptr; }
 	Geometry		&get_geometry() { return m_geom; }
 	void			 clear_states(long s) { m_states &= ~s; }
 	long			 get_states() const { return m_states; }
 	bool			 has_states(long s) const { return ((m_states&s) == s); }
-	bool			 and_state(long s) const { return (m_states&s); }
+	bool			 has_state(long s) const { return (m_states&s); }
 	void			 set_states(long s) { m_states |= s; }
 	int			 get_border() const { return m_border_w; }
 	void			 set_border(int b) { m_border_w = b; }
@@ -127,8 +96,7 @@ public:
 	void			 send_configure_event();
 	void			 configure_window(XConfigureRequestEvent *);
 
-	void			 draw_window();
-	void			 draw_window_header();
+	void			 draw_window_border();
 	void 			 set_window_active();
 	void			 show_window();
 	void			 hide_window();
@@ -139,10 +107,8 @@ public:
 	void			 move_window_with_pointer();
 	void			 move_window();
 	void			 resize_window_with_keyboard(long);
-	void			 resize_window_with_pointer(Handle);
+	void			 resize_window_with_pointer();
 	void			 snap_window(long);
-	void			 close_window_with_button();
-	void			 hide_window_with_button();
 
 	void			 save_pointer();
 	void			 warp_pointer();
@@ -159,17 +125,11 @@ public:
 
 private:
 	void			 reparent_window();
-	void			 create_header();
-	void			 create_footer();
-	void			 draw_title();
-	void			 draw_left_button(bool);
-	void			 draw_right_button(bool);
-	void			 draw_window_border();
-	void			 draw_window_footer();
+	void 			 grab_mouse_bindings();
 	void			 resize_window();
 
 	void			 set_initial_placement();
- 	void			 apply_configured_states();
+ 	void			 apply_user_states();
  	long			 get_configured_desktop();
 	void			 get_net_wm_window_type();
 	long			 get_net_wm_desktop();
@@ -180,6 +140,7 @@ private:
 
 	static const long 	 ButtonMask;
 	static const long 	 MouseMask;
+	static const long 	 ModifierMask;
 };
 
 #endif /* _XCLIENT_H_ */
