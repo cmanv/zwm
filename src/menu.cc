@@ -52,7 +52,7 @@ Menu::Menu(XScreen *s, MenuDef &md, Menu *p): m_data(md)
 	m_hicolor = m_screen->get_color(Color::MenuHighlight);
 	m_bordercolor = m_screen->get_color(Color::MenuBorder);
 
-	m_border = conf::border_menu;
+	m_border = conf::menu_border;
 	m_entry_height = m_font->ascent + m_font->descent;
 
 	Position pos = xutil::get_pointer_pos(m_rootwin);

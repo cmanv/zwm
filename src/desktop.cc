@@ -227,7 +227,7 @@ void Desktop::tile_horizontal()
 	
 	Position p = xutil::get_pointer_pos(m_screen->get_window());
 	Geometry area = m_screen->get_area(p, true);
-	int border = conf::border_tile;
+	int border = conf::tiled_border;
 
 	float mh = area.h;
 	int nwins = m_clienttile.size();
@@ -271,7 +271,7 @@ void Desktop::tile_vertical()
 
 	Position p = xutil::get_pointer_pos(m_screen->get_window());
 	Geometry area = m_screen->get_area(p, true);
-	int border = conf::border_tile;
+	int border = conf::tiled_border;
 
 	float mw = area.w;
 	int nwins = m_clienttile.size();
@@ -329,7 +329,7 @@ void Desktop::tile_maximized()
 {
 	Position p = xutil::get_pointer_pos(m_screen->get_window());
 	Geometry area = m_screen->get_area(p, true);
-	int border = conf::border_tile;
+	int border = conf::tiled_border;
 
 	Geometry maximized(area.x, area.y, area.w - 2 * border, area.h - 2 * border);
 	bool master = true;

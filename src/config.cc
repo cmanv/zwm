@@ -132,9 +132,9 @@ namespace conf {
 
 	int			debug = 0;
 	const int		ndesktops = desktop_defs.size();
-	int			border_menu = 1;
-	int			border_tile = 2;
-	int			border_stack = 5;
+	int			menu_border = 1;
+	int			tiled_border = 2;
+	int			stacked_border = 5;
 	int			moveamount = 10;
 	int			snapdist = 9;
 	BorderGap		bordergap = { 1, 1, 1, 1 };
@@ -228,15 +228,7 @@ void conf::init()
 			debug = std::strtol(tokens[1].c_str(), NULL, 10);
 			continue;
 		}
-		if (!tokens[0].compare("border-tile")) {
-			border_tile = std::strtol(tokens[1].c_str(), NULL, 10);
-			continue;
-		}
-		if (!tokens[0].compare("border-stack")) {
-			border_stack = std::strtol(tokens[1].c_str(), NULL, 10);
-			continue;
-		}
-		if (!tokens[0].compare("border-gap")) {
+		if (!tokens[0].compare("screen-border-gap")) {
 			if (tokens.size() < 5) continue;
 			bordergap.top = std::strtol(tokens[1].c_str(), NULL, 10);
 			bordergap.bottom = std::strtol(tokens[2].c_str(), NULL, 10);
@@ -266,27 +258,31 @@ void conf::init()
 			shutdownscript = tokens[1];
 			continue;
 		}
-		if (!tokens[0].compare("window-font")) {
-			windowfont = tokens[1];
+		if (!tokens[0].compare("window-tiled-border")) {
+			tiled_border = std::strtol(tokens[1].c_str(), NULL, 10);
 			continue;
 		}
-		if (!tokens[0].compare("menu-font")) {
-			menufont = tokens[1];
+		if (!tokens[0].compare("window-stacked-border")) {
+			stacked_border = std::strtol(tokens[1].c_str(), NULL, 10);
 			continue;
 		}
 		if (!tokens[0].compare("terminal")) {
 			terminal = tokens[1];
 			continue;
 		}
-		if (!tokens[0].compare("app-menu-title")) {
+		if (!tokens[0].compare("menu-font")) {
+			menufont = tokens[1];
+			continue;
+		}
+		if (!tokens[0].compare("menu-launcher-title")) {
 			appmenu = tokens[1];
 			continue;
 		}
-		if (!tokens[0].compare("window-menu-title")) {
+		if (!tokens[0].compare("menu-client-title")) {
 			windowmenu = tokens[1];
 			continue;
 		}
-		if (!tokens[0].compare("desktop-menu-title")) {
+		if (!tokens[0].compare("menu-desktop-title")) {
 			desktopmenu = tokens[1];
 			continue;
 		}
@@ -298,7 +294,7 @@ void conf::init()
 			if (tokens.size() < 4) continue;
 
 			desktop_defs[index].mode = "Stacked";
-			desktop_defs[index].split = 0.55;
+			desktop_defs[index].split = 0.52;
 
 			if ((!tokens[3].compare("VTiled")) || (!tokens[3].compare("HTiled"))
 				|| (!tokens[3].compare("Monocle")))

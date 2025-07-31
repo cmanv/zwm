@@ -53,7 +53,7 @@ This section describe all options that can be set in the configuration
 files.
 .SS GENERAL OPTIONS
 .IP \(bu 2
-\f[B]border\-gap\f[R] \f[I]top bottom left right\f[R]
+\f[B]screen\-border\-gap\f[R] \f[I]top bottom left right\f[R]
 .RS
 .PP
 Sets reserved spaces at the edges of the screen.
@@ -91,6 +91,26 @@ desktop.
 (default: \f[I]vtile\f[R])
 .RE
 .IP \(bu 2
+\f[B]desktop\-modes\f[R] \f[I]mode1\f[R],_mode2,..
+.RS
+.PP
+Sets a comma separated list of active desktop modes.
+The order is used to rotate mode with the functions
+\f[I]desktop\f[R]mode\f[I]next\f[R] and
+\f[I]desktop\f[R]mode\f[I]prev\f[R] The list of currently valid modes
+is:
+.RS
+.PP
+\f[I]Stacked\f[R] : Windows are stacked and can be moved/resized by the
+user.
+\f[I]Monocle\f[R] : Only one window (maximized) is visible at a time.
+\f[I]Vtile\f[R] : Master / slaves with the slaves tiled vertically on
+the right.
+\f[I]Htile\f[R] : Master / slaves with the slaves tiled horizontally on
+the bottom.
+.RE
+.RE
+.IP \(bu 2
 \f[B]server\-socket\f[R] \f[I][host:port|path]\f[R]
 .RS
 .PP
@@ -124,14 +144,14 @@ Defines the default terminal program.
 .RE
 .SS WINDOWS OPTIONS
 .IP \(bu 2
-\f[B]border\-float\f[R] \f[I]width\f[R]
+\f[B]window\-stacked\-border\f[R] \f[I]width\f[R]
 .RS
 .PP
-Specifies the border width of floating windows.
+Specifies the border width of stacked windows.
 (default: 5)
 .RE
 .IP \(bu 2
-\f[B]border\-tile\f[R] \f[I]width\f[R]
+\f[B]window\-tiled\-border\f[R] \f[I]width\f[R]
 .RS
 .PP
 Specifies the border width of tiled windows.
@@ -287,25 +307,25 @@ Any changes in the configuration file will be applied.
 Ends the definition of the menu.
 .RE
 .IP \(bu 2
-\f[B]app\-menu\-title\f[R] \f[I]text\f[R]
+\f[B]menu\-launcher\-title\f[R] \f[I]text\f[R]
 .RS
 .PP
-Sets the title of the application menu.
+Sets the title of the launcher menu.
 (default is \(dqApplications\(dq).
 .RE
 .IP \(bu 2
-\f[B]desktop\-menu\-title\f[R] \f[I]text\f[R]
+\f[B]menu\-desktop\-title\f[R] \f[I]text\f[R]
 .RS
 .PP
-Sets the title of the menu for active desktops.
+Sets the title of the active desktops menu.
 (default is \(dqActive desktops\(dq)
 .RE
 .IP \(bu 2
-\f[B]window\-menu\-title\f[R] \f[I]text\f[R]
+\f[B]menu\-client\-title\f[R] \f[I]text\f[R]
 .RS
 .PP
-Sets the title of the windows menu.
-(default is \(dqWindows\(dq)
+Sets the title of the client menu.
+(default is \(dqClients\(dq)
 .RE
 .SS APPLICATION OPTIONS
 .IP \(bu 2
@@ -378,7 +398,7 @@ Do not add the window to the task list or the window list.
 .RS
 .RS
 .PP
-The window has no border (\f[I]floated\f[R] windows only).
+The window has no border (\f[I]stacked\f[R] windows only).
 .RE
 .RE
 .RE
@@ -392,7 +412,7 @@ The window has no border (\f[I]floated\f[R] windows only).
 .RS
 .RS
 .PP
-The window cannot be resized (applicable to \f[I]floated\f[R] windows
+The window cannot be resized (applicable to \f[I]stacked\f[R] windows
 only).
 .RE
 .RE
@@ -593,7 +613,7 @@ Decrease the proportion of the screen occupied by the master window.
 .RS
 .PP
 Lower the position of the current window in the stack.
-(\f[I]floated\f[R] windows only).
+(\f[I]stacked\f[R] windows only).
 .RE
 .IP \(bu 2
 \f[B]window\-hide\f[R]
@@ -606,7 +626,7 @@ Hides the current window.
 .RS
 .PP
 Moves the current window to the top the stack.
-(\f[I]floated\f[R] windows only).
+(\f[I]stacked\f[R] windows only).
 .RE
 .IP \(bu 2
 \f[B]window\-close\f[R]
@@ -630,7 +650,7 @@ Toggle the \f[I]sticky\f[R] state of the current window.
 \f[B]window\-toggle\-tiled\f[R]
 .RS
 .PP
-Toggle the \f[I]tiled\f[R]/\f[I]floated\f[R] state of the current
+Toggle the \f[I]tiled\f[R]/\f[I]stacked\f[R] state of the current
 window.
 .RE
 .IP \(bu 2
@@ -645,98 +665,98 @@ Moves the current window to the desktop \f[I]num\f[R].
 .RS
 .PP
 Snap the current window to the top edge of the screen.
-(\f[I]floated\f[R] windows only)
+(\f[I]stacked\f[R] windows only)
 .RE
 .IP \(bu 2
 \f[B]window\-snap\-down\f[R]
 .RS
 .PP
 Snap the current window to the bottom edge of the screen.
-(\f[I]floated\f[R] windows only)
+(\f[I]stacked\f[R] windows only)
 .RE
 .IP \(bu 2
 \f[B]window\-snap\-right\f[R]
 .RS
 .PP
 Snap the current window to the right edge of the screen.
-(\f[I]floated\f[R] windows only)
+(\f[I]stacked\f[R] windows only)
 .RE
 .IP \(bu 2
 \f[B]window\-snap\-left\f[R]
 .RS
 .PP
 Snap the current window to the left edge of the screen.
-(\f[I]Floated\f[R] windows only)
+(\f[I]stacked\f[R] windows only)
 .RE
 .IP \(bu 2
 \f[B]window\-snap\-down\-left\f[R]
 .RS
 .PP
 Snap the current window to the bottom\-left corner of the screen.
-(\f[I]floated\f[R] windows only)
+(\f[I]stacked\f[R] windows only)
 .RE
 .IP \(bu 2
 \f[B]window\-snap\-down\-right\f[R]
 .RS
 .PP
 Snap the current window to the bottom\-right corner of the screen.
-(\f[I]floated\f[R] windows only)
+(\f[I]stacked\f[R] windows only)
 .RE
 .IP \(bu 2
 \f[B]window\-snap\-up\-left\f[R]
 .RS
 .PP
 Snap the current window to the top\-left corner of the screen.
-(\f[I]floated\f[R] windows only)
+(\f[I]stacked\f[R] windows only)
 .RE
 .IP \(bu 2
 \f[B]window\-snap\-up\-right\f[R]
 .RS
 .PP
 Snap the current window to the top\-right corner of the screen.
-(\f[I]floated\f[R] windows only)
+(\f[I]stacked\f[R] windows only)
 .RE
 .IP \(bu 2
 \f[B]window\-move\f[R]
 .RS
 .PP
 Move the current window with the pointer.
-(\f[I]floated\f[R] windows only)
+(\f[I]stacked\f[R] windows only)
 .RE
 .IP \(bu 2
 \f[B]window\-move\-up\f[R]
 .RS
 .PP
 Move the current window toward to the top of the screen.
-(\f[I]floated\f[R] windows only)
+(\f[I]stacked\f[R] windows only)
 .RE
 .IP \(bu 2
 \f[B]window\-move\-down\f[R]
 .RS
 .PP
 Move the current window toward to the bottom of the screen.
-(\f[I]floated\f[R] windows only)
+(\f[I]stacked\f[R] windows only)
 .RE
 .IP \(bu 2
 \f[B]window\-move\-right\f[R]
 .RS
 .PP
 Move the current window toward to the right of the screen.
-(\f[I]floated\f[R] windows only)
+(\f[I]stacked\f[R] windows only)
 .RE
 .IP \(bu 2
 \f[B]window\-move\-left\f[R]
 .RS
 .PP
 Move the current window toward to the left of the screen.
-(\f[I]floated\f[R] windows only)
+(\f[I]stacked\f[R] windows only)
 .RE
 .IP \(bu 2
 \f[B]window\-move\-down\-left\f[R]
 .RS
 .PP
 Move the current window toward to the bottom\-left corner of the screen.
-(\f[I]floated\f[R] windows only)
+(\f[I]stacked\f[R] windows only)
 .RE
 .IP \(bu 2
 \f[B]window\-move\-down\-right\f[R]
@@ -744,56 +764,56 @@ Move the current window toward to the bottom\-left corner of the screen.
 .PP
 Move the current window toward to the bottom\-right corner of the
 screen.
-(\f[I]floated\f[R] windows only)
+(\f[I]stacked\f[R] windows only)
 .RE
 .IP \(bu 2
 \f[B]window\-move\-up\-left\f[R]
 .RS
 .PP
 Move the current window toward to the top\-left corner of the screen.
-(\f[I]floated\f[R] windows only)
+(\f[I]stacked\f[R] windows only)
 .RE
 .IP \(bu 2
 \f[B]window\-move\-up\-right\f[R]
 .RS
 .PP
 Move the current window toward to the bottom\-left corner of the screen.
-(\f[I]floated\f[R] windows only)
+(\f[I]stacked\f[R] windows only)
 .RE
 .IP \(bu 2
 \f[B]window\-resize\f[R]
 .RS
 .PP
 Resize the current window with the pointer.
-(\f[I]floated\f[R] windows only)
+(\f[I]stacked\f[R] windows only)
 .RE
 .IP \(bu 2
 \f[B]window\-resize\-up\f[R]
 .RS
 .PP
 Resize the current window toward the top.
-(\f[I]floated\f[R] windows only)
+(\f[I]stacked\f[R] windows only)
 .RE
 .IP \(bu 2
 \f[B]window\-resize\-down\f[R]
 .RS
 .PP
 Resize the current window toward the bottom.
-(\f[I]floated\f[R] windows only)
+(\f[I]stacked\f[R] windows only)
 .RE
 .IP \(bu 2
 \f[B]window\-resize\-right\f[R]
 .RS
 .PP
 Resize the current window toward the right.
-(\f[I]floated\f[R] window only)
+(\f[I]stacked\f[R] window only)
 .RE
 .IP \(bu 2
 \f[B]window\-resize\-left\f[R]
 .RS
 .PP
 Resize the current window toward the left.
-(\f[I]floated\f[R] window only)
+(\f[I]stacked\f[R] window only)
 .RE
 .IP \(bu 2
 \f[B]root\-menu\-window\f[R]

@@ -52,7 +52,7 @@ XClient::XClient(Window w, XScreen *s, bool query): m_window(w), m_screen(s)
 
 	m_rootwin = m_screen->get_window();
 	m_font = m_screen->get_window_font();
-	m_border_w = conf::border_stack;
+	m_border_w = conf::stacked_border;
 	m_parent = None;
 	m_states = 0;
 	m_initial_state = 0;
@@ -784,7 +784,7 @@ void XClient::set_stacked_geom()
 	if (has_state(State::NoBorder)) 
 		m_border_w = 0;
 	else
-		m_border_w = conf::border_stack;
+		m_border_w = conf::stacked_border;
 
 	resize_window();
 }
@@ -792,7 +792,7 @@ void XClient::set_stacked_geom()
 void XClient::set_tiled_geom(Geometry &tiled)
 {
 	m_geom = tiled;
-	m_border_w = conf::border_tile;
+	m_border_w = conf::tiled_border;
 	resize_window();
 }
 
@@ -807,7 +807,7 @@ void XClient::set_notile()
 	if (has_state(State::NoBorder))
 		m_border_w = 0;
 	else 
-		m_border_w = conf::border_stack;
+		m_border_w = conf::stacked_border;
 	
 	resize_window();
 }
@@ -895,12 +895,12 @@ void XClient::toggle_fullscreen()
 
 void XClient::remove_fullscreen()
 {
-	m_border_w = conf::border_stack;
+	m_border_w = conf::stacked_border;
 	if (has_state(State::NoBorder))
 		m_border_w = 0; 
 	m_geom = m_geom_save;
 	if (has_state(State::Tiled)) {
-		m_border_w = conf::border_tile;
+		m_border_w = conf::tiled_border;
 	} else {
 		clear_states(State::Frozen);
 	}

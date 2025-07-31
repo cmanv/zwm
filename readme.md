@@ -49,7 +49,7 @@ This section describe all options that can be set in the configuration files.
 
 ## GENERAL OPTIONS
 
-* **border-gap** _top bottom left right_
+* **screen-border-gap** _top bottom left right_
 
 > Sets reserved spaces at the edges of the screen. This space will not
 > be used for tiling windows by the window manager. (default: 1 1 1 1) 
@@ -104,11 +104,11 @@ This section describe all options that can be set in the configuration files.
 
 ## WINDOWS OPTIONS
 
-* **border-stack** _width_
+* **window-stacked-border** _width_
 
 > Specifies the border width of stacked windows. (default: 5)
 
-* **border-tile** _width_
+* **window-tiled-border** _width_
 
 > Specifies the border width of tiled windows. (default: 2)
 
@@ -170,17 +170,17 @@ series of _menu-item_ lines and end with a _menu-end_ line.
 
 > Ends the definition of the menu.
 
-* **app-menu-title** _text_
+* **menu-launcher-title** _text_
 
-> Sets the title of the application menu. (default is "Applications").
+> Sets the title of the launcher menu. (default is "Applications").
 
-* **desktop-menu-title** _text_
+* **menu-desktop-title** _text_
 
-> Sets the title of the menu for active desktops. (default is "Active desktops")
+> Sets the title of the active desktops menu. (default is "Active desktops")
 
-* **window-menu-title** _text_
+* **menu-client-title** _text_
 
-> Sets the title of the windows menu. (default is "Windows")
+> Sets the title of the client menu. (default is "Clients")
 
 ## APPLICATION OPTIONS
 
