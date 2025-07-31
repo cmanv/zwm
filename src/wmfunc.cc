@@ -35,9 +35,9 @@
 
 namespace wmfunc {
 std::vector<FuncDef> funcdefs = {
-	{ "root-menu-window", 		rootmenu_window, Context::Root},
-	{ "root-menu-desktop", 		rootmenu_desktop, Context::Root},
-	{ "root-menu-app", 		rootmenu_app, Context::Root},
+	{ "menu-client", 		menu_client, Context::Root},
+	{ "menu-desktop", 		menu_desktop, Context::Root},
+	{ "menu-launcher", 		menu_launcher, Context::Root},
 
 	{ "window-lower", 		window_lower},
 	{ "window-hide", 		window_hide},
@@ -212,19 +212,19 @@ void wmfunc::desktop_rotate_tiles(XScreen *screen, long direction)
 	screen->rotate_desktop_tiles(direction);
 }
 
-void wmfunc::rootmenu_app(XScreen *screen)
+void wmfunc::menu_launcher(XScreen *screen)
 {
-	screen->run_rootmenu_app();
+	screen->run_menu_launcher();
 }
 
-void wmfunc::rootmenu_window(XScreen *screen)
+void wmfunc::menu_client(XScreen *screen)
 {
-	screen->run_rootmenu_window();
+	screen->run_menu_client();
 }
 
-void wmfunc::rootmenu_desktop(XScreen *screen)
+void wmfunc::menu_desktop(XScreen *screen)
 {
-	screen->run_rootmenu_desktop();
+	screen->run_menu_desktop();
 }
 
 void wmfunc::set_wm_status(long status)

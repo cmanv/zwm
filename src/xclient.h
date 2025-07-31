@@ -43,7 +43,6 @@ class XClient {
 	int			 m_initial_state;
 
 	Colormap		 m_colormap;
-	XftFont			*m_font;
 
 	Geometry		 m_geom;
 	Geometry 		 m_geom_stack;

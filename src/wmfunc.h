@@ -85,9 +85,9 @@ namespace wmfunc {
 	void desktop_cycle(XScreen *, long);
 	void desktop_window_cycle(XScreen *, long);
 
-	void rootmenu_app(XScreen *);
-	void rootmenu_window(XScreen *);
-	void rootmenu_desktop(XScreen *);
+	void menu_launcher(XScreen *);
+	void menu_client(XScreen *);
+	void menu_desktop(XScreen *);
 
 	void exec_term(long);
 	void set_wm_status(long);

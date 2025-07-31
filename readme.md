@@ -268,37 +268,33 @@ or mouse binding.
 
 > Terminate the window manager.
 
-* **desktop-select-_num_**
+* **desktop-close**
 
-> Move to desktop _num_
-
-* **desktop-last**
-
-> Move to the last desktop.
+> Close all windows on the desktop.
 
 * **desktop-hide**
 
 > Hide all windows on the desktop.
 
-* **desktop-close**
+* **desktop-last**
 
-> Close all windows on the desktop.
+> Move to the last desktop.
 
-* **desktop-mode-prev**
+* **desktop-master-decr**
 
-> Switch to the previous desktop tiling mode. (VTiled -> Monocle -> HTiled -> VTiled) 
+> Decrease the proportion of the screen occupied by the master window.
+
+* **desktop-master-incr**
+
+> Increase the proportion of the screen occupied by the master window.
 
 * **desktop-mode-next**
 
 > Switch to the next desktop tilinh mode. (VTiled -> HTiled -> Monocle -> VTiled)
 
-* **desktop-window-next**
+* **desktop-mode-prev**
 
-> Move the focus to the next tiled window.
-
-* **desktop-window-prev**
-
-> Move the focus to the previous tiled window.
+> Switch to the previous desktop tiling mode. (VTiled -> Monocle -> HTiled -> VTiled) 
 
 * **desktop-next**
 
@@ -316,29 +312,141 @@ or mouse binding.
 
 > Rotate the position of the tiled windows clockwise.
 
-* **desktop-master-incr**
+* **desktop-select-_num_**
 
-> Increase the proportion of the screen occupied by the master window.
+> Move to desktop _num_
 
-* **desktop-master-decr**
+* **desktop-window-next**
 
-> Decrease the proportion of the screen occupied by the master window.
+> Move the focus to the next tiled window.
 
-* **window-lower**
+* **desktop-window-prev**
 
-> Lower the position of the current window in the stack. (_stacked_ windows only).
+> Move the focus to the previous tiled window.
+
+* **menu-client**
+
+> Shows the list of X clients.
+
+* **menu-desktop**
+
+> Show the list of active desktops.
+
+* **menu-launcher**
+
+> Show the launcher menu as defined by the user.
+
+* **window-close**
+
+> Closes the current window.
 
 * **window-hide**
 
 > Hides the current window.
 
+* **window-lower**
+
+> Lower the position of the current window in the stack. (_stacked_ windows only).
+
+* **window-move**
+
+> Move the current window with the pointer. (_stacked_ windows only)
+
+* **window-move-down**
+
+> Move the current window toward to the bottom of the screen. (_stacked_ windows only)
+
+* **window-move-down-left**
+
+> Move the current window toward to the bottom-left corner of the screen. 
+> (_stacked_ windows only)
+
+* **window-move-down-right**
+
+> Move the current window toward to the bottom-right corner of the screen. 
+> (_stacked_ windows only)
+
+* **window-move-left**
+
+> Move the current window toward to the left of the screen. (_stacked_ windows only)
+
+* **window-move-right**
+
+> Move the current window toward to the right of the screen. (_stacked_ windows only)
+
+* **window-move-up**
+
+> Move the current window toward to the top of the screen. (_stacked_ windows only)
+
+* **window-move-up-left**
+
+> Move the current window toward to the top-left corner of the screen. 
+> (_stacked_ windows only)
+
+* **window-move-up-right**
+
+> Move the current window toward to the bottom-left corner of the screen. 
+> (_stacked_ windows only)
+
+* **window-move-to-desktop-_num_**
+
+> Moves the current window to the desktop _num_. (1 <= _num_ <= 10)
+
 * **window-raise**
 
 > Moves the current window to the top the stack. (_stacked_ windows only).
 
-* **window-close**
+* **window-resize**
 
-> Closes the current window.
+> Resize the current window with the pointer.  (_stacked_ windows only)
+
+* **window-resize-down**
+
+> Resize the current window toward the bottom.  (_stacked_ windows only)
+
+* **window-resize-left**
+
+> Resize the current window toward the left.  (_stacked_ window only)
+
+* **window-resize-right**
+
+> Resize the current window toward the right.  (_stacked_ window only)
+
+* **window-resize-up**
+
+> Resize the current window toward the top.  (_stacked_ windows only)
+
+* **window-snap-down**
+
+> Snap the current window to the bottom  edge of the screen. (_stacked_ windows only)
+
+* **window-snap-down-left**
+
+> Snap the current window to the bottom-left corner of the screen. (_stacked_ windows only)
+
+* **window-snap-down-right**
+
+> Snap the current window to the bottom-right corner of the screen. (_stacked_ windows only)
+
+* **window-snap-left**
+
+> Snap the current window to the left edge of the screen. (_stacked_ windows only)
+
+* **window-snap-up**
+
+> Snap the current window to the top edge of the screen. (_stacked_ windows only)
+
+* **window-snap-up-left**
+
+> Snap the current window to the top-left corner of the screen. (_stacked_ windows only)
+
+* **window-snap-up-right**
+
+> Snap the current window to the top-right corner of the screen. (_stacked_ windows only)
+
+* **window-snap-right**
+
+> Snap the current window to the right edge of the screen. (_stacked_ windows only)
 
 * **window-toggle-fullscreen**
 
@@ -351,114 +459,6 @@ or mouse binding.
 * **window-toggle-tiled**
 
 > Toggle the _tiled_/_stacked_ state of the current window.
-
-* **window-move-to-desktop-_num_**
-
-> Moves the current window to the desktop _num_. (1 <= _num_ <= 10)
-
-* **window-snap-up**
-
-> Snap the current window to the top edge of the screen. (_stacked_ windows only)
-
-* **window-snap-down**
-
-> Snap the current window to the bottom  edge of the screen. (_stacked_ windows only)
-
-* **window-snap-right**
-
-> Snap the current window to the right edge of the screen. (_stacked_ windows only)
-
-* **window-snap-left**
-
-> Snap the current window to the left edge of the screen. (_stacked_ windows only)
-
-* **window-snap-down-left**
-
-> Snap the current window to the bottom-left corner of the screen. (_stacked_ windows only)
-
-* **window-snap-down-right**
-
-> Snap the current window to the bottom-right corner of the screen. (_stacked_ windows only)
-
-* **window-snap-up-left**
-
-> Snap the current window to the top-left corner of the screen. (_stacked_ windows only)
-
-* **window-snap-up-right**
-
-> Snap the current window to the top-right corner of the screen. (_stacked_ windows only)
-
-* **window-move**
-
-> Move the current window with the pointer. (_stacked_ windows only)
-
-* **window-move-up**
-
-> Move the current window toward to the top of the screen. (_stacked_ windows only)
-
-* **window-move-down**
-
-> Move the current window toward to the bottom of the screen. (_stacked_ windows only)
-
-* **window-move-right**
-
-> Move the current window toward to the right of the screen. (_stacked_ windows only)
-
-* **window-move-left**
-
-> Move the current window toward to the left of the screen. (_stacked_ windows only)
-
-* **window-move-down-left**
-
-> Move the current window toward to the bottom-left corner of the screen. 
-> (_stacked_ windows only)
-
-* **window-move-down-right**
-
-> Move the current window toward to the bottom-right corner of the screen. 
-> (_stacked_ windows only)
-
-* **window-move-up-left**
-
-> Move the current window toward to the top-left corner of the screen. 
-> (_stacked_ windows only)
-
-* **window-move-up-right**
-
-> Move the current window toward to the bottom-left corner of the screen. 
-> (_stacked_ windows only)
-
-* **window-resize**
-
-> Resize the current window with the pointer.  (_stacked_ windows only)
-
-* **window-resize-up**
-
-> Resize the current window toward the top.  (_stacked_ windows only)
-
-* **window-resize-down**
-
-> Resize the current window toward the bottom.  (_stacked_ windows only)
-
-* **window-resize-right**
-
-> Resize the current window toward the right.  (_stacked_ window only)
-
-* **window-resize-left**
-
-> Resize the current window toward the left.  (_stacked_ window only)
-
-* **root-menu-window**
-
-> Activates the windows menu.
-
-* **root-menu-desktop**
-
-> Activates the desktops menu.
-
-* **root-menu-app**
-
-> Activates the applications menu.
 
 # DEFAULT BINDINGS
   
@@ -511,17 +511,19 @@ or mouse binding.
 
 ## Mouse buttons bindings
 
-  * **1**	->	_root-menu-window_  
-  * **2**	->	_root-menu-desktop_  
-  * **3**	->	_root-menu-app_  
-  * **C+1**	->	_move-window_  
-  * **C+3**	->	_resize-window_  
+  * **1**	->	_menu-client_  
+  * **2**	->	_menu-desktop_  
+  * **3**	->	_menu-launcher_  
+  * **M+1**	->	_window_move_  
+  * **M+3**	->	_window_resize_  
+  * **M+4**	->	_window_lower_  
+  * **M+5**	->	_window_raise_  
 
 # FILES
 
 **zwm** uses the first configuration file it finds in that list:
 
-1. _~/.config/zwm/zwmrc_
+1. _~/.config/zwm/config_
 2. _~/.zwmrc_
 
 # ENVIRONMENT

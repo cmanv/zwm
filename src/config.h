@@ -32,7 +32,6 @@
 namespace conf {
 	extern std::string			 cfilename;
 	extern std::string			 wmname;
-	extern std::string 			 windowfont;
 	extern std::string 			 menufont;
 	extern std::string 			 clientsocket;
 	extern std::string 			 serversocket;
@@ -57,9 +56,9 @@ namespace conf {
 	extern std::vector<DefaultDesktop>	 defdesktoplist;
 	extern std::vector<DefaultStates>	 defstateslist;
 	extern std::string			 terminal;
-	extern std::string			 appmenu;
-	extern std::string			 windowmenu;
-	extern std::string			 desktopmenu;
+	extern std::string			 menu_client;
+	extern std::string			 menu_desktop;
+	extern std::string			 menu_launcher;
 
 	void 	init();
 }

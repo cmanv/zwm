@@ -53,7 +53,6 @@ class XScreen {
 	Visual				*m_visual;
 	Colormap			 m_colormap;
 	std::vector<XftColor>		 m_xftcolors;
-	XftFont				*m_windowfont;
 	XftFont				*m_menufont;
 
 public:
@@ -67,7 +66,6 @@ public:
 	long			 	 get_last_desktop() const { return m_desktop_last; }
 	std::list<XClient*> 		&get_clients() { return m_clientlist; }
 	std::vector<Desktop> 		&get_desktops() { return m_desktoplist; }
-	XftFont				*get_window_font() { return m_windowfont; }
 	XftFont				*get_menu_font() { return m_menufont; }
 	XftColor			*get_color(Color c) { return &m_xftcolors[c]; }
 	unsigned long			 get_pixel(Color c) const { return m_xftcolors[c].pixel; }
@@ -111,9 +109,9 @@ public:
 	void	 			 switch_to_desktop(int);
 	void	 			 update_desktop_names();
 
-	void				 run_rootmenu_app();
-	void				 run_rootmenu_window();
-	void				 run_rootmenu_desktop();
+	void				 run_menu_client();
+	void				 run_menu_desktop();
+	void				 run_menu_launcher();
 
 	static XClient			*find_active_client();
 	static XClient			*find_client(Window);

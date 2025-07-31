@@ -103,11 +103,13 @@ namespace conf {
 	};
 
 	std::vector<BindingDef> mousebinding_defs = {
-		{ "1",		"root-menu-window" },
-		{ "2",		"root-menu-desktop" },
-		{ "3",		"root-menu-app" },
+		{ "1",		"menu-client" },
+		{ "2",		"menu-desktop" },
+		{ "3",		"menu-launcher" },
 		{ "M-1",	"window-move" },
 		{ "M-3",	"window-resize" },
+		{ "M-4",	"window-lower" },
+		{ "M-5",	"window-raise" },
 	};
 
 	std::vector<std::string> cfilenames = {
@@ -117,11 +119,10 @@ namespace conf {
 
 	std::string		cfilename = "";
 	std::string		wmname = "ZWM";
-	std::string 		windowfont = "Mono:size=10";
 	std::string 		menufont = "Mono:size=10";
-	std::string		appmenu = "Applications";
-	std::string		windowmenu = "Windows";
-	std::string		desktopmenu = "Active desktops";
+	std::string		menu_client = "X Clients";
+	std::string		menu_desktop = "Active desktops";
+	std::string		menu_launcher = "Applications";
 	std::string		serversocket = "";
 	std::string		clientsocket = "";
 	std::string		terminal = "xterm";
@@ -274,16 +275,16 @@ void conf::init()
 			menufont = tokens[1];
 			continue;
 		}
-		if (!tokens[0].compare("menu-launcher-title")) {
-			appmenu = tokens[1];
-			continue;
-		}
 		if (!tokens[0].compare("menu-client-title")) {
-			windowmenu = tokens[1];
+			menu_client = tokens[1];
 			continue;
 		}
 		if (!tokens[0].compare("menu-desktop-title")) {
-			desktopmenu = tokens[1];
+			menu_desktop = tokens[1];
+			continue;
+		}
+		if (!tokens[0].compare("menu-launcher-title")) {
+			menu_launcher = tokens[1];
 			continue;
 		}
 		if (!tokens[0].compare("desktop")) {
@@ -536,7 +537,7 @@ void conf::add_default_desktop(std::string &rname, std::string &rclass, int inde
 
 void conf::add_menu(std::string &label, std::ifstream &configfile)
 {
-	MenuDef 		 menudef(label, MenuType::Command);
+	MenuDef 		 menudef(label, MenuType::Launcher);
 	std::vector<std::string> tokens;
 	std::string 		 line;
 

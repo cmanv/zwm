@@ -51,7 +51,6 @@ XClient::XClient(Window w, XScreen *s, bool query): m_window(w), m_screen(s)
 		m_ignore_unmap = true;
 
 	m_rootwin = m_screen->get_window();
-	m_font = m_screen->get_window_font();
 	m_border_w = conf::stacked_border;
 	m_parent = None;
 	m_states = 0;

@@ -177,9 +177,9 @@ enum class EventType {
 };
 
 enum class MenuType {
-	Command,
-	Window,
-	Desktop
+	Client,
+	Desktop,
+	Launcher
 };
 
 #endif // _DEFINITIONS_H_

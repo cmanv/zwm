@@ -98,9 +98,9 @@ private:
 	int 			 get_active_entry(Position);
 	void 			 open_submenu();
 	void 			 close_submenu();
-	void			 run_command();
-	void 			 activate_window();
-	void			 goto_desktop();
+	void			 run_launcher();
+	void 			 activate_client();
+	void			 switch_to_desktop();
 
 	static const long 	 ButtonMask;
 	static const long 	 MenuMask;

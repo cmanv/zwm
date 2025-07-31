@@ -521,16 +521,10 @@ Restart the window manager.
 Terminate the window manager.
 .RE
 .IP \(bu 2
-\f[B]desktop\-select\-\f[BI]num\f[B]\f[R]
+\f[B]desktop\-close\f[R]
 .RS
 .PP
-Move to desktop \f[I]num\f[R]
-.RE
-.IP \(bu 2
-\f[B]desktop\-last\f[R]
-.RS
-.PP
-Move to the last desktop.
+Close all windows on the desktop.
 .RE
 .IP \(bu 2
 \f[B]desktop\-hide\f[R]
@@ -539,17 +533,22 @@ Move to the last desktop.
 Hide all windows on the desktop.
 .RE
 .IP \(bu 2
-\f[B]desktop\-close\f[R]
+\f[B]desktop\-last\f[R]
 .RS
 .PP
-Close all windows on the desktop.
+Move to the last desktop.
 .RE
 .IP \(bu 2
-\f[B]desktop\-mode\-prev\f[R]
+\f[B]desktop\-master\-decr\f[R]
 .RS
 .PP
-Switch to the previous desktop tiling mode.
-(VTiled \-> Monocle \-> HTiled \-> VTiled)
+Decrease the proportion of the screen occupied by the master window.
+.RE
+.IP \(bu 2
+\f[B]desktop\-master\-incr\f[R]
+.RS
+.PP
+Increase the proportion of the screen occupied by the master window.
 .RE
 .IP \(bu 2
 \f[B]desktop\-mode\-next\f[R]
@@ -559,16 +558,11 @@ Switch to the next desktop tilinh mode.
 (VTiled \-> HTiled \-> Monocle \-> VTiled)
 .RE
 .IP \(bu 2
-\f[B]desktop\-window\-next\f[R]
+\f[B]desktop\-mode\-prev\f[R]
 .RS
 .PP
-Move the focus to the next tiled window.
-.RE
-.IP \(bu 2
-\f[B]desktop\-window\-prev\f[R]
-.RS
-.PP
-Move the focus to the previous tiled window.
+Switch to the previous desktop tiling mode.
+(VTiled \-> Monocle \-> HTiled \-> VTiled)
 .RE
 .IP \(bu 2
 \f[B]desktop\-next\f[R]
@@ -597,16 +591,52 @@ Rotate the position of the tiled windows counterclockwise.
 Rotate the position of the tiled windows clockwise.
 .RE
 .IP \(bu 2
-\f[B]desktop\-master\-incr\f[R]
+\f[B]desktop\-select\-\f[BI]num\f[B]\f[R]
 .RS
 .PP
-Increase the proportion of the screen occupied by the master window.
+Move to desktop \f[I]num\f[R]
 .RE
 .IP \(bu 2
-\f[B]desktop\-master\-decr\f[R]
+\f[B]desktop\-window\-next\f[R]
 .RS
 .PP
-Decrease the proportion of the screen occupied by the master window.
+Move the focus to the next tiled window.
+.RE
+.IP \(bu 2
+\f[B]desktop\-window\-prev\f[R]
+.RS
+.PP
+Move the focus to the previous tiled window.
+.RE
+.IP \(bu 2
+\f[B]menu\-client\f[R]
+.RS
+.PP
+Shows the list of X clients.
+.RE
+.IP \(bu 2
+\f[B]menu\-desktop\f[R]
+.RS
+.PP
+Show the list of active desktops.
+.RE
+.IP \(bu 2
+\f[B]menu\-launcher\f[R]
+.RS
+.PP
+Show the launcher menu as defined by the user.
+.RE
+.IP \(bu 2
+\f[B]window\-close\f[R]
+.RS
+.PP
+Closes the current window.
+.RE
+.IP \(bu 2
+\f[B]window\-hide\f[R]
+.RS
+.PP
+Hides the current window.
 .RE
 .IP \(bu 2
 \f[B]window\-lower\f[R]
@@ -616,10 +646,75 @@ Lower the position of the current window in the stack.
 (\f[I]stacked\f[R] windows only).
 .RE
 .IP \(bu 2
-\f[B]window\-hide\f[R]
+\f[B]window\-move\f[R]
 .RS
 .PP
-Hides the current window.
+Move the current window with the pointer.
+(\f[I]stacked\f[R] windows only)
+.RE
+.IP \(bu 2
+\f[B]window\-move\-down\f[R]
+.RS
+.PP
+Move the current window toward to the bottom of the screen.
+(\f[I]stacked\f[R] windows only)
+.RE
+.IP \(bu 2
+\f[B]window\-move\-down\-left\f[R]
+.RS
+.PP
+Move the current window toward to the bottom\-left corner of the screen.
+(\f[I]stacked\f[R] windows only)
+.RE
+.IP \(bu 2
+\f[B]window\-move\-down\-right\f[R]
+.RS
+.PP
+Move the current window toward to the bottom\-right corner of the
+screen.
+(\f[I]stacked\f[R] windows only)
+.RE
+.IP \(bu 2
+\f[B]window\-move\-left\f[R]
+.RS
+.PP
+Move the current window toward to the left of the screen.
+(\f[I]stacked\f[R] windows only)
+.RE
+.IP \(bu 2
+\f[B]window\-move\-right\f[R]
+.RS
+.PP
+Move the current window toward to the right of the screen.
+(\f[I]stacked\f[R] windows only)
+.RE
+.IP \(bu 2
+\f[B]window\-move\-up\f[R]
+.RS
+.PP
+Move the current window toward to the top of the screen.
+(\f[I]stacked\f[R] windows only)
+.RE
+.IP \(bu 2
+\f[B]window\-move\-up\-left\f[R]
+.RS
+.PP
+Move the current window toward to the top\-left corner of the screen.
+(\f[I]stacked\f[R] windows only)
+.RE
+.IP \(bu 2
+\f[B]window\-move\-up\-right\f[R]
+.RS
+.PP
+Move the current window toward to the bottom\-left corner of the screen.
+(\f[I]stacked\f[R] windows only)
+.RE
+.IP \(bu 2
+\f[B]window\-move\-to\-desktop\-\f[BI]num\f[B]\f[R]
+.RS
+.PP
+Moves the current window to the desktop \f[I]num\f[R].
+(1 <= \f[I]num\f[R] <= 10)
 .RE
 .IP \(bu 2
 \f[B]window\-raise\f[R]
@@ -629,10 +724,95 @@ Moves the current window to the top the stack.
 (\f[I]stacked\f[R] windows only).
 .RE
 .IP \(bu 2
-\f[B]window\-close\f[R]
+\f[B]window\-resize\f[R]
 .RS
 .PP
-Closes the current window.
+Resize the current window with the pointer.
+(\f[I]stacked\f[R] windows only)
+.RE
+.IP \(bu 2
+\f[B]window\-resize\-down\f[R]
+.RS
+.PP
+Resize the current window toward the bottom.
+(\f[I]stacked\f[R] windows only)
+.RE
+.IP \(bu 2
+\f[B]window\-resize\-left\f[R]
+.RS
+.PP
+Resize the current window toward the left.
+(\f[I]stacked\f[R] window only)
+.RE
+.IP \(bu 2
+\f[B]window\-resize\-right\f[R]
+.RS
+.PP
+Resize the current window toward the right.
+(\f[I]stacked\f[R] window only)
+.RE
+.IP \(bu 2
+\f[B]window\-resize\-up\f[R]
+.RS
+.PP
+Resize the current window toward the top.
+(\f[I]stacked\f[R] windows only)
+.RE
+.IP \(bu 2
+\f[B]window\-snap\-down\f[R]
+.RS
+.PP
+Snap the current window to the bottom edge of the screen.
+(\f[I]stacked\f[R] windows only)
+.RE
+.IP \(bu 2
+\f[B]window\-snap\-down\-left\f[R]
+.RS
+.PP
+Snap the current window to the bottom\-left corner of the screen.
+(\f[I]stacked\f[R] windows only)
+.RE
+.IP \(bu 2
+\f[B]window\-snap\-down\-right\f[R]
+.RS
+.PP
+Snap the current window to the bottom\-right corner of the screen.
+(\f[I]stacked\f[R] windows only)
+.RE
+.IP \(bu 2
+\f[B]window\-snap\-left\f[R]
+.RS
+.PP
+Snap the current window to the left edge of the screen.
+(\f[I]stacked\f[R] windows only)
+.RE
+.IP \(bu 2
+\f[B]window\-snap\-up\f[R]
+.RS
+.PP
+Snap the current window to the top edge of the screen.
+(\f[I]stacked\f[R] windows only)
+.RE
+.IP \(bu 2
+\f[B]window\-snap\-up\-left\f[R]
+.RS
+.PP
+Snap the current window to the top\-left corner of the screen.
+(\f[I]stacked\f[R] windows only)
+.RE
+.IP \(bu 2
+\f[B]window\-snap\-up\-right\f[R]
+.RS
+.PP
+Snap the current window to the top\-right corner of the screen.
+(\f[I]stacked\f[R] windows only)
+.RE
+.IP \(bu 2
+\f[B]window\-snap\-right\f[R]
+.RS
+.PP
+Snap the current window to the right edge of the screen.
+(\f[I]stacked\f[R] windows only)
 .RE
 .IP \(bu 2
 \f[B]window\-toggle\-fullscreen\f[R]
@@ -652,186 +832,6 @@ Toggle the \f[I]sticky\f[R] state of the current window.
 .PP
 Toggle the \f[I]tiled\f[R]/\f[I]stacked\f[R] state of the current
 window.
-.RE
-.IP \(bu 2
-\f[B]window\-move\-to\-desktop\-\f[BI]num\f[B]\f[R]
-.RS
-.PP
-Moves the current window to the desktop \f[I]num\f[R].
-(1 <= \f[I]num\f[R] <= 10)
-.RE
-.IP \(bu 2
-\f[B]window\-snap\-up\f[R]
-.RS
-.PP
-Snap the current window to the top edge of the screen.
-(\f[I]stacked\f[R] windows only)
-.RE
-.IP \(bu 2
-\f[B]window\-snap\-down\f[R]
-.RS
-.PP
-Snap the current window to the bottom edge of the screen.
-(\f[I]stacked\f[R] windows only)
-.RE
-.IP \(bu 2
-\f[B]window\-snap\-right\f[R]
-.RS
-.PP
-Snap the current window to the right edge of the screen.
-(\f[I]stacked\f[R] windows only)
-.RE
-.IP \(bu 2
-\f[B]window\-snap\-left\f[R]
-.RS
-.PP
-Snap the current window to the left edge of the screen.
-(\f[I]stacked\f[R] windows only)
-.RE
-.IP \(bu 2
-\f[B]window\-snap\-down\-left\f[R]
-.RS
-.PP
-Snap the current window to the bottom\-left corner of the screen.
-(\f[I]stacked\f[R] windows only)
-.RE
-.IP \(bu 2
-\f[B]window\-snap\-down\-right\f[R]
-.RS
-.PP
-Snap the current window to the bottom\-right corner of the screen.
-(\f[I]stacked\f[R] windows only)
-.RE
-.IP \(bu 2
-\f[B]window\-snap\-up\-left\f[R]
-.RS
-.PP
-Snap the current window to the top\-left corner of the screen.
-(\f[I]stacked\f[R] windows only)
-.RE
-.IP \(bu 2
-\f[B]window\-snap\-up\-right\f[R]
-.RS
-.PP
-Snap the current window to the top\-right corner of the screen.
-(\f[I]stacked\f[R] windows only)
-.RE
-.IP \(bu 2
-\f[B]window\-move\f[R]
-.RS
-.PP
-Move the current window with the pointer.
-(\f[I]stacked\f[R] windows only)
-.RE
-.IP \(bu 2
-\f[B]window\-move\-up\f[R]
-.RS
-.PP
-Move the current window toward to the top of the screen.
-(\f[I]stacked\f[R] windows only)
-.RE
-.IP \(bu 2
-\f[B]window\-move\-down\f[R]
-.RS
-.PP
-Move the current window toward to the bottom of the screen.
-(\f[I]stacked\f[R] windows only)
-.RE
-.IP \(bu 2
-\f[B]window\-move\-right\f[R]
-.RS
-.PP
-Move the current window toward to the right of the screen.
-(\f[I]stacked\f[R] windows only)
-.RE
-.IP \(bu 2
-\f[B]window\-move\-left\f[R]
-.RS
-.PP
-Move the current window toward to the left of the screen.
-(\f[I]stacked\f[R] windows only)
-.RE
-.IP \(bu 2
-\f[B]window\-move\-down\-left\f[R]
-.RS
-.PP
-Move the current window toward to the bottom\-left corner of the screen.
-(\f[I]stacked\f[R] windows only)
-.RE
-.IP \(bu 2
-\f[B]window\-move\-down\-right\f[R]
-.RS
-.PP
-Move the current window toward to the bottom\-right corner of the
-screen.
-(\f[I]stacked\f[R] windows only)
-.RE
-.IP \(bu 2
-\f[B]window\-move\-up\-left\f[R]
-.RS
-.PP
-Move the current window toward to the top\-left corner of the screen.
-(\f[I]stacked\f[R] windows only)
-.RE
-.IP \(bu 2
-\f[B]window\-move\-up\-right\f[R]
-.RS
-.PP
-Move the current window toward to the bottom\-left corner of the screen.
-(\f[I]stacked\f[R] windows only)
-.RE
-.IP \(bu 2
-\f[B]window\-resize\f[R]
-.RS
-.PP
-Resize the current window with the pointer.
-(\f[I]stacked\f[R] windows only)
-.RE
-.IP \(bu 2
-\f[B]window\-resize\-up\f[R]
-.RS
-.PP
-Resize the current window toward the top.
-(\f[I]stacked\f[R] windows only)
-.RE
-.IP \(bu 2
-\f[B]window\-resize\-down\f[R]
-.RS
-.PP
-Resize the current window toward the bottom.
-(\f[I]stacked\f[R] windows only)
-.RE
-.IP \(bu 2
-\f[B]window\-resize\-right\f[R]
-.RS
-.PP
-Resize the current window toward the right.
-(\f[I]stacked\f[R] window only)
-.RE
-.IP \(bu 2
-\f[B]window\-resize\-left\f[R]
-.RS
-.PP
-Resize the current window toward the left.
-(\f[I]stacked\f[R] window only)
-.RE
-.IP \(bu 2
-\f[B]root\-menu\-window\f[R]
-.RS
-.PP
-Activates the windows menu.
-.RE
-.IP \(bu 2
-\f[B]root\-menu\-desktop\f[R]
-.RS
-.PP
-Activates the desktops menu.
-.RE
-.IP \(bu 2
-\f[B]root\-menu\-app\f[R]
-.RS
-.PP
-Activates the applications menu.
 .RE
 .SH DEFAULT BINDINGS
 .SS Key bindings
@@ -1054,31 +1054,41 @@ Activates the applications menu.
 \f[B]CM\-k\f[R] \-> \f[I]window\-snap\-up\f[R]
 .SS Mouse buttons bindings
 .IP \(bu 2
-\f[B]1\f[R] \-> \f[I]root\-menu\-window\f[R]
+\f[B]1\f[R] \-> \f[I]menu\-client\f[R]
 .PD 0
 .P
 .PD
 .IP \(bu 2
-\f[B]2\f[R] \-> \f[I]root\-menu\-desktop\f[R]
+\f[B]2\f[R] \-> \f[I]menu\-desktop\f[R]
 .PD 0
 .P
 .PD
 .IP \(bu 2
-\f[B]3\f[R] \-> \f[I]root\-menu\-app\f[R]
+\f[B]3\f[R] \-> \f[I]menu\-launcher\f[R]
 .PD 0
 .P
 .PD
 .IP \(bu 2
-\f[B]C+1\f[R] \-> \f[I]move\-window\f[R]
+\f[B]M+1\f[R] \-> \f[I]window\f[R]move_
 .PD 0
 .P
 .PD
 .IP \(bu 2
-\f[B]C+3\f[R] \-> \f[I]resize\-window\f[R]
+\f[B]M+3\f[R] \-> \f[I]window\f[R]resize_
+.PD 0
+.P
+.PD
+.IP \(bu 2
+\f[B]M+4\f[R] \-> \f[I]window\f[R]lower_
+.PD 0
+.P
+.PD
+.IP \(bu 2
+\f[B]M+5\f[R] \-> \f[I]window\f[R]raise_
 .SH FILES
 \f[B]zwm\f[R] uses the first configuration file it finds in that list:
 .IP "1." 3
-\f[I]\(ti/.config/zwm/zwmrc\f[R]
+\f[I]\(ti/.config/zwm/config\f[R]
 .IP "2." 3
 \f[I]\(ti/.zwmrc\f[R]
 .SH ENVIRONMENT

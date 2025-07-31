@@ -77,12 +77,6 @@ XScreen::XScreen(int id): m_screenid(id)
 		wm::set_net_current_desktop(m_rootwin, m_desktop_active);
 
 	// fonts
-	m_windowfont = XftFontOpenName(wm::display, m_screenid, conf::windowfont.c_str());
-	if (!m_windowfont) {
-		std::cerr << util::gettime() << " [XScreen::" << __func__ 
-				<< "] Cant open font name '" << conf::windowfont << "'\n";
-		m_windowfont = XftFontOpenName(wm::display, m_screenid, "Mono:size=10");
-	}
 	m_menufont = XftFontOpenName(wm::display, m_screenid, conf::menufont.c_str());
 	if (!m_menufont) {
 		std::cerr << util::gettime() << " [XScreen::" << __func__ 
@@ -129,7 +123,6 @@ XScreen::~XScreen()
 		    DefaultColormap(wm::display, m_screenid),
 		    &color);
 
-	XftFontClose(wm::display, m_windowfont);
 	XftFontClose(wm::display, m_menufont);
 	XUngrabKey(wm::display, AnyKey, AnyModifier, m_rootwin);
 }
@@ -556,21 +549,21 @@ void XScreen::switch_to_desktop(int index)
 	update_statusbar_desktops();
 }
 
-void XScreen::run_rootmenu_app()
+void XScreen::run_menu_launcher()
 {
-	std::string rootmenu = conf::appmenu;
-	auto isRootMenu = [rootmenu] (MenuDef mdef) 
-			{ return (!mdef.label.compare(rootmenu)); };
-	auto it = std::find_if(conf::menulist.begin(),conf::menulist.end(), isRootMenu);
+	std::string menu = conf::menu_launcher;
+	auto isLauncherMenu = [menu] (MenuDef mdef) 
+			{ return (!mdef.label.compare(menu)); };
+	auto it = std::find_if(conf::menulist.begin(),conf::menulist.end(), isLauncherMenu);
 	if (it == conf::menulist.end()) return;
 
-	Menu menu(this, *it);
-	menu.run();
+	Menu appmenu(this, *it);
+	appmenu.run();
 }
 
-void XScreen::run_rootmenu_window()
+void XScreen::run_menu_client()
 {
-	MenuDef menudef(conf::windowmenu, MenuType::Window);
+	MenuDef menudef(conf::menu_client, MenuType::Client);
 	for (XClient *client : m_stickylist) {
 		char ws = '+';
 		if (client->has_states(State::Docked)) continue;
@@ -598,9 +591,9 @@ void XScreen::run_rootmenu_window()
 	window_menu.run();
 }
 
-void XScreen::run_rootmenu_desktop()
+void XScreen::run_menu_desktop()
 {
-	MenuDef menudef(conf::desktopmenu, MenuType::Desktop);
+	MenuDef menudef(conf::menu_desktop, MenuType::Desktop);
 	for (int i = 0; i < m_ndesktops; i++) {
 		if (m_desktoplist[i].is_empty()) continue;			
 		std::stringstream ss;

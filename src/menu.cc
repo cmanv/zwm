@@ -159,14 +159,14 @@ bool Menu::run()
 
 	if ((!is_done) && (m_active != -1)) {
 		switch(m_data.type) {
-		case MenuType::Command:
-			run_command(); 
+		case MenuType::Launcher:
+			run_launcher(); 
 			break;
 		case MenuType::Desktop: 
-			goto_desktop();
+			switch_to_desktop();
 			break;
-		case MenuType::Window: 
-			activate_window();
+		case MenuType::Client: 
+			activate_client();
 			break;
 		}
 		is_done = true;
@@ -277,7 +277,7 @@ void Menu::close_submenu()
 	m_child = NULL;
 }
 
-void Menu::run_command()
+void Menu::run_launcher()
 {
 	std::string function = m_data.items[m_active].function;
 	std::string path = m_data.items[m_active].path;
@@ -292,7 +292,7 @@ void Menu::run_command()
 	}
 }
 
-void Menu::activate_window()
+void Menu::activate_client()
 {
 	XClient *client = m_data.items[m_active].client;
 	int index = client->get_desktop_index();
@@ -307,7 +307,7 @@ void Menu::activate_window()
 	}
 }
 
-void Menu::goto_desktop()
+void Menu::switch_to_desktop()
 {
 	int index = m_data.items[m_active].index;
 	int active_desktop = m_screen->get_active_desktop();
