@@ -52,7 +52,7 @@ XClient::XClient(Window w, XScreen *s, bool query): m_window(w), m_screen(s)
 
 	m_rootwin = m_screen->get_window();
 	m_font = m_screen->get_window_font();
-	m_border_w = conf::border_float;
+	m_border_w = conf::border_stack;
 	m_parent = None;
 	m_states = 0;
 	m_initial_state = 0;
@@ -62,10 +62,10 @@ XClient::XClient(Window w, XScreen *s, bool query): m_window(w), m_screen(s)
 
 	// Get window informations
 	XGetWindowAttributes(wm::display, m_window, &wattr);
-	m_geom_child.x = wattr.x;
-	m_geom_child.y = wattr.y;
-	m_geom_child.w = wattr.width;
-	m_geom_child.h = wattr.height;
+	m_geom.x = wattr.x;
+	m_geom.y = wattr.y;
+	m_geom.w = wattr.width;
+	m_geom.h = wattr.height;
 	m_colormap = wattr.colormap;
 	m_old_border = wattr.border_width;
 
@@ -80,24 +80,19 @@ XClient::XClient(Window w, XScreen *s, bool query): m_window(w), m_screen(s)
 
 	apply_user_states();	// Apply user configured states
 
-	// Enable tiling on non-floated windows
-	if (!has_state(State::Floated))
-		set_states(State::Tiled|State::Frozen);
-
-	if (has_state(State::Ignored) && has_state(State::NoBorder)) {
-		m_border_w = 0;
-	} else if (has_states(State::Docked)) {
+	if (has_state(State::NoBorder)) {
 		m_border_w = 0;
 	}
 
 	// Pointer position
-	m_ptr = m_geom_child.get_center(Coordinates::Window);
+	m_ptr = m_geom.get_center(Coordinates::Window);
 
 	// New window starts as hidden until reparent
 	if (wattr.map_state != IsViewable) {
 		set_initial_placement();
 		wm::set_wm_state(m_window, IconicState);
 	}
+	m_geom_stack = m_geom;
 
 	// Request some types of event from X server
 	XSelectInput(wm::display, m_window, EnterWindowMask|PropertyChangeMask);
@@ -156,9 +151,6 @@ void XClient::reparent_window()
 	wattr.event_mask = SubstructureRedirectMask | SubstructureNotifyMask
 		| ButtonPressMask | EnterWindowMask;
 
-	m_geom = m_geom_child;
-	m_geom_floated = m_geom;
-
 	m_parent = XCreateWindow(wm::display, m_rootwin, m_geom.x, m_geom.y, 
 			m_geom.w, m_geom.h, m_border_w, 
 			DefaultDepth(wm::display, m_screen->get_screenid()), 
@@ -169,14 +161,7 @@ void XClient::reparent_window()
 	XAddToSaveSet(wm::display, m_window);
 	XSetWindowBorderWidth(wm::display, m_window, 0);
 	XReparentWindow(wm::display, m_window, m_parent, 0, 0);
-	grab_mouse_bindings();
 
-	XMapWindow(wm::display, m_parent);
-	XMapWindow(wm::display, m_window);
-}
-
-void XClient::grab_mouse_bindings()
-{
 	for (Binding& mb : conf::mousebindings) {
 		if (mb.context != Context::Window) continue;
 		for (auto mod : wm::ignore_mods)
@@ -184,6 +169,7 @@ void XClient::grab_mouse_bindings()
 					m_parent, False, ButtonPressMask,
 					GrabModeAsync, GrabModeAsync, None, None);
 	}
+
 }
 
 void XClient::draw_window_border()
@@ -251,19 +237,19 @@ void XClient::get_net_wm_window_type()
 			break;
 		}
 		if (atom == wm::ewmh[_NET_WM_WINDOW_TYPE_DIALOG]) {
-			set_states(State::Floated);
+			set_states(State::NoTile);
 			break;
 		}
 		if (atom == wm::ewmh[_NET_WM_WINDOW_TYPE_SPLASH]) {
-			set_states(State::Floated|State::FixedSize);
+			set_states(State::NoTile|State::NoResize);
 			break;
 		}
 		if (atom == wm::ewmh[_NET_WM_WINDOW_TYPE_TOOLBAR]) {
-			set_states(State::Floated);
+			set_states(State::NoTile);
 			break;
 		}
 		if (atom == wm::ewmh[_NET_WM_WINDOW_TYPE_UTILITY]) {
-			set_states(State::Floated);
+			set_states(State::NoTile);
 			break;
 		}
 	}
@@ -334,7 +320,7 @@ void XClient::get_transient()
 	if (XGetTransientForHint(wm::display, m_window, &trans)) {
 		if ((tc = XScreen::find_client(trans)) != NULL) {
 			if (tc->has_state(State::Ignored)) {
-				set_states(State::Floated|State::Ignored);
+				set_states(State::NoTile|State::Ignored);
 				m_border_w = tc->m_border_w;
 			}
 		}
@@ -356,8 +342,7 @@ void XClient::get_motif_hints()
 	if ((hints->flags & Motif::HintDecorations) &&
 	    !(hints->decorations & Motif::DecorAll)) {
 		if (!(hints->decorations & Motif::DecorBorder)) {
-			set_states(State::Floated|State::NoBorder);
-			m_border_w = 0;
+			set_states(State::NoTile|State::NoBorder);
 		}
 	}
 	XFree(hints);
@@ -368,15 +353,15 @@ void XClient::set_initial_placement()
 {
 	if (m_hints.flags & (USPosition | PPosition)) {
 		Geometry view = m_screen->get_view();
-		m_geom_child.set_user_placement(view, m_border_w);
+		m_geom.set_user_placement(view, m_border_w);
 		if (has_state(State::Ignored))
-			m_geom_child.adjust_for_maximized(view, m_old_border);
+			m_geom.adjust_for_maximized(view, m_old_border);
 	} else {
 		Position pos = xutil::get_pointer_pos(m_rootwin);
 		Geometry area = m_screen->get_area(pos, true);
-		m_geom_child.set_placement(pos, area, m_border_w);
+		m_geom.set_placement(pos, area, m_border_w);
 	}
-	XMoveResizeWindow(wm::display, m_window, 0, 0, m_geom_child.w, m_geom_child.h);
+	XMoveResizeWindow(wm::display, m_window, m_geom.x, m_geom.y, m_geom.w, m_geom.h);
 }
 
 // Obtain size hints from the client window
@@ -424,13 +409,12 @@ long XClient::get_configured_desktop()
 // Process event to Configure the size of the client window
 void XClient::configure_window(XConfigureRequestEvent *e)
 {
-	if (e->value_mask & CWWidth)
-		m_geom_child.w = e->width;
-	if (e->value_mask & CWHeight)
-		m_geom_child.h = e->height;
+	if (has_state(State::Frozen)) return;
 
-	m_geom.w = m_geom_child.w;
-	m_geom.h = m_geom_child.h;
+	if (e->value_mask & CWWidth)
+		m_geom.w = e->width;
+	if (e->value_mask & CWHeight)
+		m_geom.h = e->height;
 
 	resize_window();
 }
@@ -443,10 +427,10 @@ void XClient::send_configure_event()
 	xev.type = ConfigureNotify;
 	xev.event = m_window;
 	xev.window = m_window;
-	xev.x = m_geom_child.x;
-	xev.y = m_geom_child.y;
-	xev.width = m_geom_child.w;
-	xev.height = m_geom_child.h;
+	xev.x = m_geom.x;
+	xev.y = m_geom.y;
+	xev.width = m_geom.w;
+	xev.height = m_geom.h;
 	xev.border_width = 0;
 	xev.above = None;
 	xev.override_redirect = False;
@@ -456,8 +440,7 @@ void XClient::send_configure_event()
 
 void XClient::set_window_active()
 {
-
-	if (has_state(State::Active|State::Hidden) || has_states(State::Docked))
+	if (has_state(State::Hidden) || has_states(State::Docked))
 		return;
 
 	XInstallColormap(wm::display, m_colormap);
@@ -489,6 +472,7 @@ void XClient::show_window()
 	wm::set_net_wm_states(m_window, m_states);
 	wm::set_wm_state(m_window, NormalState);
 	XMapWindow(wm::display, m_parent);
+	XMapWindow(wm::display, m_window);
 	draw_window_border();
 }
 
@@ -538,6 +522,8 @@ void XClient::move_window_with_keyboard(long direction)
 
 	move_window();
 	move_pointer_inside();
+	m_geom_stack = m_geom;
+
 	XSync(wm::display, True);
 }
 
@@ -595,6 +581,7 @@ void XClient::move_window_with_pointer()
 	}
 	if (ltime) move_window();
 	XUngrabPointer(wm::display, CurrentTime);
+	m_geom_stack = m_geom;
 	XSync(wm::display, True);
 }
 
@@ -606,17 +593,18 @@ void XClient::move_window()
 
 void XClient::resize_window_with_keyboard(long direction)
 {
-	if (has_state(State::Frozen|State::FixedSize)) return;
+	if (has_state(State::Frozen|State::NoResize)) return;
 
 	m_geom.resize(direction, m_hints, m_border_w);
 	resize_window();
 	move_pointer_inside();
+	m_geom_stack = m_geom;
 	XSync(wm::display, True);
 }
 
 void XClient::resize_window_with_pointer()
 {
-	if (has_state(State::Frozen|State::FixedSize)) return;
+	if (has_state(State::Frozen|State::NoResize)) return;
 
 	if (conf::debug>1) {
 		std::cout << util::gettime() << " [XClient::" << __func__ << "]\n";
@@ -730,6 +718,7 @@ void XClient::resize_window_with_pointer()
 
 			m_geom.apply_size_hints(m_hints);
 			resize_window();
+			m_geom_stack = m_geom;
 
 			width = (m_geom.w - m_hints.basew) / m_hints.incw;
 			height = (m_geom.h - m_hints.baseh) / m_hints.inch;
@@ -752,14 +741,7 @@ void XClient::resize_window_with_pointer()
 void XClient::resize_window()
 {
 	XMoveResizeWindow(wm::display, m_parent, m_geom.x, m_geom.y, m_geom.w, m_geom.h);
-
-	m_geom_child.x = 0;
-	m_geom_child.y = 0;
-	m_geom_child.w = m_geom.w;
-	m_geom_child.h = m_geom.h;
-	XMoveResizeWindow(wm::display, m_window, 0, 0, m_geom_child.w, m_geom_child.h);
-	m_geom_floated = m_geom;
-
+	XMoveResizeWindow(wm::display, m_window, 0, 0, m_geom.w, m_geom.h);
 	draw_window_border();
 	send_configure_event();
 }
@@ -796,31 +778,36 @@ void XClient::save_pointer()
 	}
 }
 
-void XClient::set_tiling(Geometry &tiled)
+void XClient::set_stacked_geom()
 {
-	if (!has_state(State::Tiled)) return;
-	if (has_state(State::FullScreen))
-		remove_fullscreen();
+	m_geom = m_geom_stack;
+	if (has_state(State::NoBorder)) 
+		m_border_w = 0;
+	else
+		m_border_w = conf::border_stack;
 
-	m_geom = tiled;
-
-	set_states(State::Frozen);	
-	wm::set_net_wm_states(m_window, m_states);
 	resize_window();
 }
 
-void XClient::set_floated()
+void XClient::set_tiled_geom(Geometry &tiled)
+{
+	m_geom = tiled;
+	m_border_w = conf::border_tile;
+	resize_window();
+}
+
+void XClient::set_notile()
 {
 	if (has_state(State::FullScreen))
 		remove_fullscreen();
 
 	clear_states(State::Tiled|State::Frozen|State::Maximized);
-	m_geom = m_geom_floated;
+	set_states(State::NoTile);
+	m_geom = m_geom_stack;
 	if (has_state(State::NoBorder))
 		m_border_w = 0;
 	else 
-		m_border_w = conf::border_float;
-	
+		m_border_w = conf::border_stack;
 	
 	resize_window();
 }
@@ -868,13 +855,13 @@ void XClient::toggle_state(long flags)
 			m_screen->assign_client_to_desktop(this, -1, true);
 		m_states ^= flags;
 		break;
-	case State::Tiled:
-		if (has_state(State::Tiled)) {
-			m_screen->remove_window_tile_from_desktop(this);
-			set_floated();
-		} else {
-			set_states(State::Tiled|State::Frozen);
+	case State::NoTile:
+		if (has_state(State::NoTile)) {
+			clear_states(State::NoTile);
 			m_screen->add_window_tile_to_desktop(this);
+		} else {
+			m_screen->remove_window_tile_from_desktop(this);
+			set_notile();
 		}	
 		break;
 	case State::FullScreen:
@@ -892,14 +879,11 @@ void XClient::toggle_fullscreen()
 	if (has_state(State::FullScreen))
 		remove_fullscreen();
 	else {
-		if (has_state(State::Tiled))
-			m_geom_tiling = m_geom;
-		else
-			m_geom_floated = m_geom;
-
 		Position pos = m_geom.get_center(Coordinates::Root);
 		Geometry area = m_screen->get_area(pos, false);
+		m_geom_save = m_geom;
 		m_border_w = 0;
+
 		m_geom = area;
 		set_states(State::FullScreen|State::Frozen);
 		raise_window();
@@ -911,16 +895,13 @@ void XClient::toggle_fullscreen()
 
 void XClient::remove_fullscreen()
 {
+	m_border_w = conf::border_stack;
 	if (has_state(State::NoBorder))
 		m_border_w = 0; 
-	else
-		m_border_w = conf::border_float;
-
-
+	m_geom = m_geom_save;
 	if (has_state(State::Tiled)) {
-		m_geom = m_geom_tiling;
+		m_border_w = conf::border_tile;
 	} else {
-		m_geom = m_geom_floated;
 		clear_states(State::Frozen);
 	}
 	clear_states(State::FullScreen);

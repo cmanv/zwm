@@ -35,17 +35,24 @@
 #include "config.h"
 
 namespace conf {
-	std::vector<DesktopDef> desktopdefs = {
-		{ 0, "un", 0, 0.5 },
-		{ 1, "deux", 0, 0.5 },
-		{ 2, "trois", 0, 0.5 },
-		{ 3, "quatre", 0, 0.5 },
-		{ 4, "cinq", 0, 0.5 },
-		{ 5, "six", 0, 0.5 },
-		{ 6, "sept", 0, 0.5 },
-		{ 7, "huit", 0, 0.5 },
-		{ 8, "neuf", 0, 0.5 },
-		{ 9, "dix", 0, 0.5 },
+	std::vector<DesktopDef> desktop_defs = {
+		{ 0, "one", "Stacked", 0.5 },
+		{ 1, "two", "Stacked", 0.5 },
+		{ 2, "three", "Stacked", 0.5 },
+		{ 3, "four", "Stacked", 0.5 },
+		{ 4, "five", "Stacked", 0.5 },
+		{ 5, "six", "Stacked", 0.5 },
+		{ 6, "seven", "Stacked", 0.5 },
+		{ 7, "eigth", "Stacked", 0.5 },
+		{ 8, "nine", "Stacked", 0.5 },
+		{ 9, "ten", "Stacked", 0.5 },
+	};
+
+	std::vector<DesktopMode> desktop_modes = {
+		{ 0,	"Stacked",	"F" },
+		{ 1,	"Monocle",	"M" },
+		{ 2,	"VTiled",	"V" },
+		{ 3,	"HTiled",	"H" },
 	};
 
 	std::vector<BindingDef>	keybinding_defs = {
@@ -104,7 +111,7 @@ namespace conf {
 	};
 
 	std::vector<std::string> cfilenames = {
-		"/.config/zwm/zwmrc",
+		"/.config/zwm/config",
 		"/.zwmrc"
 	};
 
@@ -124,10 +131,10 @@ namespace conf {
 	std::vector<std::string> colordefs;
 
 	int			debug = 0;
-	const int		ndesktops = desktopdefs.size();
+	const int		ndesktops = desktop_defs.size();
 	int			border_menu = 1;
 	int			border_tile = 2;
-	int			border_float = 5;
+	int			border_stack = 5;
 	int			moveamount = 10;
 	int			snapdist = 9;
 	BorderGap		bordergap = { 1, 1, 1, 1 };
@@ -140,12 +147,13 @@ namespace conf {
 
 	bool get_line(std::ifstream &, std::string &);
 	int  get_tokens(std::string &, std::vector<std::string> &);
-	int  get_states(std::string &, std::vector<std::string> &);
+	int  split_string(std::string &, std::vector<std::string> &, char);
 	void get_name_class(std::string&, std::string&, std::string&);
 	void add_keybinding(Binding&);
 	void remove_keybinding(Binding &);
 	void add_mousebinding(Binding&);
 	void remove_mousebinding(Binding &);
+	void add_desktop_modes(std::vector<std::string> &);
 	void add_window_states(std::string &, std::string &, std::vector<std::string> &);
 	void add_default_desktop(std::string &, std::string &, int);
 	void add_menu(std::string &, std::ifstream &);
@@ -220,8 +228,12 @@ void conf::init()
 			debug = std::strtol(tokens[1].c_str(), NULL, 10);
 			continue;
 		}
-		if (!tokens[0].compare("border-float")) {
-			border_float = std::strtol(tokens[1].c_str(), NULL, 10);
+		if (!tokens[0].compare("border-tile")) {
+			border_tile = std::strtol(tokens[1].c_str(), NULL, 10);
+			continue;
+		}
+		if (!tokens[0].compare("border-stack")) {
+			border_stack = std::strtol(tokens[1].c_str(), NULL, 10);
 			continue;
 		}
 		if (!tokens[0].compare("border-gap")) {
@@ -230,6 +242,12 @@ void conf::init()
 			bordergap.bottom = std::strtol(tokens[2].c_str(), NULL, 10);
 			bordergap.left = std::strtol(tokens[3].c_str(), NULL, 10);
 			bordergap.right = std::strtol(tokens[4].c_str(), NULL, 10);
+			continue;
+		}
+		if (!tokens[0].compare("desktop-modes")) {
+			std::vector<std::string> modes;
+			split_string(tokens[1], modes, ',');
+			add_desktop_modes(modes);
 			continue;
 		}
 		if (!tokens[0].compare("server-socket")) {
@@ -276,19 +294,21 @@ void conf::init()
 			if (tokens.size() < 3) continue;
 			int index = std::strtol(tokens[1].c_str(), NULL, 10) - 1;
 			if ((index < 0) || (index >= ndesktops)) continue;
-			desktopdefs[index].name = tokens[2];
+			desktop_defs[index].name = tokens[2];
 			if (tokens.size() < 4) continue;
-			desktopdefs[index].mode = DeskMode::VTiled;
-			if (!tokens[3].compare("HTiled"))
-					desktopdefs[index].mode = DeskMode::HTiled;
-			if (!tokens[3].compare("Monocle"))
-					desktopdefs[index].mode = DeskMode::Monocle;
+
+			desktop_defs[index].mode = "Stacked";
+			desktop_defs[index].split = 0.55;
+
+			if ((!tokens[3].compare("VTiled")) || (!tokens[3].compare("HTiled"))
+				|| (!tokens[3].compare("Monocle")))
+					desktop_defs[index].mode = tokens[3];
 			if (tokens.size() < 5) continue;
 
 			float split = std::strtof(tokens[4].c_str(), NULL);
 			if (split < 0.1) split = 0.1;
 			if (split > 0.9) split = 0.9;
-			desktopdefs[index].split = split;
+			desktop_defs[index].split = split;
 		}
 		if (!tokens[0].compare("color")) {
 			if (tokens.size() < 3) continue;
@@ -367,7 +387,7 @@ void conf::init()
 			std::string rname, rclass;
 			get_name_class(tokens[1], rname, rclass);
 			std::vector<std::string> states;
-			get_states(tokens[2], states);
+			split_string(tokens[2], states, ',');
 			add_window_states(rname, rclass, states);
 			continue;
 		}
@@ -412,13 +432,13 @@ int conf::get_tokens(std::string &line, std::vector<std::string> &tokens)
 	return tokens.size();
 }
 
-int conf::get_states(std::string &token, std::vector<std::string> &states)
+int conf::split_string(std::string &str, std::vector<std::string> &tokens, char separator)
 {
-	std::istringstream iss(token);
+	std::istringstream iss(str);
 	std::string out;
-	while (std::getline(iss, out, ','))
-		states.push_back(out);
-	return states.size();
+	while (std::getline(iss, out, separator))
+		tokens.push_back(out);
+	return tokens.size();
 }
 
 void conf::get_name_class(std::string &s, std::string &rname, std::string &rclass)
@@ -467,17 +487,35 @@ void conf::remove_mousebinding(Binding &mb)
 	if (it != mousebindings.end()) mousebindings.erase(it);
 }
 
+void conf::add_desktop_modes(std::vector<std::string> &modes)
+{
+	long index = 0;
+	desktop_modes.clear();
+	for (std::string &mode : modes) {
+		if (!mode.compare("Stacked")) 
+			desktop_modes.push_back(DesktopMode(index++, "Stacked", "F")); 
+		else if (!mode.compare("Monocle"))
+			desktop_modes.push_back(DesktopMode(index++, "Monocle", "M")); 
+		else if (!mode.compare("VTiled"))
+			desktop_modes.push_back(DesktopMode(index++, "VTiled", "V")); 
+		else if (!mode.compare("HTiled"))
+			desktop_modes.push_back(DesktopMode(index++, "HTiled", "H")); 
+	}
+	if (desktop_modes.empty()) 
+		desktop_modes.push_back(DesktopMode(0, "Stacked", "F")); 
+}
+
 void conf::add_window_states(std::string &rname, std::string &rclass,
 				std::vector<std::string> &states)
 {
 	long statemask = 0;
 	for (std::string &state : states) {
 		if (!state.compare("docked")) statemask |= State::Docked;
-		if (!state.compare("fixedsize")) statemask |= State::FixedSize;
-		if (!state.compare("floated")) statemask |= State::Floated;
 		if (!state.compare("frozen")) statemask |= State::Frozen;
 		if (!state.compare("ignored")) statemask |= State::Ignored;
 		if (!state.compare("noborder")) statemask |= State::NoBorder;
+		if (!state.compare("noresize")) statemask |= State::NoResize;
+		if (!state.compare("notile")) statemask |= State::NoTile;
 		if (!state.compare("sticky")) statemask |= State::Sticky;
 	}
 

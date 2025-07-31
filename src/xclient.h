@@ -46,9 +46,8 @@ class XClient {
 	XftFont			*m_font;
 
 	Geometry		 m_geom;
-	Geometry 		 m_geom_floated;
-	Geometry 		 m_geom_tiling;
-	Geometry		 m_geom_child;
+	Geometry 		 m_geom_stack;
+	Geometry 		 m_geom_save;
 
 	Position		 m_ptr;
 	SizeHints		 m_hints;
@@ -116,8 +115,9 @@ public:
 	void			 move_pointer_inside();
 
 	void			 toggle_fullscreen();
-	void			 set_tiling(Geometry &);
-	void 			 set_floated();
+	void			 set_stacked_geom();
+	void			 set_tiled_geom(Geometry &);
+	void 			 set_notile();
 
 	void			 update_statusbar_title();
 	void 			 change_states(int, Atom, Atom);
@@ -125,7 +125,6 @@ public:
 
 private:
 	void			 reparent_window();
-	void 			 grab_mouse_bindings();
 	void			 resize_window();
 
 	void			 set_initial_placement();

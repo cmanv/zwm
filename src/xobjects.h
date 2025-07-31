@@ -143,8 +143,16 @@ struct DefaultDesktop {
 struct DesktopDef {
 	long		index;
 	std::string 	name;
-	long		mode;
+	std::string	mode;
 	float		split;
+};
+
+struct DesktopMode {
+	long		index;
+	std::string	name;
+	std::string	letter;
+	DesktopMode(long i, std::string n, std::string l) 
+		:index(i), name(n), letter(l) {}
 };
 
 #endif /* _XOBJECTS_H_ */

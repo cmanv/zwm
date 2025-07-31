@@ -35,10 +35,10 @@ class Desktop {
 	long		 	 m_index;
 	std::vector<XClient*>	 m_clientstack;
 	std::vector<XClient*>	 m_clienttile;
-	long			 m_mode;
+	long			 m_mode_index;
 	float			 m_split;
 public:
-	Desktop(XScreen *, long, std::string&, long, float);
+	Desktop(XScreen *, long, std::string&, std::string&, float);
 	std::string		&get_name() { return m_name; }
 	long			 get_index() const { return m_index; }
 	std::vector<XClient*>	&get_clients() { return m_clientstack; }
@@ -61,6 +61,7 @@ private:
 	void 			 tile_horizontal();
 	void 			 tile_vertical();
 	void 			 tile_maximized();
+	void 			 stacked_desktop();
 	bool			 has_hidden_only();
 	XClient 		*next_window(XClient *);
 	XClient 		*prev_window(XClient *);

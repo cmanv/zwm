@@ -86,10 +86,10 @@ enum State {
 	FullScreen	= 0x000100,
 	HMaximized	= 0x000200,
 	VMaximized	= 0x000400,
-	Floated		= 0x001000,
-	Tiled		= 0x002000,
-	FixedSize	= 0x004000,
-	NoBorder	= 0x008000,
+	Tiled		= 0x000800,
+	NoTile		= 0x001000,
+	NoResize	= 0x002000,
+	NoBorder	= 0x004000,
 	WMDeleteWindow	= 0x010000,
 	WMTakeFocus	= 0x020000,
 	Maximized	= HMaximized|VMaximized,
@@ -182,9 +182,4 @@ enum class MenuType {
 	Desktop
 };
 
-enum DeskMode {
-	VTiled,
-	HTiled,
-	Monocle	
-};
 #endif // _DEFINITIONS_H_

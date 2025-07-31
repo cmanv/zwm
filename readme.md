@@ -1,4 +1,4 @@
-% ZWM(1) zwm version alpha9 | zwm user's manual
+% ZWM(1) zwm version alpha11 | zwm user's manual
 % cmanv
 % May 2025
 
@@ -72,6 +72,16 @@ This section describe all options that can be set in the configuration files.
 > _name_ is a string to identify the desktop.
 > _mode_ can be any of: _vtile_, _htile_ or _monocle_. (default: _vtile_)
 
+* **desktop-modes** _mode1_,_mode2,..
+
+> Sets a comma separated list of active desktop modes. The order is used 
+> to rotate mode with the functions _desktop_mode_next_ and _desktop_mode_prev_
+> The list of currently valid modes is:
+> > _Stacked_ : Windows are stacked and can be moved/resized by the user.
+> > _Monocle_ : Only one window (maximized) is visible at a time.
+> > _Vtile_ : Master / slaves with the slaves tiled vertically on the right. 
+> > _Htile_ : Master / slaves with the slaves tiled horizontally on the bottom. 
+
 * **server-socket** _[host:port|path]_
 
 > Sets up a listening socket which can be a UNIX domain socket or a tcp socket. This allows
@@ -94,9 +104,9 @@ This section describe all options that can be set in the configuration files.
 
 ## WINDOWS OPTIONS
 
-* **border-float** _width_
+* **border-stack** _width_
 
-> Specifies the border width of floating windows. (default: 5)
+> Specifies the border width of stacked windows. (default: 5)
 
 * **border-tile** _width_
 
@@ -185,17 +195,13 @@ series of _menu-item_ lines and end with a _menu-end_ line.
 > Set the default state of an application with class _appclaas_.
 > The applicable states are:
 
-> > _floated_ 
+> > _docked_ 
 
-> > > The window is not tiled and may have decorations.
+> > > Equivalent to _frozen_,_sticky_,_ignore_,_noborder_. Any client with the property _\_NET\_WM\_WINDOW\_TYPE\_DOCK_ will have this state set.
 
 > > _frozen_ 
 
 > > > The window is locked at its current position.
-
-> > _fixedsize_ 
-
-> > > The window cannot be resized (applicable to _floated_ windows only).
 
 > > _ignored_
 
@@ -203,15 +209,19 @@ series of _menu-item_ lines and end with a _menu-end_ line.
 
 > > _noborder_ 
 
-> > > The window has minimalisiic border (_floated_ windows only).
+> > > The window has no border (_stacked_ windows only).
+
+> > _noresize_ 
+
+> > > The window cannot be resized (applicable to _stacked_ windows only).
+
+> > _notile_ 
+
+> > > The window is never tiled.
 
 > > _sticky_ 
 
 > > > The window appears on all desktops.
-
-> > _docked_ 
-
-> > > Equivalent to _frozen_,_sticky_,_ignore_,_noborder_. Any client with the property _\_NET\_WM\_WINDOW\_TYPE\_DOCK_ will have this state set.
 
 ## BINDING OPTIONS
 
@@ -227,7 +237,7 @@ Modifiers include:
 
 * **bind-mouse** _modifiers-button function_
 
-> Bind a mouse button click with modifiers to a window manager function.
+> Bind a mouse button click with modifiers to a window manager function. _C_,_M_'_4_,_S_ are the applicable modifiers.
 
 * **unbind-key** _modifiers-key_
 
@@ -316,7 +326,7 @@ or mouse binding.
 
 * **window-lower**
 
-> Lower the position of the current window in the stack. (_floated_ windows only).
+> Lower the position of the current window in the stack. (_stacked_ windows only).
 
 * **window-hide**
 
@@ -324,7 +334,7 @@ or mouse binding.
 
 * **window-raise**
 
-> Moves the current window to the top the stack. (_floated_ windows only).
+> Moves the current window to the top the stack. (_stacked_ windows only).
 
 * **window-close**
 
@@ -340,7 +350,7 @@ or mouse binding.
 
 * **window-toggle-tiled**
 
-> Toggle the _tiled_/_floated_ state of the current window.
+> Toggle the _tiled_/_stacked_ state of the current window.
 
 * **window-move-to-desktop-_num_**
 
@@ -348,95 +358,95 @@ or mouse binding.
 
 * **window-snap-up**
 
-> Snap the current window to the top edge of the screen. (_floated_ windows only)
+> Snap the current window to the top edge of the screen. (_stacked_ windows only)
 
 * **window-snap-down**
 
-> Snap the current window to the bottom  edge of the screen. (_floated_ windows only)
+> Snap the current window to the bottom  edge of the screen. (_stacked_ windows only)
 
 * **window-snap-right**
 
-> Snap the current window to the right edge of the screen. (_floated_ windows only)
+> Snap the current window to the right edge of the screen. (_stacked_ windows only)
 
 * **window-snap-left**
 
-> Snap the current window to the left edge of the screen. (_Floated_ windows only)
+> Snap the current window to the left edge of the screen. (_stacked_ windows only)
 
 * **window-snap-down-left**
 
-> Snap the current window to the bottom-left corner of the screen. (_floated_ windows only)
+> Snap the current window to the bottom-left corner of the screen. (_stacked_ windows only)
 
 * **window-snap-down-right**
 
-> Snap the current window to the bottom-right corner of the screen. (_floated_ windows only)
+> Snap the current window to the bottom-right corner of the screen. (_stacked_ windows only)
 
 * **window-snap-up-left**
 
-> Snap the current window to the top-left corner of the screen. (_floated_ windows only)
+> Snap the current window to the top-left corner of the screen. (_stacked_ windows only)
 
 * **window-snap-up-right**
 
-> Snap the current window to the top-right corner of the screen. (_floated_ windows only)
+> Snap the current window to the top-right corner of the screen. (_stacked_ windows only)
 
 * **window-move**
 
-> Move the current window with the pointer. (_floated_ windows only)
+> Move the current window with the pointer. (_stacked_ windows only)
 
 * **window-move-up**
 
-> Move the current window toward to the top of the screen. (_floated_ windows only)
+> Move the current window toward to the top of the screen. (_stacked_ windows only)
 
 * **window-move-down**
 
-> Move the current window toward to the bottom of the screen. (_floated_ windows only)
+> Move the current window toward to the bottom of the screen. (_stacked_ windows only)
 
 * **window-move-right**
 
-> Move the current window toward to the right of the screen. (_floated_ windows only)
+> Move the current window toward to the right of the screen. (_stacked_ windows only)
 
 * **window-move-left**
 
-> Move the current window toward to the left of the screen. (_floated_ windows only)
+> Move the current window toward to the left of the screen. (_stacked_ windows only)
 
 * **window-move-down-left**
 
 > Move the current window toward to the bottom-left corner of the screen. 
-> (_floated_ windows only)
+> (_stacked_ windows only)
 
 * **window-move-down-right**
 
 > Move the current window toward to the bottom-right corner of the screen. 
-> (_floated_ windows only)
+> (_stacked_ windows only)
 
 * **window-move-up-left**
 
 > Move the current window toward to the top-left corner of the screen. 
-> (_floated_ windows only)
+> (_stacked_ windows only)
 
 * **window-move-up-right**
 
 > Move the current window toward to the bottom-left corner of the screen. 
-> (_floated_ windows only)
+> (_stacked_ windows only)
 
 * **window-resize**
 
-> Resize the current window with the pointer.  (_floated_ windows only)
+> Resize the current window with the pointer.  (_stacked_ windows only)
 
 * **window-resize-up**
 
-> Resize the current window toward the top.  (_floated_ windows only)
+> Resize the current window toward the top.  (_stacked_ windows only)
 
 * **window-resize-down**
 
-> Resize the current window toward the bottom.  (_floated_ windows only)
+> Resize the current window toward the bottom.  (_stacked_ windows only)
 
 * **window-resize-right**
 
-> Resize the current window toward the right.  (_floated_ window only)
+> Resize the current window toward the right.  (_stacked_ window only)
 
 * **window-resize-left**
 
-> Resize the current window toward the left.  (_floated_ window only)
+> Resize the current window toward the left.  (_stacked_ window only)
 
 * **root-menu-window**
 

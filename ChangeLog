@@ -1,3 +1,7 @@
+2025-07-30
+	* Ajoute un mode flottant pour les bureaux
+	* Version alpha11
+
 2025-07-27
 	* Supprime les décorations sur les fenêtres flottantes.
 	* Nouvelle version de resize_window_with_pointer

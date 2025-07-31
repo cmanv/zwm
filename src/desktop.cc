@@ -32,12 +32,19 @@
 #include "xscreen.h"
 #include "desktop.h"
 
-Desktop::Desktop(XScreen *screen, long index, std::string &name, long mode, float split)
+Desktop::Desktop(XScreen *screen, long index, std::string &name, 
+		std::string &mode_name, float split)
 {
 	m_screen = screen;
 	m_name = name;
 	m_index = index;
-	m_mode = mode;
+	m_mode_index = 0;
+	for (DesktopMode &dm : conf::desktop_modes) {
+		if (!dm.name.compare(mode_name)) {
+			m_mode_index = dm.index;
+			break;
+		}
+	}
 	m_split = split;
 }
 
@@ -50,7 +57,7 @@ void Desktop::add_window(XClient *client)
 	}
 
 	m_clientstack.push_back(client);
-	if (client->has_state(State::Tiled)) 
+	if (!client->has_state(State::NoTile)) 
 		add_window_tile(client);
 }
 
@@ -158,27 +165,18 @@ XClient *Desktop::prev_window(XClient *client)
 
 void Desktop::show()
 {
-	std::string mode = "";
-
 	restack_windows();
-	switch(m_mode) {
-	case DeskMode::HTiled:	
-		mode = "H";	
-		tile_horizontal();
-		break;
-	case DeskMode::VTiled:	
-		mode = "V";	
-		tile_vertical();
-		break;
-	case DeskMode::Monocle:	
-		mode = "M";	
+	if (!conf::desktop_modes[m_mode_index].name.compare("Stacked"))
+		stacked_desktop();
+	else if (!conf::desktop_modes[m_mode_index].name.compare("Monocle"))
 		tile_maximized();
-		break;
-	}
+	else if (!conf::desktop_modes[m_mode_index].name.compare("VTiled"))
+		tile_vertical();
+	else if (!conf::desktop_modes[m_mode_index].name.compare("HTiled"))
+		tile_horizontal();
 
-	if (!conf::clientsocket.length())
-		return;
-	std::string message = "desktop_mode=" + mode;
+	if (!conf::clientsocket.length()) return;
+	std::string message = "desktop_mode=" + conf::desktop_modes[m_mode_index].letter;
 	util::send_message(message);
 }
 
@@ -206,29 +204,21 @@ void Desktop::restack_windows()
 	XRestackWindows(wm::display, (Window *)winlist.data(), winlist.size());
 }
 
-void Desktop::toggle()
-{
-	if (has_hidden_only())
-		show();
-	else
-		hide();
-}
-
 void Desktop::rotate_mode(long direction)
 {
-	m_mode += direction;
-	if (m_mode > DeskMode::Monocle) m_mode = DeskMode::VTiled;
-	if (m_mode < DeskMode::VTiled) m_mode = DeskMode::Monocle;
+	m_mode_index += direction;
+	if (m_mode_index == conf::desktop_modes.size()) m_mode_index = 0;
+	else if (m_mode_index < 0) m_mode_index = conf::desktop_modes.size() - 1;
 	show();
 }
 
-bool Desktop::has_hidden_only()
+void Desktop::stacked_desktop()
 {
 	for (XClient *client : m_clientstack) {
-		if (!(client->has_state(State::Hidden)))
-			return false;
+		client->clear_states(State::Tiled|State::Frozen|State::Hidden);
+		client->set_stacked_geom();
+		client->show_window();
 	}
-	return true;
 }
 
 void Desktop::tile_horizontal()
@@ -252,25 +242,23 @@ void Desktop::tile_horizontal()
 	Geometry geom_master(area.x, area.y, area.w - 2 * border , mh - 2 * border);
 	bool master = true;
 	for (XClient *client : m_clienttile) {
+		client->set_states(State::Tiled|State::Frozen);
 		if (master) {
-			client->set_states(State::HMaximized|State::Frozen);
-			client->set_tiling(geom_master);
-//			client->warp_pointer();
+			client->set_states(State::HMaximized);
+			client->set_tiled_geom(geom_master);
 			client->update_statusbar_title();
 			master = false;
 		} else {
-			Geometry slave(x, y, w - 2 * border, h - 2 * border);
 			client->clear_states(State::HMaximized);
-			client->set_states(State::Frozen);
-			client->set_tiling(slave);
+			Geometry slave(x, y, w - 2 * border, h - 2 * border);
+			client->set_tiled_geom(slave);
 			x += w;
 		}
-		client->set_border(border);
 		client->show_window();
 	}
 
 	for (XClient *client : m_clientstack) {
-		if (!client->has_state(State::Tiled)) {
+		if (client->has_state(State::NoTile)) {
 			client->show_window();
 			client->raise_window();
 		}
@@ -298,25 +286,23 @@ void Desktop::tile_vertical()
 	Geometry geom_master(area.x, area.y, mw - 2 * border, area.h - 2 * border);
 	bool master = true;
 	for (XClient *client : m_clienttile) {
+		client->set_states(State::Tiled|State::Frozen);
 		if (master) {
-			client->set_states(State::VMaximized|State::Frozen);
-			client->set_tiling(geom_master);
-//			client->warp_pointer();
+			client->set_states(State::VMaximized);
+			client->set_tiled_geom(geom_master);
 			client->update_statusbar_title();
 			master = false;
 		} else {
-			Geometry slave(x, y, w - 2 * border, h - 2 * border);
-			client->set_states(State::Frozen);
 			client->clear_states(State::VMaximized);
-			client->set_tiling(slave);
+			Geometry slave(x, y, w - 2 * border, h - 2 * border);
+			client->set_tiled_geom(slave);
 			y += h;
 		}
-		client->set_border(border);
 		client->show_window();
 	}
 
 	for (XClient *client : m_clientstack) {
-		if (!client->has_state(State::Tiled)) {
+		if (client->has_state(State::NoTile)) {
 			client->show_window();
 			client->raise_window();
 		}
@@ -325,7 +311,8 @@ void Desktop::tile_vertical()
 
 void Desktop::master_split(long increment)
 {
-	if ((m_mode != DeskMode::HTiled) && (m_mode != DeskMode::VTiled))
+	if ((conf::desktop_modes[m_mode_index].name.compare("VTiled")) &&
+		(conf::desktop_modes[m_mode_index].name.compare("HTiled")))
 		return;
 
 	if (increment > 0) {
@@ -347,24 +334,21 @@ void Desktop::tile_maximized()
 	Geometry maximized(area.x, area.y, area.w - 2 * border, area.h - 2 * border);
 	bool master = true;
 	for (XClient *client : m_clienttile) {
+		client->set_states(State::Tiled|State::Maximized|State::Frozen);
 		if (master) {
-			client->set_states(State::Maximized|State::Frozen);
-			client->set_border(border);
-			client->set_tiling(maximized);
-//			client->warp_pointer();
+			client->clear_states(State::Hidden);
+			client->set_tiled_geom(maximized);
 			client->show_window();
 			client->update_statusbar_title();
 			master = false;
 		} else {
-			client->set_states(State::Maximized|State::Frozen|State::Hidden);
-			client->set_border(border);
-			client->set_tiling(maximized);
+			client->set_states(State::Hidden);
 			client->hide_window();
 		}
 	}
 
 	for (XClient *client : m_clientstack) {
-		if (!client->has_state(State::Tiled)) {
+		if (client->has_state(State::NoTile)) {
 			client->show_window();
 			client->raise_window();
 		}

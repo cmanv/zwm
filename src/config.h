@@ -40,7 +40,7 @@ namespace conf {
 	extern std::string 			 shutdownscript;
 
 	extern int				 debug;
-	extern int				 border_float;
+	extern int				 border_stack;
 	extern int				 border_tile;
 	extern int				 border_menu;
 	extern int				 moveamount;
@@ -48,7 +48,8 @@ namespace conf {
 	extern BorderGap			 bordergap;
 	extern const int			 ndesktops;
 
-	extern std::vector<DesktopDef> 	 	 desktopdefs;
+	extern std::vector<DesktopDef> 	 	 desktop_defs;
+	extern std::vector<DesktopMode> 	 desktop_modes;
 	extern std::vector<std::string> 	 colordefs;
 	extern std::vector<Binding>		 keybindings;
 	extern std::vector<Binding>  		 mousebindings;

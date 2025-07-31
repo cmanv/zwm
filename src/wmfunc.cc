@@ -45,7 +45,7 @@ std::vector<FuncDef> funcdefs = {
 	{ "window-close", 		window_close},
 	{ "window-toggle-fullscreen", 	window_state, State::FullScreen},
 	{ "window-toggle-sticky", 	window_state, State::Sticky},
-	{ "window-toggle-tiled", 	window_state, State::Tiled},
+	{ "window-toggle-tiled", 	window_state, State::NoTile},
 	{ "window-move-to-desktop-1", 	window_to_desktop, 0},
 	{ "window-move-to-desktop-2", 	window_to_desktop, 1},
 	{ "window-move-to-desktop-3", 	window_to_desktop, 2},
