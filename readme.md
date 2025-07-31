@@ -1,6 +1,6 @@
 % ZWM(1) zwm version alpha11 | zwm user's manual
 % cmanv
-% May 2025
+% July 2025
 
 # NAME
 
