@@ -103,6 +103,7 @@ public:
 
 	void	 			 cycle_windows(long);
 	void	 			 cycle_desktops(long);
+	void				 select_desktop_mode(const std::string&);
 	void 				 rotate_desktop_mode(long);
 	void	 			 rotate_desktop_tiles(long);
 	void 				 desktop_master(long);

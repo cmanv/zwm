@@ -204,6 +204,17 @@ void Desktop::restack_windows()
 	XRestackWindows(wm::display, (Window *)winlist.data(), winlist.size());
 }
 
+void Desktop::select_mode(const std::string& id)
+{
+	for (DesktopMode &mode : conf::desktop_modes) {
+		if (!mode.name.compare(id)) {
+			m_mode_index = mode.index;
+			show();
+			break;
+		}
+	}
+}
+
 void Desktop::rotate_mode(long direction)
 {
 	m_mode_index += direction;

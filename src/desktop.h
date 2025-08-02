@@ -55,6 +55,7 @@ public:
 	void			 hide();
 	void			 close();
 	void			 toggle();
+	void			 select_mode(const std::string&);
 	void			 rotate_mode(long);
 private:
 	void			 restack_windows();

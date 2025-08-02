@@ -350,6 +350,11 @@ void XScreen::close_desktop()
 	m_desktoplist[m_desktop_active].close();
 }
 
+void XScreen::select_desktop_mode(const std::string &mode)
+{
+	m_desktoplist[m_desktop_active].select_mode(mode);
+}
+
 void XScreen::rotate_desktop_mode(long direction)
 {
 	m_desktoplist[m_desktop_active].rotate_mode(direction);

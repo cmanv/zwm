@@ -1,6 +1,6 @@
-% ZWM(1) zwm version alpha11 | zwm user's manual
+% ZWM(1) zwm version alpha12 | zwm user's manual
 % cmanv
-% July 2025
+% August 2025
 
 # NAME
 
@@ -282,19 +282,35 @@ or mouse binding.
 
 * **desktop-master-decr**
 
-> Decrease the proportion of the screen occupied by the master window.
+> Decrease the proportion of the screen occupied by the master window. (HTiled,VTIled)
 
 * **desktop-master-incr**
 
-> Increase the proportion of the screen occupied by the master window.
+> Increase the proportion of the screen occupied by the master window. (HTiled,VTIled)
+
+* **desktop-mode-stacked**
+
+> Switch to the desktop stacked mode. (Stacked)
+
+* **desktop-mode-monocle**
+
+> Switch to the desktop monocle mode. (Monocle)
+
+* **desktop-mode-htile**
+
+> Switch to the master/slave horizontal tiling mode. (HTiled)
+
+* **desktop-mode-vtile**
+
+> Switch to the master/slave vertital tiling mode. (VTile)
 
 * **desktop-mode-next**
 
-> Switch to the next desktop tilinh mode. (VTiled -> HTiled -> Monocle -> VTiled)
+> Switch to the next desktop tiling mode in the order defined by _desktop_modes_.
 
 * **desktop-mode-prev**
 
-> Switch to the previous desktop tiling mode. (VTiled -> Monocle -> HTiled -> VTiled) 
+> Switch to the previous desktop tiling mode in ther order defined by _desktop_modes_..
 
 * **desktop-next**
 

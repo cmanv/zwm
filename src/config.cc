@@ -8,7 +8,7 @@
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 //
@@ -49,7 +49,7 @@ namespace conf {
 	};
 
 	std::vector<DesktopMode> desktop_modes = {
-		{ 0,	"Stacked",	"F" },
+		{ 0,	"Stacked",	"S" },
 		{ 1,	"Monocle",	"M" },
 		{ 2,	"VTiled",	"V" },
 		{ 3,	"HTiled",	"H" },
@@ -452,7 +452,7 @@ void conf::get_name_class(std::string &s, std::string &rname, std::string &rclas
 
 void conf::add_keybinding(Binding &kb)
 {
-	auto isCombo = [kb](Binding b) { return ((kb.modmask == b.modmask) 
+	auto isCombo = [kb](Binding b) { return ((kb.modmask == b.modmask)
 			&& (kb.keysym == b.keysym) && (kb.context == b.context)); };
 	auto it = std::find_if(keybindings.begin(), keybindings.end(), isCombo);
 	if (it != keybindings.end()) keybindings.erase(it);
@@ -461,7 +461,7 @@ void conf::add_keybinding(Binding &kb)
 
 void conf::remove_keybinding(Binding &kb)
 {
-	auto isCombo = [kb](Binding b) { return ((kb.modmask == b.modmask) 
+	auto isCombo = [kb](Binding b) { return ((kb.modmask == b.modmask)
 			&& (kb.keysym == b.keysym) && (kb.context == b.context)); };
 	auto it = std::find_if(keybindings.begin(), keybindings.end(), isCombo);
 	if (it != keybindings.end()) keybindings.erase(it);
@@ -469,7 +469,7 @@ void conf::remove_keybinding(Binding &kb)
 
 void conf::add_mousebinding(Binding &mb)
 {
-	auto isCombo = [mb](Binding b) { return ((mb.modmask == b.modmask) 
+	auto isCombo = [mb](Binding b) { return ((mb.modmask == b.modmask)
 			&& (mb.button == b.button) && (mb.context == b.context)); };
 	auto it = std::find_if(mousebindings.begin(), mousebindings.end(), isCombo);
 	if (it != mousebindings.end()) mousebindings.erase(it);
@@ -478,7 +478,7 @@ void conf::add_mousebinding(Binding &mb)
 
 void conf::remove_mousebinding(Binding &mb)
 {
-	auto isCombo = [mb](Binding b) { return ((mb.modmask == b.modmask) 
+	auto isCombo = [mb](Binding b) { return ((mb.modmask == b.modmask)
 			&& (mb.button == b.button) && (mb.context == b.context)); };
 	auto it = std::find_if(mousebindings.begin(), mousebindings.end(), isCombo);
 	if (it != mousebindings.end()) mousebindings.erase(it);
@@ -489,17 +489,17 @@ void conf::add_desktop_modes(std::vector<std::string> &modes)
 	long index = 0;
 	desktop_modes.clear();
 	for (std::string &mode : modes) {
-		if (!mode.compare("Stacked")) 
-			desktop_modes.push_back(DesktopMode(index++, "Stacked", "F")); 
+		if (!mode.compare("Stacked"))
+			desktop_modes.push_back(DesktopMode(index++, "Stacked", "S"));
 		else if (!mode.compare("Monocle"))
-			desktop_modes.push_back(DesktopMode(index++, "Monocle", "M")); 
+			desktop_modes.push_back(DesktopMode(index++, "Monocle", "M"));
 		else if (!mode.compare("VTiled"))
-			desktop_modes.push_back(DesktopMode(index++, "VTiled", "V")); 
+			desktop_modes.push_back(DesktopMode(index++, "VTiled", "V"));
 		else if (!mode.compare("HTiled"))
-			desktop_modes.push_back(DesktopMode(index++, "HTiled", "H")); 
+			desktop_modes.push_back(DesktopMode(index++, "HTiled", "H"));
 	}
-	if (desktop_modes.empty()) 
-		desktop_modes.push_back(DesktopMode(0, "Stacked", "F")); 
+	if (desktop_modes.empty())
+		desktop_modes.push_back(DesktopMode(0, "Stacked", "F"));
 }
 
 void conf::add_window_states(std::string &rname, std::string &rclass,

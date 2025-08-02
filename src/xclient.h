@@ -136,9 +136,7 @@ private:
 	void			 get_wm_protocols();
 	void 			 remove_fullscreen();
 
-	static const long 	 ButtonMask;
 	static const long 	 MouseMask;
-	static const long 	 ModifierMask;
 };
 
 #endif /* _XCLIENT_H_ */

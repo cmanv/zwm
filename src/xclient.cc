@@ -33,7 +33,6 @@
 #include "xclient.h"
 
 const long XClient::MouseMask	= ButtonReleaseMask|PointerMotionMask;
-const long XClient::ModifierMask = ControlMask|Mod1Mask|Mod4Mask|ShiftMask;
 
 XClient::XClient(Window w, XScreen *s, bool query): m_window(w), m_screen(s)
 {
@@ -46,7 +45,7 @@ XClient::XClient(Window w, XScreen *s, bool query): m_window(w), m_screen(s)
 		std::cout << util::gettime() << " [XClient::" << __func__
 			<< "] Create Client window 0x" << std::hex << m_window << std::endl;
 	}
-	// For existing clienta, reparent will send an unmap request which should be ignored.
+	// For existing clients, reparent will send an unmap request which should be ignored.
 	if (query)
 		m_ignore_unmap = true;
 
@@ -79,9 +78,8 @@ XClient::XClient(Window w, XScreen *s, bool query): m_window(w), m_screen(s)
 
 	apply_user_states();	// Apply user configured states
 
-	if (has_state(State::NoBorder)) {
+	if (has_state(State::NoBorder))
 		m_border_w = 0;
-	}
 
 	// Pointer position
 	m_ptr = m_geom.get_center(Coordinates::Window);
@@ -124,6 +122,12 @@ XClient::~XClient()
 	// Disable processing of X requests
 	XGrabServer(wm::display);
 	XUngrabButton(wm::display, AnyButton, AnyModifier, m_parent);
+
+	// If the window manager is shutting down, revert tile to stacked geometry
+	if ((wm::status != IsRunning) && has_state(State::Tiled)) {
+		clear_states(State::Frozen);
+		set_stacked_geom();
+	}
 
 	if (m_removed) {
 		// The client has been unmapped

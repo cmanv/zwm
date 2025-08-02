@@ -77,6 +77,10 @@ std::vector<FuncDef> funcdefs = {
 	{ "window-resize-right", 	window_resize, Direction::East},
 	{ "window-resize-left", 	window_resize, Direction::West},
 
+	{ "desktop-mode-stacked", 	desktop_mode_stacked},
+	{ "desktop-mode-monocle", 	desktop_mode_monocle},
+	{ "desktop-mode-htiled", 	desktop_mode_htiled},
+	{ "desktop-mode-vtiled", 	desktop_mode_vtiled},
 	{ "desktop-select-1", 		desktop_select, 0},
 	{ "desktop-select-2", 		desktop_select, 1},
 	{ "desktop-select-3", 		desktop_select, 2},
@@ -190,6 +194,26 @@ void wmfunc::desktop_close(XScreen *screen, long)
 void wmfunc::desktop_master(XScreen *screen, long increment)
 {
 	screen->desktop_master(increment);
+}
+
+void wmfunc::desktop_mode_stacked(XScreen *screen, long)
+{
+	screen->select_desktop_mode("Stacked");
+}
+
+void wmfunc::desktop_mode_monocle(XScreen *screen, long)
+{
+	screen->select_desktop_mode("Monocle");
+}
+
+void wmfunc::desktop_mode_htiled(XScreen *screen, long)
+{
+	screen->select_desktop_mode("HTiled");
+}
+
+void wmfunc::desktop_mode_vtiled(XScreen *screen, long)
+{
+	screen->select_desktop_mode("VTiled");
 }
 
 void wmfunc::desktop_rotate_mode(XScreen *screen, long direction)
