@@ -30,13 +30,6 @@ It can be used multiple times to increase verbosity.
 Use \f[I]display\f[R] as default X display.
 .RE
 .PP
-\f[B]\-s\f[R] \f[I]command\f[R]socket_
-.RS
-.PP
-Soecify a socket for sending commands to the window manager.
-This overrides any value defined in the configuration file.
-.RE
-.PP
 \f[B]\-m\f[R] \f[I]message\f[R]socket_
 .RS
 .PP
@@ -975,6 +968,10 @@ Change of active window title.
 Format: \(dqwindow_active=\f[I]current title of active window\f[R]\(dq
 .RE
 .RE
+.RE
+.RE
+.RS
+.RS
 .IP \(bu 2
 Absence of active window.
 .RS 2
@@ -983,6 +980,10 @@ Absence of active window.
 Format: \(dqno_window_active=\(dq
 .RE
 .RE
+.RE
+.RE
+.RS
+.RS
 .IP \(bu 2
 Change of desktop mode.
 .RS 2
@@ -991,14 +992,26 @@ Change of desktop mode.
 Format: \(dqdesktop_mode=\f[I]desktop mode letter\f[R]\(dq
 .RE
 .RE
+.RE
+.RE
+.RS
+.RS
 .IP \(bu 2
 Change of active desktop list.
 .RS 2
 .RS
 .PP
 Format: \(dqdesktop_list=\f[I]space separated list of desktops
-numbers\f[R]\(dq The active desktop number is prepended by \(aq*\(aq.
+numbers\f[R]\(dq
 .RE
+.RE
+.RE
+.RE
+.RS
+.RS
+.RS
+.PP
+The active desktop number is prepended by \(aq*\(aq.
 .RE
 .RE
 .RE

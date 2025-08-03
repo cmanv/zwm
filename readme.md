@@ -31,11 +31,6 @@ It is also able to send and receive messages through sockets.
 
 > Use _display_ as default X display.
 
-**-s** _command_socket_
-
-> Soecify a socket for sending commands to the window manager. This overrides any value
-defined in the configuration file.
-
 **-m** _message_socket_
 
 > Soecify a socket on which the window manager will send some status messages. This
@@ -564,15 +559,19 @@ Message socket:
 > > - Change of active window title.
 > > > Format:
 > > > "window\_active=_current title of active window_"
+
 > > - Absence of active window.
 > > > Format:
 > > > "no\_window\_active="
+
 > > - Change of desktop mode.
 > > > Format:
 > > > "desktop\_mode=_desktop mode letter_"
+
 > > - Change of active desktop list.
 > > > Format:
 > > > "desktop\_list=_space separated list of desktops numbers_"
+
 > > > The active desktop number is prepended by '*'.
 
 > To activate this feature, set _message-socket_ to the path of the destination socket in the configuration file. Alternatively, use the _-m_ command line option to specify its value. If used, the command line option overrides the value defined in the configuration file.
