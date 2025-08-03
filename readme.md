@@ -545,10 +545,13 @@ Command socket:
 
 > Commands can be sent programmatically to the window manager through a UNIX socket.
 > The command socket is located at \${XDG\_CACHE\_HOME}/zwm/socket
+
 > All window manager desktop functions are accepted. These are the functions starting with "desktop-".
+
 > The accepted format of the command is: "_screen_:_function_", where:
 > >  _screen_ is the applicable X screen number
 > >  _function_ the name of the window manager function.
+
 > Any message not complying with the format will be ignored.
 
 Message socket:

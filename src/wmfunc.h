@@ -36,7 +36,7 @@ namespace wmfunc {
 		Context			context;
 		union {
 			void		(*fcall)(long);
-			void		(*fexec)(std::string&);
+			void		(*flaunch)(std::string&);
 			void		(*fclient)(XClient *, long);
 			void		(*fscreen)(XScreen *, long);
 			void		(*froot)(XScreen *);
@@ -46,9 +46,9 @@ namespace wmfunc {
 		FuncDef(const char *n, void (*f)(XScreen *), Context c)
 			:namefunc(n), froot(f), context(c) {}
 		FuncDef(const char *n, void (*f)(long))
-			:namefunc(n), fcall(f), param(0) { context = Context::Function; }
+			:namefunc(n), fcall(f), param(0) { context = Context::FuncCall; }
 		FuncDef(const char *n, void (*f)(long), long v)
-			:namefunc(n), fcall(f), param(v) { context = Context::Function; }
+			:namefunc(n), fcall(f), param(v) { context = Context::FuncCall; }
 		FuncDef(const char *n, void (*f)(XClient *, long))
 			:namefunc(n), fclient(f), param(0) { context = Context::Window; }
 		FuncDef(const char *n, void (*f)(XClient *, long), long v)
@@ -58,7 +58,7 @@ namespace wmfunc {
 		FuncDef(const char *n, void (*f)(XScreen *, long), long v)
 			:namefunc(n), fscreen(f), param(v) { context = Context::Root; }
 		FuncDef(const char *n, void (*f)(std::string&))
-			:namefunc(n), fexec(f) { context = Context::Command; }
+			:namefunc(n), flaunch(f) { context = Context::Launcher; }
 	};
 
 	extern std::vector<FuncDef> funcdefs;

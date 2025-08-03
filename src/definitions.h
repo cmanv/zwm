@@ -165,8 +165,8 @@ enum class Coordinates {
 };
 
 enum class Context {
-	Command,
-	Function,
+	Launcher,
+	FuncCall,
 	Root,
 	Window,
 };

@@ -60,7 +60,7 @@ struct Binding {
 	Context			context;
 	union {
 		void		(*fcall)(long);
-		void		(*fexec)(std::string&);
+		void		(*flaunch)(std::string&);
 		void		(*fscreen)(XScreen *, long);
 		void		(*fclient)(XClient *, long);
 		void		(*froot)(XScreen *);

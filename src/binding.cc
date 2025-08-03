@@ -98,12 +98,12 @@ Binding::Binding( BindingDef& binddef, EventType eventtype)
 				fclient = funcdef.fclient;
 				param = funcdef.param;
 				break;
-			case Context::Function:
+			case Context::FuncCall:
 				fcall = funcdef.fcall;
 				param = funcdef.param;
 				break;
-			case Context::Command:
-				fexec = funcdef.fexec;
+			case Context::Launcher:
+				flaunch = funcdef.flaunch;
 				path = binddef.path;
 				break;
 			default:

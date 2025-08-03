@@ -938,17 +938,26 @@ Command socket:
 .PP
 Commands can be sent programmatically to the window manager through a
 UNIX socket.
-The command socket is located at \(rs${XDG_CACHE_HOME}/zwm/socket All
-window manager desktop functions are accepted.
+The command socket is located at \(rs${XDG_CACHE_HOME}/zwm/socket
+.RE
+.RS
+.PP
+All window manager desktop functions are accepted.
 These are the functions starting with \(dqdesktop\-\(dq.
+.RE
+.RS
+.PP
 The accepted format of the command is:
 \(dq\f[I]screen\f[R]:\f[I]function\f[R]\(dq, where:
 .RS
 .PP
 \f[I]screen\f[R] is the applicable X screen number \f[I]function\f[R]
 the name of the window manager function.
-Any message not complying with the format will be ignored.
 .RE
+.RE
+.RS
+.PP
+Any message not complying with the format will be ignored.
 .RE
 .PP
 Message socket:

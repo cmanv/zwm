@@ -119,11 +119,11 @@ static void XEvents::key_press(XEvent *ee)
 	case Context::Window:
 		(*kb->fclient)(client, kb->param);
 		break;
-	case Context::Function:
+	case Context::FuncCall:
 		(*kb->fcall)(kb->param);
 		break;
-	case Context::Command:
-		(*kb->fexec)(kb->path);
+	case Context::Launcher:
+		(*kb->flaunch)(kb->path);
 		break;
 	default: ;
 	}
