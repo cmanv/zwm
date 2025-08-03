@@ -560,6 +560,7 @@ Message socket:
 
 > The window manager can send status messages to a UNIX socket. This can be useful for some programs such as status bars.
 > This is the list of message that can be sent by the window manager:
+
 > > - Change of active window title.
 > > > Format:
 > > > "window\_active=_current title of active window_"
@@ -573,6 +574,7 @@ Message socket:
 > > > Format:
 > > > "desktop\_list=_space separated list of desktops numbers_"
 > > > The active desktop number is prepended by '*'.
+
 > To activate this feature, set _message-socket_ to the path of the destination socket in the configuration file. Alternatively, use the _-m_ command line option to specify its value. If used, the command line option overrides the value defined in the configuration file.
 
 # FILES
