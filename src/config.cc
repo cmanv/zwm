@@ -32,6 +32,7 @@
 #include "binding.h"
 #include "xclient.h"
 #include "menu.h"
+#include "version.h"
 #include "config.h"
 
 namespace conf {
@@ -112,19 +113,14 @@ namespace conf {
 		{ "M-5",	"window-raise" },
 	};
 
-	std::vector<std::string> cfilenames = {
-		"/.config/zwm/config",
-		"/.zwmrc"
-	};
-
 	std::string		cfilename = "";
 	std::string		wmname = "ZWM";
 	std::string 		menufont = "Mono:size=10";
 	std::string		menu_client = "X Clients";
 	std::string		menu_desktop = "Active desktops";
 	std::string		menu_launcher = "Applications";
-	std::string		serversocket = "";
-	std::string		clientsocket = "";
+	std::string		command_socket = "";
+	std::string		message_socket = "";
 	std::string		terminal = "xterm";
 	std::string		startupscript = "";
 	std::string		shutdownscript = "";
@@ -146,6 +142,7 @@ namespace conf {
 	std::vector<DefaultStates>	defstateslist;
 	std::vector<MenuDef>		menulist;
 
+	void read_configfile();
 	bool get_line(std::ifstream &, std::string &);
 	int  get_tokens(std::string &, std::vector<std::string> &);
 	int  split_string(std::string &, std::vector<std::string> &, char);
@@ -184,32 +181,47 @@ void conf::init()
 	colordefs[Color::MenuTitle] 		= "WhiteSmoke";
 	colordefs[Color::MenuTitleBackground] 	= "SkyBlue4";
 
-	const char *wm_socket = std::getenv("WM_SERVER_SOCKET");
-	if (wm_socket) {
-		serversocket = wm_socket;
-	}
-	const char *statusbar_socket = std::getenv("WM_CLIENT_SOCKET");
-	if (statusbar_socket) {
-		clientsocket = statusbar_socket;
-	}
-
 	if (!std::getenv("HOME")) {
 		std::cerr << "HOME is not defined in the environment!\n";
 		return;
 	}
 
-	if (!cfilename.size()) {
-		for (auto filename : cfilenames) {
-			std::string file = std::getenv("HOME") + filename;
-			std::filesystem::path f(file);
-			if (std::filesystem::exists(f)) {
-				cfilename = file;
-				break;
-			}
-		}
+	// Define and create path to command socket
+	std::string socket_path;
+	if (std::getenv("XDG_CACHE_HOME")) {
+		socket_path = std::getenv("XDG_CACHE_HOME");
+	} else {
+		socket_path = std::getenv("HOME") + std::string("/.cache");
 	}
-	if (!cfilename.size()) return;
+	socket_path = socket_path + "/" + APP_NAME;
+	std::filesystem::path sockdir(socket_path);
+	if (!std::filesystem::exists(sockdir)) {
+		create_directory(sockdir);
+	}
+	command_socket = socket_path + "/socket";
 
+	if (cfilename.empty()) {
+		// Define and create path to config file
+		std::string config_path;
+		if (std::getenv("XDG_CONFIG_HOME")) {
+			config_path = std::getenv("XDG_CONFIG_HOME");
+		} else {
+			config_path = std::getenv("HOME") + std::string("/.config");
+		}
+		config_path = config_path + "/" + APP_NAME;
+		std::filesystem::path confdir(config_path);
+		if (!std::filesystem::exists(confdir)) {
+			create_directory(confdir);
+		}
+		cfilename = config_path + "/config";
+	}
+
+	read_configfile();
+	return;
+}
+
+void conf::read_configfile()
+{
 	std::ifstream configfile(cfilename);
 	if (!configfile.is_open()) {
         	std::cerr << "Could not open [" << cfilename << "] for reading.\n";
@@ -243,12 +255,8 @@ void conf::init()
 			add_desktop_modes(modes);
 			continue;
 		}
-		if (!tokens[0].compare("server-socket")) {
-			serversocket = tokens[1];
-			continue;
-		}
-		if (!tokens[0].compare("client-socket")) {
-			clientsocket = tokens[1];
+		if (message_socket.empty() && !tokens[0].compare("message-socket")) {
+			message_socket = tokens[1];
 			continue;
 		}
 		if (!tokens[0].compare("startup-script")) {
@@ -388,9 +396,7 @@ void conf::init()
 			add_window_states(rname, rclass, states);
 			continue;
 		}
-	} // end-while
-
-	return;		
+	}
 }
 
 bool conf::get_line(std::ifstream &configfile, std::string &line)

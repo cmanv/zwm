@@ -8,7 +8,7 @@
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 //
@@ -58,8 +58,8 @@ struct Position {
 	int	 y;
 	Position() { x = 0; y = 0; }
 	Position(int px, int py): x(px), y(py) {}
-	bool 	operator==(Position p) { return ((x == p.x) && (y == p.y)); } 
-	bool 	operator!=(Position p) { return ((x != p.x) || (y != p.y)); } 
+	bool 	operator==(Position p) { return ((x == p.x) && (y == p.y)); }
+	bool 	operator!=(Position p) { return ((x != p.x) || (y != p.y)); }
 	void 	move_inside(Geometry &);
 	void 	move(long);
 };
@@ -82,8 +82,8 @@ struct Geometry {
 	Geometry() { x=0; y=0; w=0; h=0; }
 	Geometry(int px, int py, int pw, int ph):
 		x(px), y(py), w(pw), h(ph) {}
-	Position	get_center(Coordinates); 
-	bool	 	contains(Position, Coordinates); 
+	Position	get_center(Coordinates);
+	bool	 	contains(Position, Coordinates);
 	bool	 	intersects(Geometry &, int);
 	void 	 	set_pos(int, int);
 	void 	 	set_pos(Position);
@@ -151,7 +151,7 @@ struct DesktopMode {
 	long		index;
 	std::string	name;
 	std::string	letter;
-	DesktopMode(long i, std::string n, std::string l) 
+	DesktopMode(long i, std::string n, std::string l)
 		:index(i), name(n), letter(l) {}
 };
 

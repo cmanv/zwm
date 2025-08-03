@@ -8,7 +8,7 @@
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 //
@@ -154,10 +154,10 @@ void XClient::reparent_window()
 	wattr.event_mask = SubstructureRedirectMask | SubstructureNotifyMask
 		| ButtonPressMask | EnterWindowMask;
 
-	m_parent = XCreateWindow(wm::display, m_rootwin, m_geom.x, m_geom.y, 
-			m_geom.w, m_geom.h, m_border_w, 
-			DefaultDepth(wm::display, m_screen->get_screenid()), 
-			CopyFromParent, 
+	m_parent = XCreateWindow(wm::display, m_rootwin, m_geom.x, m_geom.y,
+			m_geom.w, m_geom.h, m_border_w,
+			DefaultDepth(wm::display, m_screen->get_screenid()),
+			CopyFromParent,
 			DefaultVisual(wm::display, m_screen->get_screenid()),
 			CWOverrideRedirect|CWBorderPixel|CWEventMask, &wattr);
 
@@ -168,7 +168,7 @@ void XClient::reparent_window()
 	for (Binding& mb : conf::mousebindings) {
 		if (mb.context != Context::Window) continue;
 		for (auto mod : wm::ignore_mods)
-			XGrabButton(wm::display, mb.button, (mb.modmask | mod), 
+			XGrabButton(wm::display, mb.button, (mb.modmask | mod),
 					m_parent, False, ButtonPressMask,
 					GrabModeAsync, GrabModeAsync, None, None);
 	}
@@ -224,7 +224,7 @@ void XClient::update_net_wm_name()
 
 void XClient::update_statusbar_title()
 {
-	if (!conf::clientsocket.length())
+	if (conf::message_socket.empty())
 		return;
 	std::string message = "window_active=" + m_name;
 	util::send_message(message);
@@ -291,7 +291,7 @@ void XClient::get_wm_hints()
 		if ((wmh->flags & InputHint) && (wmh->input))
 			set_states(State::Input);
 		if ((wmh->flags & XUrgencyHint))
-			set_states(State::Urgent);	
+			set_states(State::Urgent);
 		if ((wmh->flags & StateHint))
 			m_initial_state = wmh->initial_state;
 		XFree(wmh);
@@ -400,7 +400,7 @@ long XClient::get_configured_desktop()
 		bool match = true;
 		if (!defdesk.resclass.empty() && defdesk.resclass.compare(m_res_class))
 				match = false;
-		
+
 		if (!defdesk.resname.empty() && defdesk.resname.compare(m_res_name))
 				match = false;
 
@@ -450,7 +450,7 @@ void XClient::set_window_active()
 
 	if (has_state(State::Input) || !has_state(State::WMTakeFocus))
 		XSetInputFocus(wm::display, m_window, RevertToPointerRoot, CurrentTime);
-	
+
 	if (has_state(State::WMTakeFocus))
 		wm::send_client_message(m_window, wm::hints[WM_TAKE_FOCUS],
 						wm::last_event_time);
@@ -494,7 +494,7 @@ void XClient::hide_window()
 void XClient::close_window()
 {
 	if (has_state(State::WMDeleteWindow))
-		wm::send_client_message(m_window, wm::hints[WM_DELETE_WINDOW], 
+		wm::send_client_message(m_window, wm::hints[WM_DELETE_WINDOW],
 					CurrentTime);
 	else
 		XKillClient(wm::display, m_window);
@@ -635,28 +635,28 @@ void XClient::resize_window_with_pointer()
 	} else if ((m_ptr.x <= limitleft) && (m_ptr.y > limitbottom)) {
 		direction = SouthWest;
 		cursor = wm::cursors[Pointer::ShapeSW];
-	} else if ((m_ptr.x <= limitleft) && (m_ptr.y <= limittop)) { 
+	} else if ((m_ptr.x <= limitleft) && (m_ptr.y <= limittop)) {
 		direction = NorthWest;
 		cursor = wm::cursors[Pointer::ShapeNW];
-	} else if ((m_ptr.x > limitleft) && (m_ptr.x < limitright) 
+	} else if ((m_ptr.x > limitleft) && (m_ptr.x < limitright)
 		&& (m_ptr.y < limittop)) {
 		direction = North;
 		cursor = wm::cursors[Pointer::ShapeNorth];
-	} else if ((m_ptr.x > limitleft) && (m_ptr.x < limitright) 
+	} else if ((m_ptr.x > limitleft) && (m_ptr.x < limitright)
 		&& (m_ptr.y > limitbottom)) {
 		direction = South;
 		cursor = wm::cursors[Pointer::ShapeSouth];
-	} else if ((m_ptr.y > limittop) && (m_ptr.y < limitbottom) 
+	} else if ((m_ptr.y > limittop) && (m_ptr.y < limitbottom)
 		&& (m_ptr.x < limitleft)) {
 		direction = West;
 		cursor = wm::cursors[Pointer::ShapeWest];
-	} else if ((m_ptr.y > limittop) && (m_ptr.y < limitbottom) 
+	} else if ((m_ptr.y > limittop) && (m_ptr.y < limitbottom)
 		&& (m_ptr.x > limitright)) {
 		direction = East;
 		cursor = wm::cursors[Pointer::ShapeEast];
 	}
 
-	if (XGrabPointer(wm::display, m_parent, False, MouseMask, GrabModeAsync, 
+	if (XGrabPointer(wm::display, m_parent, False, MouseMask, GrabModeAsync,
 		GrabModeAsync, None, cursor, CurrentTime) != GrabSuccess) return;
 
 	PropWindow propwin(m_screen, m_parent);
@@ -784,7 +784,7 @@ void XClient::save_pointer()
 void XClient::set_stacked_geom()
 {
 	m_geom = m_geom_stack;
-	if (has_state(State::NoBorder)) 
+	if (has_state(State::NoBorder))
 		m_border_w = 0;
 	else
 		m_border_w = conf::stacked_border;
@@ -809,9 +809,9 @@ void XClient::set_notile()
 	m_geom = m_geom_stack;
 	if (has_state(State::NoBorder))
 		m_border_w = 0;
-	else 
+	else
 		m_border_w = conf::stacked_border;
-	
+
 	resize_window();
 }
 
@@ -852,7 +852,7 @@ void XClient::toggle_state(long flags)
 		break;
 	case State::Sticky:
 		if (has_state(State::Sticky))
-			m_screen->assign_client_to_desktop(this, 
+			m_screen->assign_client_to_desktop(this,
 				 m_screen->get_active_desktop(), true);
 		else
 			m_screen->assign_client_to_desktop(this, -1, true);
@@ -865,7 +865,7 @@ void XClient::toggle_state(long flags)
 		} else {
 			m_screen->remove_window_tile_from_desktop(this);
 			set_notile();
-		}	
+		}
 		break;
 	case State::FullScreen:
 		toggle_fullscreen();
@@ -900,7 +900,7 @@ void XClient::remove_fullscreen()
 {
 	m_border_w = conf::stacked_border;
 	if (has_state(State::NoBorder))
-		m_border_w = 0; 
+		m_border_w = 0;
 	m_geom = m_geom_save;
 	if (has_state(State::Tiled)) {
 		m_border_w = conf::tiled_border;

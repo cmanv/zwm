@@ -8,7 +8,7 @@
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 //
@@ -34,10 +34,10 @@ namespace util {
 	std::string gettime();
 	void spawn_process(std::string &);
 	void exec_child(std::string &);
-	int init_server_socket(std::string &);
+	int init_command_socket(std::string &);
 	void get_message(int, std::string &);
-	void init_client_socket(std::string&);
-	void free_client_socket();
+	void init_message_socket(std::string&);
+	void free_message_socket();
 	int send_message(std::string&);
 }
 #endif // _UTIL_H_

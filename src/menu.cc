@@ -8,7 +8,7 @@
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 //
@@ -67,10 +67,10 @@ Menu::Menu(XScreen *s, MenuDef &md, Menu *p): m_data(md)
 		m_geom.set_menu_placement(pos, area, m_border);
 	}
 
-	m_window =  XCreateSimpleWindow(wm::display, m_rootwin, m_geom.x, m_geom.y, m_geom.w, 
+	m_window =  XCreateSimpleWindow(wm::display, m_rootwin, m_geom.x, m_geom.y, m_geom.w,
 			m_geom.h, m_border, m_bordercolor->pixel, m_bgcolor->pixel);
 
-	m_xftdraw = XftDrawCreate(wm::display, m_window, m_screen->get_visual(), 
+	m_xftdraw = XftDrawCreate(wm::display, m_window, m_screen->get_visual(),
 				m_screen->get_colormap());
 
 	XSelectInput(wm::display, m_window, MenuMask);
@@ -99,7 +99,7 @@ int Menu::get_menu_width()
 	}
 
 	XftTextExtentsUtf8(wm::display, m_font, (XftChar8 *)">", 1, &extents);
-	m_submenu_char_width = extents.width;	
+	m_submenu_char_width = extents.width;
 	width += m_submenu_char_width + 10; // add some spacing to the right
 	return width;
 }
@@ -160,12 +160,12 @@ bool Menu::run()
 	if ((!is_done) && (m_active != -1)) {
 		switch(m_data.type) {
 		case MenuType::Launcher:
-			run_launcher(); 
+			run_launcher();
 			break;
-		case MenuType::Desktop: 
+		case MenuType::Desktop:
 			switch_to_desktop();
 			break;
-		case MenuType::Client: 
+		case MenuType::Client:
 			activate_client();
 			break;
 		}
@@ -189,7 +189,7 @@ void Menu::draw()
 	    		(const FcChar8*)m_data.label.c_str(), m_data.label.size());
 
 	Position pos = xutil::get_pointer_pos(m_window);
-	m_active = get_active_entry(pos);	
+	m_active = get_active_entry(pos);
 	for (int i = 0; i< m_nitems; i++)
 		draw_entry(i);
 
@@ -207,11 +207,11 @@ void Menu::draw_entry(int n)
 	    (const FcChar8*)m_data.items[n].label.c_str(), m_data.items[n].label.size());
 
 	if (!m_data.items[n].function.compare("menu")) {
-		XftDrawStringUtf8(m_xftdraw, color, m_font, m_geom.w - m_submenu_char_width - 5, 
+		XftDrawStringUtf8(m_xftdraw, color, m_font, m_geom.w - m_submenu_char_width - 5,
 				y + m_font->ascent,
 	    			(const FcChar8*)">", 1);
 		if (n == m_active) open_submenu();
-	} 
+	}
 
 }
 
@@ -226,13 +226,13 @@ void Menu::move_pointer(Position p)
 	if (last_active != -1) {
 		draw_entry(last_active);
 		if (!m_data.items[last_active].function.compare("menu")) {
-			close_submenu();	
+			close_submenu();
 		}
 	}
 	if (m_active != -1) {
 		draw_entry(m_active);
 		if (!m_data.items[m_active].function.compare("menu")) {
-			open_submenu();	
+			open_submenu();
 		}
 	}
 }
@@ -251,8 +251,8 @@ int Menu::get_active_entry(Position p)
 
 int Menu::grab_pointer()
 {
-	if (XGrabPointer(wm::display, m_window, False, MenuGrabMask, GrabModeAsync, 
-		GrabModeAsync, None, wm::cursors[Pointer::ShapeNormal], CurrentTime) 
+	if (XGrabPointer(wm::display, m_window, False, MenuGrabMask, GrabModeAsync,
+		GrabModeAsync, None, wm::cursors[Pointer::ShapeNormal], CurrentTime)
 		!= GrabSuccess) {
 		return 0;
 	}
@@ -263,7 +263,7 @@ void Menu::open_submenu()
 {
 	if (m_child) return;
 	std::string menupath = m_data.items[m_active].path;
-	auto isSubMenu = [menupath] (MenuDef mdef) 
+	auto isSubMenu = [menupath] (MenuDef mdef)
 			{ return (!mdef.label.compare(menupath)); };
 	auto it = std::find_if(conf::menulist.begin(),conf::menulist.end(), isSubMenu);
 	if (it == conf::menulist.end()) return;
@@ -297,9 +297,9 @@ void Menu::activate_client()
 	XClient *client = m_data.items[m_active].client;
 	int index = client->get_desktop_index();
 	int active_desktop = m_screen->get_active_desktop();
-	if ((index != -1) && (index != active_desktop)) 
+	if ((index != -1) && (index != active_desktop))
 		m_screen->switch_to_desktop(index);
- 	if (client->has_state(State::Hidden)) 
+ 	if (client->has_state(State::Hidden))
 		client->show_window();
  	if (!(client->has_states(State::Ignored))) {
 		client->raise_window();
@@ -312,5 +312,5 @@ void Menu::switch_to_desktop()
 	int index = m_data.items[m_active].index;
 	int active_desktop = m_screen->get_active_desktop();
 	if (index != active_desktop)
-		m_screen->switch_to_desktop(index); 	
+		m_screen->switch_to_desktop(index);
 }

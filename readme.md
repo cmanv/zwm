@@ -1,4 +1,4 @@
-% ZWM(1) zwm version alpha12 | zwm user's manual
+% ZWM(1) zwm version alpha13 | zwm user's manual
 % cmanv
 % August 2025
 
@@ -13,13 +13,12 @@ zwm — dynamic tiling window manager for X11
 # DESCRIPTION
 
 **zwm** is a dynamic tiling window manager for X11. It features a number
-of configurable keyboards control functions, workspaces and a configurable menu. 
-It is able to send and receive messages from a complemantary program such as
-a statusbar.
+of configurable keyboards control functions, workspaces and a configurable menu.
+It is also able to send and receive messages through sockets.
 
 # COMMAND LINE OPTIONS
 
-**-c** _filename_  
+**-c** _filename_
 
 > Use _filename_ as configuration file.
 
@@ -31,6 +30,16 @@ a statusbar.
 **-D** _display_
 
 > Use _display_ as default X display.
+
+**-s** _command_socket_
+
+> Soecify a socket for sending commands to the window manager. This overrides any value
+defined in the configuration file.
+
+**-m** _message_socket_
+
+> Soecify a socket on which the window manager will send some status messages. This
+overrides any value defined in the configuration file.
 
 **-h**
 
@@ -52,7 +61,7 @@ This section describe all options that can be set in the configuration files.
 * **screen-border-gap** _top bottom left right_
 
 > Sets reserved spaces at the edges of the screen. This space will not
-> be used for tiling windows by the window manager. (default: 1 1 1 1) 
+> be used for tiling windows by the window manager. (default: 1 1 1 1)
 
 * **client-socket** _[hoat:port|path]_
 
@@ -60,12 +69,12 @@ This section describe all options that can be set in the configuration files.
 > connect to send IPC messages. It overrides the value of WM\_CLIENT\_SOCKET if
 > it has been set in the environment. (default: unset)
 
-* **debug-level** _level_  
+* **debug-level** _level_
 
 > A non zero value causes the window manager to print debug information
 > on the standard output. Increasing its value increases verbosity. (default: 0)
 
-* **desktop** _num name mode_  
+* **desktop** _num name mode_
 
 > Sets the default name and tiling mode of the desktop_.
 > _num_ goes from 1 to 10
@@ -74,13 +83,13 @@ This section describe all options that can be set in the configuration files.
 
 * **desktop-modes** _mode1_,_mode2,..
 
-> Sets a comma separated list of active desktop modes. The order is used 
+> Sets a comma separated list of active desktop modes. The order is used
 > to rotate mode with the functions _desktop_mode_next_ and _desktop_mode_prev_
 > The list of currently valid modes is:
 > > _Stacked_ : Windows are stacked and can be moved/resized by the user.
 > > _Monocle_ : Only one window (maximized) is visible at a time.
-> > _Vtile_ : Master / slaves with the slaves tiled vertically on the right. 
-> > _Htile_ : Master / slaves with the slaves tiled horizontally on the bottom. 
+> > _Vtile_ : Master / slaves with the slaves tiled vertically on the right.
+> > _Htile_ : Master / slaves with the slaves tiled horizontally on the bottom.
 
 * **server-socket** _[host:port|path]_
 
@@ -91,12 +100,12 @@ This section describe all options that can be set in the configuration files.
 * **shutdown-script** _path_
 
 > Defines a script that is to be run when the window manager terminates.
-> (default is unset) 
+> (default is unset)
 
 * **startup-script** _path_
 
 > Defines a script that is to be run when the window manager starts.
-> (default is unset) 
+> (default is unset)
 
 * **terminal** _path_
 
@@ -114,26 +123,26 @@ This section describe all options that can be set in the configuration files.
 
 * **color** _element color_
 
-> Sets the color of the windows border.  
+> Sets the color of the windows border.
 
-> > _window-border-active_  
-> > _window-border-inactive_  
-> > _window-border-urgent_  
+> > _window-border-active_
+> > _window-border-inactive_
+> > _window-border-urgent_
 
 ## MENU OPTIONS
 
 * **color** _element color_
 
-> Sets the color of various UI elements.  
+> Sets the color of various UI elements.
 
-> > _menu-background_  
-> > _menu-border_  
-> > _menu-text_  
-> > _menu-text-selected_  
-> > _menu-text-highlight_  
-> > _menu-highlight_  
-> > _menu-title_  
-> > _menu-title-background_  
+> > _menu-background_
+> > _menu-border_
+> > _menu-text_
+> > _menu-text-selected_
+> > _menu-text-highlight_
+> > _menu-highlight_
+> > _menu-title_
+> > _menu-title-background_
 
 * **menu-font** _font_
 
@@ -141,27 +150,27 @@ This section describe all options that can be set in the configuration files.
 
 * **menu-start** _text_
 
-> Starts the definition of a menu with title _text_. This must be followed by a 
+> Starts the definition of a menu with title _text_. This must be followed by a
 series of _menu-item_ lines and end with a _menu-end_ line.
 
 * **menu-item**  _text \[function \[arg\]\]_
 
 > Define an item in a menu. The _text_ is what appears in the menu. The _function_
-> and _arg_ can be any window manager function, but usually one of these:  
+> and _arg_ can be any window manager function, but usually one of these:
 
-> > _exec_ _path_  
+> > _exec_ _path_
 
 > > > Execute the program at the specified _path_.
 
-> > _menu_  _text_  
+> > _menu_  _text_
 
 > > > Open a menu as a submenu. The _text_ is the title of a defined menu.
 
-> > _quit_  
+> > _quit_
 
 > > > Terminates the window manager application.
 
-> > _restart_  
+> > _restart_
 
 > > > Restarts the window manager application. Any changes in the configuration
 > > > file will be applied.
@@ -187,7 +196,7 @@ series of _menu-item_ lines and end with a _menu-end_ line.
 * **default-desktop** _appclass num_
 
 > Use this configuration option to specify that an application with class _appclass_
-> is to open on desktop _num_ (1-10). 
+> is to open on desktop _num_ (1-10).
 
 
 * **window-state** _appclass_ _state1_ [,_state2_ ..,_stateN_]
@@ -195,11 +204,11 @@ series of _menu-item_ lines and end with a _menu-end_ line.
 > Set the default state of an application with class _appclaas_.
 > The applicable states are:
 
-> > _docked_ 
+> > _docked_
 
 > > > Equivalent to _frozen_,_sticky_,_ignore_,_noborder_. Any client with the property _\_NET\_WM\_WINDOW\_TYPE\_DOCK_ will have this state set.
 
-> > _frozen_ 
+> > _frozen_
 
 > > > The window is locked at its current position.
 
@@ -207,19 +216,19 @@ series of _menu-item_ lines and end with a _menu-end_ line.
 
 > > > Do not add the window to the task list or the window list.
 
-> > _noborder_ 
+> > _noborder_
 
 > > > The window has no border (_stacked_ windows only).
 
-> > _noresize_ 
+> > _noresize_
 
 > > > The window cannot be resized (applicable to _stacked_ windows only).
 
-> > _notile_ 
+> > _notile_
 
 > > > The window is never tiled.
 
-> > _sticky_ 
+> > _sticky_
 
 > > > The window appears on all desktops.
 
@@ -230,9 +239,9 @@ series of _menu-item_ lines and end with a _menu-end_ line.
 > Bind a key pressed with modifiers to a window manager function.
 Modifiers include:
 
-> > _C_ for the Control key  
-> > _M_ for the Alt key  
-> > _4_ for the Super (Windows) key  
+> > _C_ for the Control key
+> > _M_ for the Alt key
+> > _4_ for the Super (Windows) key
 > > _S_ for the Shift key
 
 * **bind-mouse** _modifiers-button function_
@@ -246,10 +255,10 @@ Modifiers include:
 
 * **unbind-mouse** _modifiers-button_
 
-> Unassigns a particular modifiers/button combination. 
+> Unassigns a particular modifiers/button combination.
 
 # WINDOW MANAGER FUNCTIONS
-This sections list all window manager functions that can be accessed through a key 
+This sections list all window manager functions that can be accessed through a key
 or mouse binding.
 
 * **terminal**
@@ -374,12 +383,12 @@ or mouse binding.
 
 * **window-move-down-left**
 
-> Move the current window toward to the bottom-left corner of the screen. 
+> Move the current window toward to the bottom-left corner of the screen.
 > (_stacked_ windows only)
 
 * **window-move-down-right**
 
-> Move the current window toward to the bottom-right corner of the screen. 
+> Move the current window toward to the bottom-right corner of the screen.
 > (_stacked_ windows only)
 
 * **window-move-left**
@@ -396,12 +405,12 @@ or mouse binding.
 
 * **window-move-up-left**
 
-> Move the current window toward to the top-left corner of the screen. 
+> Move the current window toward to the top-left corner of the screen.
 > (_stacked_ windows only)
 
 * **window-move-up-right**
 
-> Move the current window toward to the bottom-left corner of the screen. 
+> Move the current window toward to the bottom-left corner of the screen.
 > (_stacked_ windows only)
 
 * **window-move-to-desktop-_num_**
@@ -477,82 +486,98 @@ or mouse binding.
 > Toggle the _tiled_/_stacked_ state of the current window.
 
 # DEFAULT BINDINGS
-  
+
 ## Key bindings
-  
-  * **CM-Return**	->	_terminal_  
-  * **CM-r**	->	_restart_  
-  * **CM-q**	->	_quit_  
-  * **M-1**	->	_desktop-select-1_  
-  * **M-2**	->	_desktop-select-2_  
-  * **M-3**	->	_desktop-select-3_  
-  * **M-4**	->	_desktop-select-4_  
-  * **M-5**	->	_desktop-select-5_  
-  * **M-6**	->	_desktop-select-6_  
-  * **M-7**	->	_desktop-select-7_  
-  * **M-8**	->	_desktop-select-8_  
-  * **M-9**	->	_desktop-select-9_  
-  * **M-0**	->	_desktop-select-10_  
-  * **CM-Right**	->	_desktop-next_  
-  * **CM-Left**	->	_desktop-prev_  
-  * **SM-Right**	->	_desktop-mode-next_  
-  * **SM-Left**	->	_desktop-mode-prev_  
-  * **M-Tab**	->	_desktop-window-next_  
-  * **SM-Tab**	->	_desktop-window-prec_  
-  * **SM-1**	->	_window-move-to-desktop-1_  
-  * **SM-2**	->	_window-move-to-desktop-2_  
-  * **SM-3**	->	_window-move-to-desktop-3_  
-  * **SM-4**	->	_window-move-to-desktop-4_  
-  * **SM-5**	->	_window-move-to-desktop-5_  
-  * **SM-6**	->	_window-move-to-desktop-6_  
-  * **SM-7**	->	_window-move-to-desktop-7_  
-  * **SM-8**	->	_window-move-to-desktop-8_  
-  * **SM-9**	->	_window-move-to-desktop-9_  
-  * **SM-0**	->	_window-move-to-desktop-10_  
-  * **SM-f**	->	_window-toggle-fullscreen_  
-  * **SM-s**	->	_window-toggle-sticky_  
-  * **SM-t**	->	_window-toggle-tiled_  
-  * **SM-i**	->	_window-hide_  
-  * **SM-x**	->	_window-close_  
-  * **M-Down**	->	_window-lower_  
-  * **M-Up**	->	_window-raise_  
-  * **M-h**	->	_window-move-left_  
-  * **M-l**	->	_window-move-right_  
-  * **M-j**	->	_window-move-down_  
-  * **M-k**	->	_window-move-up_  
-  * **CM-h**	->	_window-snap-left_  
-  * **CM-l**	->	_window-snap-right_  
-  * **CM-j**	->	_window-snap-down_  
-  * **CM-k**	->	_window-snap-up_  
+
+  * **CM-Return**	->	_terminal_
+  * **CM-r**	->	_restart_
+  * **CM-q**	->	_quit_
+  * **M-1**	->	_desktop-select-1_
+  * **M-2**	->	_desktop-select-2_
+  * **M-3**	->	_desktop-select-3_
+  * **M-4**	->	_desktop-select-4_
+  * **M-5**	->	_desktop-select-5_
+  * **M-6**	->	_desktop-select-6_
+  * **M-7**	->	_desktop-select-7_
+  * **M-8**	->	_desktop-select-8_
+  * **M-9**	->	_desktop-select-9_
+  * **M-0**	->	_desktop-select-10_
+  * **CM-Right**	->	_desktop-next_
+  * **CM-Left**	->	_desktop-prev_
+  * **SM-Right**	->	_desktop-mode-next_
+  * **SM-Left**	->	_desktop-mode-prev_
+  * **M-Tab**	->	_desktop-window-next_
+  * **SM-Tab**	->	_desktop-window-prec_
+  * **SM-1**	->	_window-move-to-desktop-1_
+  * **SM-2**	->	_window-move-to-desktop-2_
+  * **SM-3**	->	_window-move-to-desktop-3_
+  * **SM-4**	->	_window-move-to-desktop-4_
+  * **SM-5**	->	_window-move-to-desktop-5_
+  * **SM-6**	->	_window-move-to-desktop-6_
+  * **SM-7**	->	_window-move-to-desktop-7_
+  * **SM-8**	->	_window-move-to-desktop-8_
+  * **SM-9**	->	_window-move-to-desktop-9_
+  * **SM-0**	->	_window-move-to-desktop-10_
+  * **SM-f**	->	_window-toggle-fullscreen_
+  * **SM-s**	->	_window-toggle-sticky_
+  * **SM-t**	->	_window-toggle-tiled_
+  * **SM-i**	->	_window-hide_
+  * **SM-x**	->	_window-close_
+  * **M-Down**	->	_window-lower_
+  * **M-Up**	->	_window-raise_
+  * **M-h**	->	_window-move-left_
+  * **M-l**	->	_window-move-right_
+  * **M-j**	->	_window-move-down_
+  * **M-k**	->	_window-move-up_
+  * **CM-h**	->	_window-snap-left_
+  * **CM-l**	->	_window-snap-right_
+  * **CM-j**	->	_window-snap-down_
+  * **CM-k**	->	_window-snap-up_
 
 ## Mouse buttons bindings
 
-  * **1**	->	_menu-client_  
-  * **2**	->	_menu-desktop_  
-  * **3**	->	_menu-launcher_  
-  * **M+1**	->	_window_move_  
-  * **M+3**	->	_window_resize_  
-  * **M+4**	->	_window_lower_  
-  * **M+5**	->	_window_raise_  
+  * **1**	->	_menu-client_
+  * **2**	->	_menu-desktop_
+  * **3**	->	_menu-launcher_
+  * **M+1**	->	_window_move_
+  * **M+3**	->	_window_resize_
+  * **M+4**	->	_window_lower_
+  * **M+5**	->	_window_raise_
+
+# SOCKETS
+
+Command socket:
+
+> Commands can be sent programmatically to the window manager through a UNIX socket.
+> The command socket is located at \${XDG\_CACHE\_HOME}/zwm/socket
+> All window manager desktop functions are accepted. These are the functions starting with "desktop-".
+> The accepted format of the command is: "_screen_:_function_", where:
+> >  _screen_ is the applicable X screen number
+> >  _function_ the name of the window manager function.
+> Any message not complying with the format will be ignored.
+
+Message socket:
+
+> The window manager can send status messages to a UNIX socket. This can be useful for some programs such as status bars.
+> This is the list of message that can be sent by the window manager:
+> > - Change of active window title.
+> > > Format:
+> > > "window\_active=_current title of active window_"
+> > - Absence of active window.
+> > > Format:
+> > > "no\_window\_active="
+> > - Change of desktop mode.
+> > > Format:
+> > > "desktop\_mode=_desktop mode letter_"
+> > - Change of active desktop list.
+> > > Format:
+> > > "desktop\_list=_space separated list of desktops numbers_"
+> > > The active desktop number is prepended by '*'.
+> To activate this feature, set _message-socket_ to the path of the destination socket in the configuration file. Alternatively, use the _-m_ command line option to specify its value. If used, the command line option overrides the value defined in the configuration file.
 
 # FILES
 
-**zwm** uses the first configuration file it finds in that list:
-
-1. _~/.config/zwm/config_
-2. _~/.zwmrc_
-
-# ENVIRONMENT
-
-WM\_SERVER\_SOCKET
-
-> TCP socket or UNIX Domain socket on which the window manager is listening for messages. 
-> If defined, the configuration option _server-socket_ overrides this value.
-
-WM\_CLIENT\_SOCKET
-
-> TCP socket or UNIX Domain socket on which the window manager can send messages.
-> If defined, the configuration option _client-socket_ overrides this value. 
+If not specified at the command line, **zwm** read the configuration file _~/.config/zwm/config_
 
 # BUGS
 

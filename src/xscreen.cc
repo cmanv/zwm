@@ -8,7 +8,7 @@
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 //
@@ -42,7 +42,7 @@
 XScreen::XScreen(int id): m_screenid(id)
 {
 	if (conf::debug) {
-		std::cout << util::gettime() << " [XScreen:" << __func__ 
+		std::cout << util::gettime() << " [XScreen:" << __func__
 			<< "] Add screen " << m_screenid << std::endl;
 	}
 
@@ -73,13 +73,13 @@ XScreen::XScreen(int id): m_screenid(id)
 	long net_current_desktop;
 	if (wm::get_net_current_desktop(m_rootwin, &net_current_desktop))
 		m_desktop_active = net_current_desktop;
-	else 
+	else
 		wm::set_net_current_desktop(m_rootwin, m_desktop_active);
 
 	// fonts
 	m_menufont = XftFontOpenName(wm::display, m_screenid, conf::menufont.c_str());
 	if (!m_menufont) {
-		std::cerr << util::gettime() << " [XScreen::" << __func__ 
+		std::cerr << util::gettime() << " [XScreen::" << __func__
 				<< "] Cant open font name '" << conf::menufont << "'\n";
 		m_menufont = XftFontOpenName(wm::display, m_screenid, "Mono:size=10");
 	}
@@ -88,7 +88,7 @@ XScreen::XScreen(int id): m_screenid(id)
 	for (std::string& def : conf::colordefs) {
 		XftColor xc;
 		if (!XftColorAllocName(wm::display, m_visual, m_colormap, def.c_str(), &xc)) {
-			std::cerr << util::gettime() << " [XScreen::" << __func__ 
+			std::cerr << util::gettime() << " [XScreen::" << __func__
 					<< "] Cant allocate color for name '" << def << "'\n";
 			XftColorAllocName(wm::display, m_visual, m_colormap, "gray50", &xc);
 		}
@@ -111,7 +111,7 @@ XScreen::XScreen(int id): m_screenid(id)
 XScreen::~XScreen()
 {
 	if (conf::debug) {
-		std::cout << util::gettime() << " [XScreen:" << __func__ 
+		std::cout << util::gettime() << " [XScreen:" << __func__
 			<< "] REMOVE screen " << m_screenid << std::endl;
 	}
 
@@ -134,9 +134,9 @@ void XScreen::grab_keybindings()
 	for (Binding& kb : conf::keybindings) {
 		KeyCode kc = XKeysymToKeycode(wm::display, kb.keysym);
 		if (!kc) {
-			std::cerr << util::gettime() << " XScreen::" << __func__ 
-				<< "] Failed converting '" << XKeysymToString(kb.keysym) 
-				<< "' keysym to keycode" << std::endl; 
+			std::cerr << util::gettime() << " XScreen::" << __func__
+				<< "] Failed converting '" << XKeysymToString(kb.keysym)
+				<< "' keysym to keycode" << std::endl;
 			continue;
 		}
 		if ((XkbKeycodeToKeysym(wm::display, kc, 0, 0) != kb.keysym) &&
@@ -175,7 +175,7 @@ void XScreen::query_clients()
 	update_net_client_lists();
 
 	for (int i = 0; i < m_ndesktops; i++) {
-		if (i == m_desktop_active) 
+		if (i == m_desktop_active)
 			m_desktoplist[i].show();
 		else
 			m_desktoplist[i].hide();
@@ -191,7 +191,7 @@ void XScreen::query_clients()
 	    		&rx, &ry, &wx, &wy, &mask);
 	if (cwin == None) return;
 
-	// Set pointed window as active 
+	// Set pointed window as active
 	for (XClient *client : m_clientlist) {
 		if (cwin == client->get_window()) {
 			if (!(client->has_states(State::Ignored)))
@@ -246,7 +246,7 @@ bool XScreen::can_manage(Window w, bool query)
 void XScreen::remove_client(XClient *client)
 {
 	if (conf::debug) {
-		std::cout << util::gettime() << " [XScreen:" << __func__ << "] REMOVE Client " 
+		std::cout << util::gettime() << " [XScreen:" << __func__ << "] REMOVE Client "
 			<< std::hex << client->get_window() << std::endl;
 	}
 
@@ -360,7 +360,7 @@ void XScreen::rotate_desktop_mode(long direction)
 	m_desktoplist[m_desktop_active].rotate_mode(direction);
 }
 
-void XScreen::update_net_client_lists() 
+void XScreen::update_net_client_lists()
 {
 	std::vector<Window> netclientlist;
 
@@ -391,7 +391,7 @@ void XScreen::set_net_desktop_names()
 
 void XScreen::clear_statusbar_title()
 {
-	if (!conf::clientsocket.length())
+	if (conf::message_socket.empty())
 		return;
 	std::string message = "no_window_active";
 	util::send_message(message);
@@ -399,17 +399,17 @@ void XScreen::clear_statusbar_title()
 
 void XScreen::update_statusbar_desktops()
 {
-	if (!conf::clientsocket.length())
+	if (conf::message_socket.empty())
 		return;
 
 	std::stringstream ss;
 	for (int i = 0; i < m_ndesktops; i++) {
 		if (i == m_desktop_active) {
 			ss << '+' << i+1 << ' ';
-			continue;	
+			continue;
 		}
-		if (m_desktoplist[i].is_empty()) 
-			continue;			
+		if (m_desktoplist[i].is_empty())
+			continue;
 		ss << ' ' << i+1 << ' ';
 	}
 	std::string s(ss.str());
@@ -455,7 +455,7 @@ void XScreen::update_geometry()
 	wm::set_net_workarea(m_rootwin, m_ndesktops, m_work);
 }
 
-Geometry XScreen::get_area(Position &p, bool gap) 
+Geometry XScreen::get_area(Position &p, bool gap)
 {
 	Geometry area = m_view;
 
@@ -557,7 +557,7 @@ void XScreen::switch_to_desktop(int index)
 void XScreen::run_menu_launcher()
 {
 	std::string menu = conf::menu_launcher;
-	auto isLauncherMenu = [menu] (MenuDef mdef) 
+	auto isLauncherMenu = [menu] (MenuDef mdef)
 			{ return (!mdef.label.compare(menu)); };
 	auto it = std::find_if(conf::menulist.begin(),conf::menulist.end(), isLauncherMenu);
 	if (it == conf::menulist.end()) return;
@@ -585,9 +585,9 @@ void XScreen::run_menu_client()
 			if (client->has_state(State::Active)) ws = '#';
 			if (client->has_state(State::Hidden)) ws = '.';
 			std::stringstream ss;
-			ss << "[" << client->get_desktop_index()+1 << "]" << ws  
+			ss << "[" << client->get_desktop_index()+1 << "]" << ws
 				<< ' ' << client->get_name();
-			std::string s(ss.str().substr(0,127));	
+			std::string s(ss.str().substr(0,127));
 			menudef.items.push_back(MenuItem(s, client));
 		}
 	}
@@ -600,10 +600,10 @@ void XScreen::run_menu_desktop()
 {
 	MenuDef menudef(conf::menu_desktop, MenuType::Desktop);
 	for (int i = 0; i < m_ndesktops; i++) {
-		if (m_desktoplist[i].is_empty()) continue;			
+		if (m_desktoplist[i].is_empty()) continue;
 		std::stringstream ss;
 		ss << "[" << m_desktoplist[i].get_name() << "]";
-		std::string s(ss.str());	
+		std::string s(ss.str());
 		menudef.items.push_back(MenuItem(s,i));
 	}
 	Menu desktop_menu(this, menudef);
@@ -631,7 +631,7 @@ XClient *XScreen::find_client(Window win)
 	auto isClient = [win](XClient *c) { return (c->has_window(win)); };
 
 	for (XScreen *screen : wm::screenlist) {
-		auto it = std::find_if(screen->m_clientlist.begin(), screen->m_clientlist.end(), 
+		auto it = std::find_if(screen->m_clientlist.begin(), screen->m_clientlist.end(),
 					isClient);
 		if (it != screen->m_clientlist.end()) {
 			return *it;

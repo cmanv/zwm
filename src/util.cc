@@ -8,7 +8,7 @@
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 //
@@ -53,7 +53,7 @@ Position xutil::get_pointer_pos(Window window)
 	int		 rx, ry, wx, wy;
 	unsigned int	 mask;
 
-	XQueryPointer(wm::display, window, &root, &child, &rx,  &ry, &wx, &wy, &mask);	
+	XQueryPointer(wm::display, window, &root, &child, &rx,  &ry, &wx, &wy, &mask);
 	return Position(wx, wy);
 }
 
@@ -62,7 +62,7 @@ void xutil::set_pointer_pos(Window window, Position p)
 	XWarpPointer(wm::display, None, window, 0, 0, 0, 0, p.x, p.y);
 }
 
-std::string util::gettime() 
+std::string util::gettime()
 {
 	auto t = std::chrono::system_clock::now();
 	std::time_t now = std::chrono::system_clock::to_time_t(t);
@@ -108,7 +108,7 @@ static void util::execute(std::string &path)
 	std::vector<std::string> arglist;
 	std::string word;
 
-	// Split the command into a array of space or quote delimited strings 	
+	// Split the command into a array of space or quote delimited strings
 	std::istringstream iss(path);
 	while (iss >> std::quoted(word))
 		arglist.push_back(word);
@@ -126,7 +126,7 @@ static void util::execute(std::string &path)
 	std::cerr << "Error exec: " << path << std::endl;
 }
 
-int util::init_server_socket(std::string &name)
+int util::init_command_socket(std::string &name)
 {
 	int res = 0, optval = 1;
 	bool unix_socket = false;
@@ -139,11 +139,11 @@ int util::init_server_socket(std::string &name)
 
 	int pos = name.find(":");
 	if (pos != name.npos) {
-		std::string hostname = name.substr(0, pos); 
-		std::string port = name.substr(pos+1); 
+		std::string hostname = name.substr(0, pos);
+		std::string port = name.substr(pos+1);
 		hint.ai_family = AF_UNSPEC;
 		hint.ai_protocol = IPPROTO_TCP;
-		hint.ai_flags = AI_ADDRCONFIG;	
+		hint.ai_flags = AI_ADDRCONFIG;
 		res = getaddrinfo(hostname.c_str(), port.c_str(), &hint, &result);
 	} else {
 		unix_socket = true;
@@ -151,7 +151,7 @@ int util::init_server_socket(std::string &name)
 		res = getaddrinfo(name.c_str(), NULL, &hint, &result);
 	}
 	if (res) {
-		std::cerr << "getaddrinfo error on socket [" << name << "}: " 
+		std::cerr << "getaddrinfo error on socket [" << name << "}: "
 			<< gai_strerror(res) << "\n";
 		return -1;
 	}
@@ -180,7 +180,7 @@ int util::init_server_socket(std::string &name)
 		return -1;
 	}
 
-	if (unix_socket) 
+	if (unix_socket)
 		std::filesystem::permissions(socket_name, std::filesystem::perms::owner_all);
 
 	if (listen(fd, 5) < 0) {
@@ -211,7 +211,7 @@ void util::get_message(int fd, std::string &msg)
 	return;
 }
 
-void util::init_client_socket(std::string &socket_name)
+void util::init_message_socket(std::string &socket_name)
 {
 	int rc;
 	struct addrinfo hint;
@@ -220,11 +220,11 @@ void util::init_client_socket(std::string &socket_name)
 
 	int pos = socket_name.find(":");
 	if (pos != socket_name.npos) {
-		std::string hostname = socket_name.substr(0, pos); 
-		std::string port = socket_name.substr(pos+1); 
+		std::string hostname = socket_name.substr(0, pos);
+		std::string port = socket_name.substr(pos+1);
 		hint.ai_family = AF_UNSPEC;
 		hint.ai_protocol = IPPROTO_TCP;
-		hint.ai_flags = AI_ADDRCONFIG;	
+		hint.ai_flags = AI_ADDRCONFIG;
 		rc = getaddrinfo(hostname.c_str(), port.c_str(), &hint, &sock_addr);
 	} else {
 		hint.ai_family = PF_LOCAL;
@@ -232,12 +232,12 @@ void util::init_client_socket(std::string &socket_name)
 	}
 	if (rc) {
 		valid_addr = false;
-		std::cerr << "getaddrinfo error on socket [" << socket_name << "}: " 
+		std::cerr << "getaddrinfo error on socket [" << socket_name << "}: "
 			<< gai_strerror(rc) << "\n";
 	}
 }
 
-void util::free_client_socket()
+void util::free_message_socket()
 {
 	if (!valid_addr) return;
 	freeaddrinfo(sock_addr);
@@ -246,15 +246,15 @@ void util::free_client_socket()
 int util::send_message(std::string &message)
 {
 	if (!valid_addr) return 0;
-	
+
 	int fd = socket(sock_addr->ai_family, sock_addr->ai_socktype, sock_addr->ai_protocol);
 	if (fd < 0) {
 		std::cerr << "Cannot create socket!\n";
 		return -1;
-	}	
+	}
 
 	if (connect(fd, sock_addr->ai_addr, sock_addr->ai_addrlen) < 0) {
-		std::cerr << "Cannot connect to server socket!\n";
+		std::cerr << "Cannot connect to message socket!\n";
 		close(fd);
 		return -1;
 	}
@@ -264,7 +264,7 @@ int util::send_message(std::string &message)
 	if (rc < 0) {
 		std::cerr << "Failed to send message!\n";
 	}
-	
+
 	close(fd);
 	return rc;
 }

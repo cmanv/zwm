@@ -8,7 +8,7 @@
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 //
@@ -33,8 +33,8 @@ namespace conf {
 	extern std::string			 cfilename;
 	extern std::string			 wmname;
 	extern std::string 			 menufont;
-	extern std::string 			 clientsocket;
-	extern std::string 			 serversocket;
+	extern std::string 			 message_socket;
+	extern std::string 			 command_socket;
 	extern std::string 			 startupscript;
 	extern std::string 			 shutdownscript;
 

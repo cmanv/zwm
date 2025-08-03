@@ -8,7 +8,7 @@
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 //
@@ -32,7 +32,7 @@
 #include "xscreen.h"
 #include "desktop.h"
 
-Desktop::Desktop(XScreen *screen, long index, std::string &name, 
+Desktop::Desktop(XScreen *screen, long index, std::string &name,
 		std::string &mode_name, float split)
 {
 	m_screen = screen;
@@ -51,21 +51,21 @@ Desktop::Desktop(XScreen *screen, long index, std::string &name,
 void Desktop::add_window(XClient *client)
 {
 	if (conf::debug > 1) {
-		std::cout << util::gettime() << " [Desktop::" << __func__ 
-			<< "] ADD Client ptr window 0x" << std::hex << client->get_window() 
+		std::cout << util::gettime() << " [Desktop::" << __func__
+			<< "] ADD Client ptr window 0x" << std::hex << client->get_window()
 			<< std::endl;
 	}
 
 	m_clientstack.push_back(client);
-	if (!client->has_state(State::NoTile)) 
+	if (!client->has_state(State::NoTile))
 		add_window_tile(client);
 }
 
 void Desktop::remove_window(XClient *client)
 {
 	if (conf::debug > 1) {
-		std::cout << util::gettime() << " [Desktop::" << __func__ 
-			<< "] REMOVE Client ptr window 0x" << std::hex << client->get_window() 
+		std::cout << util::gettime() << " [Desktop::" << __func__
+			<< "] REMOVE Client ptr window 0x" << std::hex << client->get_window()
 			<< std::endl;
 	}
 
@@ -111,7 +111,7 @@ void Desktop::rotate_windows(long direction)
 
 void Desktop::cycle_windows(XClient *old_client, long direction)
 {
-	if (m_clientstack.empty()) 
+	if (m_clientstack.empty())
 		return;
 
 	XClient *new_client = (direction == -1) ?  prev_window(old_client)
@@ -135,7 +135,7 @@ XClient *Desktop::next_window(XClient *client)
 	if (m_clientstack.empty()) return client;
 
 	auto current = std::find(m_clientstack.rbegin(), m_clientstack.rend(), client);
-	if (current == m_clientstack.rend()) 
+	if (current == m_clientstack.rend())
 		return client;
 
 	auto isNext = [](XClient *c) { return (!c->has_state(State::SkipCycle)); };
@@ -152,7 +152,7 @@ XClient *Desktop::prev_window(XClient *client)
 	if (m_clientstack.empty()) return client;
 
 	auto current = std::find(m_clientstack.begin(), m_clientstack.end(), client);
-	if (current == m_clientstack.end()) 
+	if (current == m_clientstack.end())
 		return client;
 
 	auto isPrev = [](XClient *c) { return (!c->has_state(State::SkipCycle)); };
@@ -175,7 +175,7 @@ void Desktop::show()
 	else if (!conf::desktop_modes[m_mode_index].name.compare("HTiled"))
 		tile_horizontal();
 
-	if (!conf::clientsocket.length()) return;
+	if (conf::message_socket.empty()) return;
 	std::string message = "desktop_mode=" + conf::desktop_modes[m_mode_index].letter;
 	util::send_message(message);
 }
@@ -199,7 +199,7 @@ void Desktop::restack_windows()
 	std::vector<Window> winlist;
 	for (auto it=m_clientstack.rbegin(); it!=m_clientstack.rend(); it++) {
 		XClient *c = *it;
-		winlist.push_back(c->get_window());	
+		winlist.push_back(c->get_window());
 	}
 	XRestackWindows(wm::display, (Window *)winlist.data(), winlist.size());
 }
@@ -235,7 +235,7 @@ void Desktop::stacked_desktop()
 void Desktop::tile_horizontal()
 {
 	int x, y, w, h;
-	
+
 	Position p = xutil::get_pointer_pos(m_screen->get_window());
 	Geometry area = m_screen->get_area(p, true);
 	int border = conf::tiled_border;
@@ -328,10 +328,10 @@ void Desktop::master_split(long increment)
 
 	if (increment > 0) {
 		m_split += 0.01;
-		if (m_split > 0.9) m_split = 0.9;	
+		if (m_split > 0.9) m_split = 0.9;
 	} else {
 		m_split -= 0.01;
-		if (m_split < 0.1) m_split = 0.1;	
+		if (m_split < 0.1) m_split = 0.1;
 	}
 	show();
 }

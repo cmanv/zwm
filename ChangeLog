@@ -1,6 +1,11 @@
+2025-08-03
+	* Exécution des fonctions desktop-* via socket
+	* Maj doc
+	* Version alpha13
+
 2025-08-02
 	* Ajoute les fonctions de selection de mode.
-	* Sauvegarde la géométre flottante au redémarrage. 
+	* Sauvegarde la géométre flottante au redémarrage.
 	* Version alpha12
 
 2025-07-30
@@ -25,7 +30,7 @@
 	* Supprime le mode 'Stacked'
 	* Ajoute la rotation des modes tiling
 	* Noms de menus configurables
-	* Noms de sockets configurables 
+	* Noms de sockets configurables
 	* Ajout des actions PrevMode, NextMode
 	* Version alpha7
 

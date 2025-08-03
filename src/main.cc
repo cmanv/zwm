@@ -8,7 +8,7 @@
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 //
@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 
 	wm::set_param_restart(argc, argv);
 
-	while ((ch = getopt(argc, argv, "X:c:hdpv")) != -1) {
+	while ((ch = getopt(argc, argv, "X:c:s:m:hdpv")) != -1) {
 		switch (ch) {
 		case 'c':
 			conf::cfilename = optarg;
@@ -59,6 +59,9 @@ int main(int argc, char **argv)
 			break;
 		case 'D':
 			wm::displayname = optarg;
+			break;
+		case 'm':
+			conf::message_socket = optarg;
 			break;
 		case 'p':
 			parse_only = 1;

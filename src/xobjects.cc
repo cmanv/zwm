@@ -8,7 +8,7 @@
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 //
@@ -104,7 +104,7 @@ void Position::move(long direction)
 
 Position Geometry::get_center(Coordinates c)
 {
-	if (c == Coordinates::Root) 
+	if (c == Coordinates::Root)
 		return Position(x + w/2, y + h/2);
 	else
 		return Position(w/2, h/2);
@@ -114,7 +114,7 @@ bool Geometry::contains(Position p, Coordinates c)
 {
 	if (c == Coordinates::Root)
 		return ((p.x < x + w) && (p.x >= x) && (p.y < y + h) && (p.y >= y));
-	else		
+	else
 		return ((p.x < w) && (p.x >= 0) && (p.y < h) && (p.y >= 0));
 }
 
@@ -124,19 +124,19 @@ bool Geometry::intersects(Geometry &view, int border)
 	if (y + h + (2*border) - 1 < view.y) return false;
 	if (view.x + view.w < x) return false;
 	if (view.y + view.h < y) return false;
-	return true; 
+	return true;
 }
 
-void Geometry::set_pos(int px, int py) 
-{ 
-	x = px; 
-	y = py; 
+void Geometry::set_pos(int px, int py)
+{
+	x = px;
+	y = py;
 }
 
-void Geometry::set_pos(Position p) 
-{ 
-	x = p.x; 
-	y = p.y; 
+void Geometry::set_pos(Position p)
+{
+	x = p.x;
+	y = p.y;
 }
 
 void Geometry::set_menu_placement(Position p, Geometry &area, int border)
@@ -174,7 +174,7 @@ void Geometry::set_placement(Position p, Geometry &area, int border)
 
 	if (yspace >= area.y)
 		y = std::max(std::min(ypos, yspace), area.y);
-	else 
+	else
 		y = area.y;
 }
 
@@ -267,14 +267,14 @@ void Geometry::snap_to_edge(Geometry &area)
 	int topsnap = 0;
 	int bottomsnap = 0;
 
-	if (abs(x - area.x) <= conf::snapdist) 
+	if (abs(x - area.x) <= conf::snapdist)
 		leftsnap = area.x - x;
-	if (abs(y - area.y) <= conf::snapdist) 
+	if (abs(y - area.y) <= conf::snapdist)
 		topsnap = area.y - y;
 
-	if (abs(x + w - area.x - area.w) <= conf::snapdist) 
+	if (abs(x + w - area.x - area.w) <= conf::snapdist)
 		rightsnap = area.x + area.w  - x  - w;
-	if (abs(y + h - area.y - area.h) <= conf::snapdist) 
+	if (abs(y + h - area.y - area.h) <= conf::snapdist)
 		bottomsnap = area.y + area.h  - y  - h;
 
 	if ((rightsnap) && (leftsnap))
@@ -298,7 +298,7 @@ void Geometry::snap_to_edge(Geometry &area)
 			y += bottomsnap;
 }
 
-void Geometry::apply_border_gap(BorderGap &b) 
+void Geometry::apply_border_gap(BorderGap &b)
 {
 	x += b.left;
 	y += b.top;
@@ -309,7 +309,7 @@ void Geometry::apply_border_gap(BorderGap &b)
 // Apply size hints to window geometry when resizing with pointer
 void Geometry::apply_size_hints(SizeHints &hints)
 {
-	bool baseismin = (hints.basew == hints.minw) 
+	bool baseismin = (hints.basew == hints.minw)
 			&& (hints.baseh == hints.minh);
 
 	// temporarily remove base dimensions, ICCCM 4.1.2.3
@@ -354,9 +354,9 @@ void Geometry::apply_size_hints(SizeHints &hints)
 Viewport::Viewport(int id, int x, int y, int w, int h, BorderGap &b)
 {
 	num = id;
-	view.x = x; 
-	view.y = y; 
-	view.w = w; 
+	view.x = x;
+	view.y = y;
+	view.w = w;
 	view.h = h;
 	work = view;
 	work.apply_border_gap(b);
@@ -375,7 +375,7 @@ bool Viewport::contains(Position p)
 	return ((p.x >= view.x) && (p.x < (view.x + view.w)) &&
 		(p.y >= view.y) && (p.y < (view.y + view.h)));
 }
-	
+
 PropWindow::PropWindow(XScreen *screen, Window parent)
 {
 	m_font = screen->get_menu_font();
@@ -383,7 +383,7 @@ PropWindow::PropWindow(XScreen *screen, Window parent)
 	m_pixel = screen->get_pixel(Color::MenuBackground);
 
 	m_window = XCreateSimpleWindow(wm::display, parent, 0, 0, 1, 1, 0, m_pixel, m_pixel);
-	m_xftdraw = XftDrawCreate(wm::display, m_window, screen->get_visual(), 
+	m_xftdraw = XftDrawCreate(wm::display, m_window, screen->get_visual(),
 					screen->get_colormap());
 	XMapWindow(wm::display, m_window);
 }
@@ -403,6 +403,6 @@ void PropWindow::draw(std::string &text, int x, int y)
 	XMoveResizeWindow(wm::display, m_window, x - extents.width/2, y,
 				extents.xOff, m_font->height);
 	XClearWindow(wm::display, m_window);
-	XftDrawStringUtf8(m_xftdraw, m_color, m_font, 0, m_font->ascent + 1, 
+	XftDrawStringUtf8(m_xftdraw, m_color, m_font, 0, m_font->ascent + 1,
 				(const FcChar8*)text.c_str(), len);
 }

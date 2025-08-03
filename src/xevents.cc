@@ -8,7 +8,7 @@
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 //
@@ -184,7 +184,7 @@ static void XEvents::button_press(XEvent *ee)
 	Binding *mb = NULL;
 	for (Binding& cmb : conf::mousebindings) {
 		if (e->button != cmb.button || e->state != cmb.modmask) continue;
-		if (client && cmb.context == Context::Root) continue;	
+		if (client && cmb.context == Context::Root) continue;
 		if (!client && cmb.context == Context::Window) continue;
 		mb = &cmb;
 		break;
@@ -275,7 +275,7 @@ static void XEvents::map_request(XEvent *ee)
 		std::cout << util::gettime() << " [XEvents::" << __func__
 			<< "] parent 0x" << std::hex << e->parent << " window 0x" << e->window << '\n';
 	}
-	
+
 	XScreen *screen = XScreen::find_screen(e->parent);
 	if (!screen) {
 		if (conf::debug>1) {

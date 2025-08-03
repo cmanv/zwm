@@ -8,7 +8,7 @@
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 //
@@ -115,9 +115,9 @@ std::vector<FuncDef> funcdefs = {
 
 void wmfunc::window_move(XClient *client, long direction)
 {
-	if (direction == Direction::Pointer) 
+	if (direction == Direction::Pointer)
 		client->move_window_with_pointer();
-	else 
+	else
 		client->move_window_with_keyboard(direction);
 }
 
@@ -125,7 +125,7 @@ void wmfunc::window_resize(XClient *client, long direction)
 {
 	if (direction == Direction::Pointer)
 		client->resize_window_with_pointer();
-	else 
+	else
 		client->resize_window_with_keyboard(direction);
 }
 

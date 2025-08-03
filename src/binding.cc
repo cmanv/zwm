@@ -8,7 +8,7 @@
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 //
@@ -53,12 +53,12 @@ Binding::Binding( BindingDef& binddef, EventType eventtype)
 			for (ModKeyDef &def : modkey_defs) {
 				if (keycombo[i] == def.ch) {
 					modmask |= def.mask;
-					modkey = true;	
+					modkey = true;
 					break;
 				}
 			}
 			if (!modkey) {
-				std::cerr << __func__ << ": Modkey (" << keycombo 
+				std::cerr << __func__ << ": Modkey (" << keycombo
 					<< ") is not valid!\n";
 				return;
 			}
@@ -70,14 +70,14 @@ Binding::Binding( BindingDef& binddef, EventType eventtype)
 	if (eventtype == EventType::Key) {
 		keysym = XStringToKeysym(symbol.c_str());
 		if (keysym == NoSymbol) {
-			std::cerr << __func__ << ": Keysym (" << symbol.c_str() 
+			std::cerr << __func__ << ": Keysym (" << symbol.c_str()
 				<< ") was not found!\n";
 			return;
 		}
 	} else {
 		button = std::strtol(symbol.c_str(), NULL, 10);
 		if ((button <1) || (button>5)) {
-			std::cerr << __func__ << ": Mouse button (" << button 
+			std::cerr << __func__ << ": Mouse button (" << button
 				<< ") is not valid!\n";
 			return;
 		}
@@ -113,11 +113,11 @@ Binding::Binding( BindingDef& binddef, EventType eventtype)
 		}
 	}
 	if (!valid) {
-		std::cerr << util::gettime() << " [Binding::" << __func__ << "] function (" 
+		std::cerr << util::gettime() << " [Binding::" << __func__ << "] function ("
 			<< binddef.namefunc << ") is not defined!\n";
 	}
 	else if (conf::debug) {
-		std::cout << util::gettime() << " [Binding::" << __func__ << "] define {" 
+		std::cout << util::gettime() << " [Binding::" << __func__ << "] define {"
 			<< keycombo << "} -> " << function << "(" << path << ")\n";
 	}
 }

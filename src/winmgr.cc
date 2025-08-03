@@ -8,7 +8,7 @@
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 //
@@ -38,6 +38,7 @@
 #include "config.h"
 #include "xscreen.h"
 #include "xevents.h"
+#include "wmfunc.h"
 #include "winmgr.h"
 
 namespace wm {
@@ -54,7 +55,7 @@ namespace wm {
 	std::vector<std::string>	 restart_argstr;
 	std::vector<char*>		 restart_argv;
 
-	std::vector<Cursor> 		 cursors(Pointer::NumShapes);	
+	std::vector<Cursor> 		 cursors(Pointer::NumShapes);
 
 	const std::vector<unsigned int>  ignore_mods = {
 		0,
@@ -77,8 +78,8 @@ namespace wm {
 	std::vector<Atom>	 ewmh;
 	std::vector<Atom>	 hints;
 
-	static void	x_startup(void);
-	static void	x_shutdown(void);
+	static void	wm_startup(void);
+	static void	wm_shutdown(void);
 	static void 	process_message(std::string&);
 	static void	setup_wmhints(void);
 	static void	setup_ewmhnts(void);
@@ -142,19 +143,19 @@ static void wm::setup_ewmhnts()
 			(Atom *)ewmh.data());
 }
 
-void wm::run() 
+void wm::run()
 {
-	if (conf::clientsocket.length()) {
-		util::init_client_socket(conf::clientsocket);
+	if (conf::message_socket.length()) {
+		util::init_message_socket(conf::message_socket);
 	}
 
-	if (conf::startupscript.length())  
+	if (conf::startupscript.length())
 		util::exec_child(conf::startupscript);
-	x_startup();
+	wm_startup();
 
 	int kq = kqueue();
 	if (kq == -1) {
-		std::cerr << " [wm:: " << __func__ << "] kqueue " 
+		std::cerr << " [wm:: " << __func__ << "] kqueue "
 				<< std::strerror(errno) << std::endl;
 		exit(1);
 	}
@@ -162,27 +163,28 @@ void wm::run()
 	int n = 0;
 	struct kevent watch[2];
 	int xfd = ConnectionNumber(display);
-	if (xfd != -1) 
+	if (xfd != -1)
 		EV_SET(&watch[n++], xfd, EVFILT_READ, EV_ADD, 0, 0, 0);
 
 	int sfd = -1;
-	if (conf::serversocket.length()) {
-		sfd = util::init_server_socket(conf::serversocket);
-		if (sfd != -1) 
+	if (conf::command_socket.length()) {
+		sfd = util::init_command_socket(conf::command_socket);
+		if (sfd != -1)
 			EV_SET(&watch[n++], sfd, EVFILT_READ, EV_ADD, 0, 0, 0);
 	}
 	if (kevent(kq, watch, n, NULL, 0, NULL) == -1) {
-		std::cerr << " [wm::" << __func__ << "] kevent(setup) " 
+		std::cerr << " [wm::" << __func__ << "] kevent(setup) "
 			<< std::strerror(errno) << std::endl;
 		exit(1);
 	}
 
+	// Main event loop
 	status = IsRunning;
 	struct kevent events[2];
 	while (status == IsRunning) {
 		int nev = kevent(kq, NULL, 0, events, n, NULL);
 		if ((nev == -1) && (errno != EINTR)) {
-			std::cerr << " [wm::" << __func__ << "] kevent " 
+			std::cerr << " [wm::" << __func__ << "] kevent "
 				<< std::strerror(errno) << std::endl;
 		}
 		for (int i=0; i<nev; i++) {
@@ -195,13 +197,13 @@ void wm::run()
 			}
 		}
 	}
-	x_shutdown();
+	wm_shutdown();
 
 	closefrom(3);
 	if (status == IsRestarting) {
 		setsid();
 		execvp((char *)restart_argv[0], (char **)restart_argv.data());
-		std::cerr << "[wm::" << __func__ << "]'" << restart_argv[0] 
+		std::cerr << "[wm::" << __func__ << "]'" << restart_argv[0]
 			<< "' failed to start.\n";
 	}
 
@@ -209,21 +211,23 @@ void wm::run()
 		util::exec_child(conf::shutdownscript);
 }
 
+// Process message received on the listening socket
 static void wm::process_message(std::string& mesg)
 {
 	std::istringstream iss(mesg);
-	
+
 	int id;
-	std::string token;
-	if (!std::getline(iss, token, ';')) 
+	std::string screenid;
+	if (!std::getline(iss, screenid, ';'))
 		return;
 	try {
-		id = std::stoi(token);
+		id = std::stoi(screenid);
 	} catch(...) {
 		return;
 	}
 
-	XScreen *screen = NULL;	
+	// Look for the screen
+	XScreen *screen = NULL;
 	for (XScreen *s : screenlist) {
 		if (id == s->get_screenid()) {
 			screen = s;
@@ -232,24 +236,23 @@ static void wm::process_message(std::string& mesg)
 	}
 	if (!screen) return;
 
-	if (!std::getline(iss, token, ';')) 
+	std::string wmfunction;
+	if (!std::getline(iss, wmfunction, ';'))
 		return;
-	if (!token.compare("NextDesktop")) {
-		screen->cycle_desktops(1);
-		XFlush(display);
-	} else if (!token.compare("PrevDesktop")) {
-		screen->cycle_desktops(-1);
-		XFlush(display);
-	} else if (!token.compare("NextMode")) {
-		screen->rotate_desktop_mode(1);
-		XFlush(display);
-	} else if (!token.compare("PrevMode")) {
-		screen->rotate_desktop_mode(-1);
-		XFlush(display);
+
+	// Look if the wm function is defined and execute if found
+	for (wmfunc::FuncDef &funcdef : wmfunc::funcdefs) {
+		// Only desktop functions will be performed
+		if (funcdef.context != Context::Root) continue;
+		if (!wmfunction.compare(funcdef.namefunc)) {
+			(*funcdef.fscreen)(screen, funcdef.param);
+			XFlush(display);
+			break;
+		}
 	}
 }
 
-static void wm::x_startup()
+static void wm::wm_startup()
 {
 	if (conf::debug) {
 		std::cout << util::gettime() << " [wm::" << __func__ << "] Open X display..\n";
@@ -257,7 +260,7 @@ static void wm::x_startup()
 
 	display = XOpenDisplay(displayname.c_str());
 	if (!display) {
-		std::cerr << util::gettime() << " [wm::" << __func__ 
+		std::cerr << util::gettime() << " [wm::" << __func__
 			<< "] Unable to open display " << XDisplayName(displayname.c_str()) << '\n';
 		exit(1);
 	}
@@ -284,7 +287,7 @@ static void wm::x_startup()
 	setup_wmhints();
 	setup_ewmhnts();
 
-	for (int i = 0; i < ScreenCount(display); i++) 
+	for (int i = 0; i < ScreenCount(display); i++)
 		screenlist.push_back(new XScreen(i));
 
 	for (XScreen *screen : screenlist)
@@ -293,17 +296,17 @@ static void wm::x_startup()
 	XSync(display, False);
 }
 
-static void wm::x_shutdown()
+static void wm::wm_shutdown()
 {
 	if (conf::debug) {
-		std::cout << util::gettime() << " [wm::" << __func__ 
+		std::cout << util::gettime() << " [wm::" << __func__
 				<< "] Window manager shutdown..\n";
 	}
 
 	for (XScreen *screen : screenlist)
 		delete screen;
 
-	for (Cursor cursor : cursors) 
+	for (Cursor cursor : cursors)
 		XFreeCursor(display, cursor);
 
 	XUngrabPointer(display, CurrentTime);
@@ -312,9 +315,9 @@ static void wm::x_shutdown()
 	XSync(display, False);
 	XSetInputFocus(display, PointerRoot, RevertToPointerRoot, CurrentTime);
 	XCloseDisplay(display);
-	
-	if (conf::clientsocket.length())
-		util::free_client_socket();
+
+	if (conf::message_socket.length())
+		util::free_message_socket();
 }
 
 static int  wm::start_error_handler(Display *display, XErrorEvent *e)
@@ -332,8 +335,8 @@ static int wm::error_handler(Display *display, XErrorEvent *e)
 	XGetErrorDatabaseText(display, "XRequest", number.c_str(),
 	    			"<unknown>", req, sizeof(req));
 
-	std::cerr << util::gettime() << " [wm::" << __func__ << "]:(" << req << ") (0x" 
-			<< std::hex << (unsigned int)e->resourceid 
+	std::cerr << util::gettime() << " [wm::" << __func__ << "]:(" << req << ") (0x"
+			<< std::hex << (unsigned int)e->resourceid
 			<< ") "  << msg << '\n';
 	return 0;
 }
@@ -361,7 +364,7 @@ void wm::set_param_restart(std::string &cmd)
 		std::cout << util::gettime() << " [wm::" << __func__ << "] cmd = " << cmd << std::endl;
 	}
 
-	// Split the command into a array of space or quote delimited strings 	
+	// Split the command into a array of space or quote delimited strings
 	std::istringstream iss(cmd);
 	while (iss >> std::quoted(word))
 		restart_argstr.push_back(word);
@@ -378,7 +381,7 @@ void wm::set_param_restart(std::string &cmd)
 // EWMH functions
 void wm::set_net_supported(Window rootwin)
 {
-	XChangeProperty(display, rootwin, ewmh[_NET_SUPPORTED], XA_ATOM, 32, 
+	XChangeProperty(display, rootwin, ewmh[_NET_SUPPORTED], XA_ATOM, 32,
 			PropModeReplace, (unsigned char *)ewmh.data(), ewmh.size());
 }
 
@@ -398,7 +401,7 @@ void wm::set_net_desktop_geometry(Window rootwin, Geometry &view)
 {
 	long	geometry[2] = { view.w, view.h };
 
-	XChangeProperty(display, rootwin, ewmh[_NET_DESKTOP_GEOMETRY], XA_CARDINAL, 32, 
+	XChangeProperty(display, rootwin, ewmh[_NET_DESKTOP_GEOMETRY], XA_CARDINAL, 32,
 			PropModeReplace, (unsigned char *)geometry , 2);
 }
 
@@ -406,7 +409,7 @@ void wm::set_net_desktop_viewport(Window rootwin)
 {
 	long	viewport[2] = {0, 0};
 
-	XChangeProperty(display, rootwin, ewmh[_NET_DESKTOP_VIEWPORT], XA_CARDINAL, 32, 
+	XChangeProperty(display, rootwin, ewmh[_NET_DESKTOP_VIEWPORT], XA_CARDINAL, 32,
 			PropModeReplace, (unsigned char *)viewport, 2);
 }
 
@@ -437,19 +440,19 @@ void wm::set_net_client_list_stacking(Window rootwin, std::vector<Window> &winli
 	int nwins = winlist.size();
 	if (nwins == 0) return;
 
-	XChangeProperty(display, rootwin, ewmh[_NET_CLIENT_LIST_STACKING], XA_WINDOW, 32, 
+	XChangeProperty(display, rootwin, ewmh[_NET_CLIENT_LIST_STACKING], XA_WINDOW, 32,
 			PropModeReplace, (unsigned char *)winlist.data(), nwins);
 }
 
 void wm::set_net_active_window(Window rootwin, Window active)
 {
-	XChangeProperty(display, rootwin, ewmh[_NET_ACTIVE_WINDOW], XA_WINDOW, 32, 
+	XChangeProperty(display, rootwin, ewmh[_NET_ACTIVE_WINDOW], XA_WINDOW, 32,
 			PropModeReplace, (unsigned char *)&active, 1);
 }
 
 void wm::set_net_number_of_desktops(Window rootwin, int ndesks)
 {
-	XChangeProperty(display, rootwin, ewmh[_NET_NUMBER_OF_DESKTOPS], XA_CARDINAL, 32, 
+	XChangeProperty(display, rootwin, ewmh[_NET_NUMBER_OF_DESKTOPS], XA_CARDINAL, 32,
 			PropModeReplace, (unsigned char *)&ndesks, 1);
 }
 
@@ -460,7 +463,7 @@ int wm::get_net_current_desktop(Window window, long *num)
 
 	prop = (long *)get_window_property(window, ewmh[_NET_CURRENT_DESKTOP], XA_CARDINAL, 1L, &n);
 	if (prop) {
-		*num = *prop;	
+		*num = *prop;
 		XFree(prop);
 	}
 	return n;
@@ -469,7 +472,7 @@ int wm::get_net_current_desktop(Window window, long *num)
 void wm::set_net_current_desktop(Window rootwin, int active)
 {
 	long	 num = active;
-	XChangeProperty(display, rootwin, ewmh[_NET_CURRENT_DESKTOP], XA_CARDINAL, 32, 
+	XChangeProperty(display, rootwin, ewmh[_NET_CURRENT_DESKTOP], XA_CARDINAL, 32,
 			PropModeReplace, (unsigned char *)&num, 1);
 }
 
@@ -478,7 +481,7 @@ void wm::unset_net_showing_desktop(Window rootwin)
 	long	 zero = 0;
 
 	// showing desktop mode is not supported.
-	XChangeProperty(display, rootwin, ewmh[_NET_SHOWING_DESKTOP], XA_CARDINAL, 32, 
+	XChangeProperty(display, rootwin, ewmh[_NET_SHOWING_DESKTOP], XA_CARDINAL, 32,
 			PropModeReplace, (unsigned char *)&zero, 1);
 }
 
@@ -495,7 +498,7 @@ void wm::set_net_desktop_names(Window rootwin, std::vector<std::string> &names)
 	unsigned char	*prop;
 
 	// Let desktop names be overwritten if _NET_DESKTOP_NAMES is set.
-	prop = (unsigned char *)get_window_property(rootwin, ewmh[_NET_DESKTOP_NAMES], 
+	prop = (unsigned char *)get_window_property(rootwin, ewmh[_NET_DESKTOP_NAMES],
 						hints[UTF8_STRING], 0xffffff, &n);
 	while (i < n)
 		if (prop[i++] == '\0')
@@ -534,7 +537,7 @@ long wm::get_wm_state(Window window)
 	long		*prop, state;
 
 	state = -1;
-	prop = (long *)get_window_property(window, hints[WM_STATE], hints[WM_STATE], 2L, &n); 
+	prop = (long *)get_window_property(window, hints[WM_STATE], hints[WM_STATE], 2L, &n);
 	if (prop) {
 		state = *prop;
 		XFree(prop);
@@ -571,7 +574,7 @@ void wm::set_net_wm_desktop(Window window, int desktop)
 
 	if (desktop >=0 ) num = desktop;
 
-	XChangeProperty(display, window, ewmh[_NET_WM_DESKTOP], XA_CARDINAL, 32, 
+	XChangeProperty(display, window, ewmh[_NET_WM_DESKTOP], XA_CARDINAL, 32,
 			PropModeReplace, (unsigned char *)&num, 1);
 }
 
@@ -628,8 +631,8 @@ void wm::set_net_wm_states(Window window, long states)
 	for (Atom atom : old_atoms) {
 		bool found = false;
 		for (StateMap &sm : wm::statemaps) {
-			if (atom == ewmh[sm.atom]) { 
-				found = true;	
+			if (atom == ewmh[sm.atom]) {
+				found = true;
 				break;
 			}
 		}
@@ -641,7 +644,7 @@ void wm::set_net_wm_states(Window window, long states)
 		if (states & sm.state) atoms.push_back(ewmh[sm.atom]);
 
 	if (atoms.size()) {
-		XChangeProperty(display, window, ewmh[_NET_WM_STATE], XA_ATOM, 32, 
+		XChangeProperty(display, window, ewmh[_NET_WM_STATE], XA_ATOM, 32,
 			PropModeReplace, (unsigned char *)atoms.data(), atoms.size());
 	}
 	else {
@@ -649,14 +652,14 @@ void wm::set_net_wm_states(Window window, long states)
 	}
 }
 
-void *wm::get_window_property(Window w, Atom atom, Atom req_type, long length, 
+void *wm::get_window_property(Window w, Atom atom, Atom req_type, long length,
 				unsigned long *nitems)
 {
 	Atom		 actualtype;
 	int		 actualformat;
 	unsigned long	 bytes_extra;
 	unsigned char	*prop;
-	
+
 	if (XGetWindowProperty(display, w, atom, 0L, length, False, req_type,
 	    	&actualtype, &actualformat, nitems, &bytes_extra, &prop) == Success)
 	{
@@ -667,7 +670,7 @@ void *wm::get_window_property(Window w, Atom atom, Atom req_type, long length,
 	return NULL;
 }
 
-int wm::get_text_property(Window window, Atom atom, std::vector<char>& text) 
+int wm::get_text_property(Window window, Atom atom, std::vector<char>& text)
 {
 	XTextProperty	 prop;
 	char		**textlist;
