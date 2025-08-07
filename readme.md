@@ -4,7 +4,7 @@
 
 # NAME
 
-zwm — dynamic tiling window manager for X11
+zwm — dynamic tiling/stackonh window manager for X11
 
 # SYNOPSIS
 
@@ -12,7 +12,7 @@ zwm — dynamic tiling window manager for X11
 
 # DESCRIPTION
 
-**zwm** is a dynamic tiling window manager for X11. It features a number
+**zwm** is an hybrid dynamic tiling/stacking window manager for X11. It features a number
 of configurable keyboards control functions, workspaces and a configurable menu.
 It is also able to send and receive messages through sockets.
 
