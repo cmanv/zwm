@@ -4,7 +4,7 @@
 
 # NAME
 
-zwm — dynamic tiling/stackonh window manager for X11
+zwm — a dynamic tiling/stacking window manager for X11
 
 # SYNOPSIS
 
