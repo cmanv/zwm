@@ -109,24 +109,24 @@ void Desktop::rotate_windows(long direction)
 	show();
 }
 
-void Desktop::cycle_windows(XClient *old_client, long direction)
+void Desktop::cycle_windows(XClient *client, long direction)
 {
 	if (m_clientstack.empty())
 		return;
 
-	XClient *new_client = (direction == -1) ?  prev_window(old_client)
-				: next_window(old_client);
+	XClient *next_client = (direction == -1) ?  prev_window(client)
+				: next_window(client);
 
-	if (old_client == new_client) return;
+	if (client == next_client) return;
 
-	old_client->save_pointer();
-	new_client->raise_window();
-	Position &p = new_client->get_saved_pointer();
-	Geometry &g = new_client->get_geometry();
+	client->save_pointer();
+	next_client->raise_window();
+	Position &p = next_client->get_saved_pointer();
+	Geometry &g = next_client->get_geometry();
 	if (!g.contains(p, Coordinates::Window)) {
 		p = g.get_center(Coordinates::Window);
 	}
-	new_client->warp_pointer();
+	next_client->warp_pointer();
 }
 
 // Find next visible client on the desktop
