@@ -76,7 +76,6 @@ public:
 
 	void				 grab_keybindings();
 	XClient				*get_active_client();
-	void 				 query_clients();
 	void 				 add_client(Window);
 	bool  				 can_manage(Window, bool);
 	void 				 remove_client(XClient *);
@@ -117,6 +116,9 @@ public:
 	static XClient			*find_active_client();
 	static XClient			*find_client(Window);
 	static XScreen			*find_screen(Window);
+
+private:
+	void 				 add_existing_clients();
 };
 
 #endif /* _XSCREEN_H_ */

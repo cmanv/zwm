@@ -290,9 +290,6 @@ static void wm::wm_startup()
 	for (int i = 0; i < ScreenCount(display); i++)
 		screenlist.push_back(new XScreen(i));
 
-	for (XScreen *screen : screenlist)
-		screen->query_clients();
-
 	XSync(display, False);
 }
 

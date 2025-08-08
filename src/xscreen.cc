@@ -106,6 +106,9 @@ XScreen::XScreen(int id): m_screenid(id)
 
 	if (wm::xrandr)
 		XRRSelectInput(wm::display, m_rootwin, RRScreenChangeNotifyMask);
+
+	add_existing_clients();
+
 }
 
 XScreen::~XScreen()
@@ -115,8 +118,8 @@ XScreen::~XScreen()
 			<< "] REMOVE screen " << m_screenid << std::endl;
 	}
 
-	for (XClient *c : m_clientlist)
-		delete c;
+	for (XClient *client : m_clientlist)
+		delete client;
 
 	for (XftColor &color : m_xftcolors)
 		XftColorFree(wm::display, DefaultVisual(wm::display, m_screenid),
@@ -155,7 +158,7 @@ XClient *XScreen::get_active_client()
 	return NULL;
 }
 
-void XScreen::query_clients()
+void XScreen::add_existing_clients()
 {
 	Window		*wins, w0, w1, rwin, cwin;
 	unsigned int	 nwins, mask;

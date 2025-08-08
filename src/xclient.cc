@@ -34,7 +34,7 @@
 
 const long XClient::MouseMask	= ButtonReleaseMask|PointerMotionMask;
 
-XClient::XClient(Window w, XScreen *s, bool query): m_window(w), m_screen(s)
+XClient::XClient(Window w, XScreen *s, bool existing): m_window(w), m_screen(s)
 {
 	XWindowAttributes	 wattr;
 
@@ -46,7 +46,7 @@ XClient::XClient(Window w, XScreen *s, bool query): m_window(w), m_screen(s)
 			<< "] Create Client window 0x" << std::hex << m_window << std::endl;
 	}
 	// For existing clients, reparent will send an unmap request which should be ignored.
-	if (query)
+	if (existing)
 		m_ignore_unmap = true;
 
 	m_rootwin = m_screen->get_window();
@@ -100,7 +100,7 @@ XClient::XClient(Window w, XScreen *s, bool query): m_window(w), m_screen(s)
 	// Set the desktop index.
 	m_deskindex = -1;
 	if (!has_state(State::Sticky)) {
-		if (!query) m_deskindex = get_configured_desktop();
+		if (!existing) m_deskindex = get_configured_desktop();
 		else m_deskindex = get_net_wm_desktop();
 		if (m_deskindex == -1) m_deskindex = m_screen->get_active_desktop();
 	}
