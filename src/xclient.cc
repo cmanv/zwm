@@ -65,7 +65,7 @@ XClient::XClient(Window w, XScreen *s, bool existing): m_window(w), m_screen(s)
 	m_geom.w = wattr.width;
 	m_geom.h = wattr.height;
 	m_colormap = wattr.colormap;
-	m_old_border = wattr.border_width;
+	m_border_orig = wattr.border_width;
 
 	get_net_wm_name(); 		// Get window name
 	get_net_wm_window_type(); 	// Get window type
@@ -137,7 +137,7 @@ XClient::~XClient()
 	}
 	// Reparent the client window to root and destroy the parent
 	XReparentWindow(wm::display, m_window, m_rootwin, m_geom.x, m_geom.y);
-	XSetWindowBorderWidth(wm::display, m_window, m_old_border);
+	XSetWindowBorderWidth(wm::display, m_window, m_border_orig);
 	XRemoveFromSaveSet(wm::display, m_window);
 	XDestroyWindow(wm::display, m_parent);
 
@@ -358,7 +358,7 @@ void XClient::set_initial_placement()
 		Geometry view = m_screen->get_view();
 		m_geom.set_user_placement(view, m_border_w);
 		if (has_state(State::Ignored))
-			m_geom.adjust_for_maximized(view, m_old_border);
+			m_geom.adjust_for_maximized(view, m_border_orig);
 	} else {
 		Position pos = xutil::get_pointer_pos(m_rootwin);
 		Geometry area = m_screen->get_area(pos, true);

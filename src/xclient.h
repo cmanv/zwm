@@ -52,7 +52,7 @@ class XClient {
 	SizeHints		 m_hints;
 
 	int			 m_border_w;
-	int			 m_old_border;		// original border width
+	int			 m_border_orig;		// original border width
 	bool			 m_removed;
 	bool			 m_ignore_unmap;
 

@@ -621,11 +621,11 @@ long wm::get_net_wm_states(Window window, long initial)
 
 void wm::set_net_wm_states(Window window, long states)
 {
-	std::vector<Atom> old_atoms;
-	get_net_wm_state_atoms(window, old_atoms);
+	std::vector<Atom> current_atoms;
+	get_net_wm_state_atoms(window, current_atoms);
 
 	std::vector<Atom> atoms;
-	for (Atom atom : old_atoms) {
+	for (Atom atom : current_atoms) {
 		bool found = false;
 		for (StateMap &sm : wm::statemaps) {
 			if (atom == ewmh[sm.atom]) {

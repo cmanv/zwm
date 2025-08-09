@@ -300,8 +300,8 @@ void XScreen::raise_client(XClient *client)
 
 void XScreen::move_client_to_desktop(XClient *client, long index)
 {
-	long client_index = client->get_desktop_index();
-	if ((client_index == -1) || (client_index == index)) return;
+	long desktop_index = client->get_desktop_index();
+	if ((desktop_index == -1) || (desktop_index == index)) return;
 	client->hide_window();
 	assign_client_to_desktop(client, index, true);
 	m_desktoplist[m_desktop_active].show();
@@ -320,14 +320,13 @@ void XScreen::remove_window_tile_from_desktop(XClient *client)
 
 void XScreen::assign_client_to_desktop(XClient *client, long index, bool client_assigned)
 {
-	long oldindex = client->get_desktop_index();
-
 	if (client_assigned) {
-		if (index == oldindex) return;
-		if (oldindex == -1)
+		long desktop_index = client->get_desktop_index();
+		if (desktop_index == index) return;
+		if (desktop_index == -1)
 			remove_sticky(client);
 		else
-			m_desktoplist[oldindex].remove_window(client);
+			m_desktoplist[desktop_index].remove_window(client);
 	}
 	if (index == -1)
 		m_stickylist.push_back(client);

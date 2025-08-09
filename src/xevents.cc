@@ -285,9 +285,9 @@ static void XEvents::map_request(XEvent *ee)
 		return;
 	}
 
-	XClient *old_client = screen->get_active_client();
-	if (old_client)
-		old_client->save_pointer();
+	XClient *active_client = screen->get_active_client();
+	if (active_client)
+		active_client->save_pointer();
 
 	XClient *client = XScreen::find_client(e->window);
 	if (!client)
@@ -367,7 +367,7 @@ static void XEvents::property_notify(XEvent *ee)
 static void XEvents::client_message(XEvent *e)
 {
 	XClientMessageEvent	*xev = &e->xclient;
-	XClient 		*client, *old_client;
+	XClient 		*client, *active_client;
 	if (conf::debug>2) {
 		std::cout << util::gettime() << " [XEvents::" << __func__
 			<< "] window 0x" << std::hex << xev->window << '\n';
@@ -385,8 +385,8 @@ static void XEvents::client_message(XEvent *e)
 	} else if (xev->message_type == wm::ewmh[_NET_ACTIVE_WINDOW]) {
 		if ((client = XScreen::find_client(xev->window)) != NULL) {
 			XScreen *screen = client->get_screen();
-			if ((old_client = screen->get_active_client()) != NULL)
-				old_client->save_pointer();
+			if ((active_client = screen->get_active_client()) != NULL)
+				active_client->save_pointer();
 			client->show_window();
 			client->warp_pointer();
 		}
