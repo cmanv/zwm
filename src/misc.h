@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef _UTIL_H_
-#define _UTIL_H_
+#ifndef _MISC_H_
+#define _MISC_H_
 #include <string>
 #include "xobjects.h"
 
