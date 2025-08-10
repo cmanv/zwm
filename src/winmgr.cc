@@ -91,15 +91,20 @@ void wm::run()
 	int n = 0;
 	struct kevent watch[2];
 	int xfd = ConnectionNumber(display);
-	if (xfd != -1)
-		EV_SET(&watch[n++], xfd, EVFILT_READ, EV_ADD, 0, 0, 0);
-
-	int sfd = -1;
-	if (conf::command_socket.length()) {
-		sfd = socket_in::init(conf::command_socket);
-		if (sfd != -1)
-			EV_SET(&watch[n++], sfd, EVFILT_READ, EV_ADD, 0, 0, 0);
+	if (xfd == -1) {
+		std::cerr << " [wm::" << __func__ << "] bad X connection number\n";
+		exit(1);
 	}
+	EV_SET(&watch[n++], xfd, EVFILT_READ, EV_ADD, 0, 0, 0);
+
+	int sfd = socket_in::init(conf::command_socket);
+	if (sfd == -1) {
+		std::cerr << " [wm::" << __func__ << "] error creating socket "
+			<< conf::command_socket << std::endl;
+		exit(1);
+	}
+	EV_SET(&watch[n++], sfd, EVFILT_READ, EV_ADD, 0, 0, 0);
+
 	if (kevent(kq, watch, n, NULL, 0, NULL) == -1) {
 		std::cerr << " [wm::" << __func__ << "] kevent(setup) "
 			<< std::strerror(errno) << std::endl;
