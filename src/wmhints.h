@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef _WINHINTS_H_
-#define _WINHINTS_H_
+#ifndef _WMHINTS_H_
+#define _WMHINTS_H_
 #include <X11/Xlib.h>
 #include <string>
 #include <vector>
@@ -62,4 +62,4 @@ namespace ewmh {
 	long		 get_net_wm_states(Window, long);
 	void		 set_net_wm_states(Window, long);
 }
-#endif // _WINHINTS_H_
+#endif // _WMHINTS_H_
