@@ -27,7 +27,7 @@
 #include <string>
 #include <list>
 #include <vector>
-#include "xobjects.h"
+#include "geometry.h"
 
 class Desktop;
 class XClient;

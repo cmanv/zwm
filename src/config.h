@@ -25,9 +25,39 @@
 #include <vector>
 #include <string>
 #include "enums.h"
-#include "xobjects.h"
 #include "binding.h"
 #include "menu.h"
+
+struct DesktopDef {
+	long		index;
+	std::string 	name;
+	std::string	mode;
+	float		split;
+};
+
+struct DefaultDesktop {
+	std::string 	resname;
+	std::string 	resclass;
+	long 		index;
+	DefaultDesktop(std::string &n, std::string &c, long i)
+		:resname(n), resclass(c), index(i) {}
+};
+
+struct DesktopMode {
+	long		index;
+	std::string	name;
+	std::string	letter;
+	DesktopMode(long i, std::string n, std::string l)
+		:index(i), name(n), letter(l) {}
+};
+
+struct DefaultStates {
+	std::string 	resname;
+	std::string 	resclass;
+	long		states;
+	DefaultStates(std::string &n, std::string &c, long s)
+		:resname(n), resclass(c), states(s) {}
+};
 
 namespace conf {
 	extern std::string			 cfilename;

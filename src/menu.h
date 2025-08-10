@@ -22,10 +22,11 @@
 
 #ifndef _MENU_H_
 #define _MENU_H_
+#include <X11/Xft/Xft.h>
 #include <X11/Xlib.h>
 #include <string>
 #include <vector>
-#include "xobjects.h"
+#include "geometry.h"
 
 class XClient;
 class XScreen;

@@ -20,22 +20,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef _XOBJECTS_H_
-#define _XOBJECTS_H_
+#ifndef _GEOMETRY_H_
+#define _GEOMETRY_H_
 #include <X11/Xlib.h>
-#include <X11/Xft/Xft.h>
-#include <string>
-#include "enums.h"
-
-class XScreen;
+#include <X11/Xutil.h>
 struct Geometry;
 
-struct MotifHints {
-	unsigned long	flags;
-	unsigned long	functions;
-	unsigned long	decorations;
-	long		inputMode;
-	unsigned long	status;
+struct Position {
+	int	 x;
+	int	 y;
+	Position() { x = 0; y = 0; }
+	Position(int px, int py): x(px), y(py) {}
+	bool 	operator==(Position p) { return ((x == p.x) && (y == p.y)); }
+	bool 	operator!=(Position p) { return ((x != p.x) || (y != p.y)); }
+	void 	move_inside(Geometry &);
+	void 	move(long);
 };
 
 struct SizeHints {
@@ -53,22 +52,6 @@ struct SizeHints {
 	SizeHints() {}
 	SizeHints(XSizeHints &);
 };
-
-struct Position {
-	int	 x;
-	int	 y;
-	Position() { x = 0; y = 0; }
-	Position(int px, int py): x(px), y(py) {}
-	bool 	operator==(Position p) { return ((x == p.x) && (y == p.y)); }
-	bool 	operator!=(Position p) { return ((x != p.x) || (y != p.y)); }
-	void 	move_inside(Geometry &);
-	void 	move(long);
-};
-
-namespace ptr {
-	Position get_pos(Window);
-	void set_pos(Window, Position);
-}
 
 struct BorderGap {
 	int	 top;
@@ -118,52 +101,4 @@ public:
 	bool 		contains(Position);
 };
 
-class PropWindow {
-	Window		 m_window;
-	XftDraw		*m_xftdraw;
-	XftFont		*m_font;
-	XftColor	*m_color;
-	unsigned long	 m_pixel;
-public:
-	PropWindow(XScreen *, Window);
-	~PropWindow();
-	void 		draw(std::string &, int, int);
-};
-
-struct StateMap {
-	Atom atom;
-	long state;
-	StateMap(Atom a, long s):atom(a), state(s) {}
-};
-
-struct DefaultStates {
-	std::string 	resname;
-	std::string 	resclass;
-	long		states;
-	DefaultStates(std::string &n, std::string &c, long s)
-		:resname(n), resclass(c), states(s) {}
-};
-
-struct DefaultDesktop {
-	std::string 	resname;
-	std::string 	resclass;
-	long 		index;
-	DefaultDesktop(std::string &n, std::string &c, long i)
-		:resname(n), resclass(c), index(i) {}
-};
-
-struct DesktopDef {
-	long		index;
-	std::string 	name;
-	std::string	mode;
-	float		split;
-};
-
-struct DesktopMode {
-	long		index;
-	std::string	name;
-	std::string	letter;
-	DesktopMode(long i, std::string n, std::string l)
-		:index(i), name(n), letter(l) {}
-};
-#endif /* _XOBJECTS_H_ */
+#endif /* _GEOMETRY_H_ */

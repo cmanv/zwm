@@ -30,6 +30,7 @@
 #include "config.h"
 #include "winmgr.h"
 #include "xclient.h"
+#include "xpointer.h"
 #include "xscreen.h"
 #include "desktop.h"
 
@@ -238,7 +239,7 @@ void Desktop::tile_horizontal()
 {
 	int x, y, w, h;
 
-	Position p = ptr::get_pos(m_screen->get_window());
+	Position p = xpointer::get_pos(m_screen->get_window());
 	Geometry area = m_screen->get_area(p, true);
 	int border = conf::tiled_border;
 
@@ -282,7 +283,7 @@ void Desktop::tile_vertical()
 {
 	int x, y, w, h;
 
-	Position p = ptr::get_pos(m_screen->get_window());
+	Position p = xpointer::get_pos(m_screen->get_window());
 	Geometry area = m_screen->get_area(p, true);
 	int border = conf::tiled_border;
 
@@ -340,7 +341,7 @@ void Desktop::master_split(long increment)
 
 void Desktop::tile_maximized()
 {
-	Position p = ptr::get_pos(m_screen->get_window());
+	Position p = xpointer::get_pos(m_screen->get_window());
 	Geometry area = m_screen->get_area(p, true);
 	int border = conf::tiled_border;
 

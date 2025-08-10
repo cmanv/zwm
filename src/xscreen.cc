@@ -38,6 +38,7 @@
 #include "menu.h"
 #include "desktop.h"
 #include "xclient.h"
+#include "xpointer.h"
 #include "xscreen.h"
 
 XScreen::XScreen(int id): m_screenid(id)
@@ -493,9 +494,9 @@ void XScreen::ensure_clients_are_visible()
 
 void XScreen::move_pointer(long direction)
 {
-	Position pos = ptr::get_pos(m_rootwin);
+	Position pos = xpointer::get_pos(m_rootwin);
 	pos.move(direction);
-	ptr::set_pos(m_rootwin, pos);
+	xpointer::set_pos(m_rootwin, pos);
 }
 
 void XScreen::cycle_windows(long direction)

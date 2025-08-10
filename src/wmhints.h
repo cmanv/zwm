@@ -25,7 +25,13 @@
 #include <X11/Xlib.h>
 #include <string>
 #include <vector>
-#include "xobjects.h"
+#include "geometry.h"
+
+struct StateMap {
+	Atom atom;
+	long state;
+	StateMap(Atom a, long s):atom(a), state(s) {}
+};
 
 namespace wmh {
 	extern std::vector<Atom>		 hints;
