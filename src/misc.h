@@ -25,19 +25,29 @@
 #include <string>
 #include "xobjects.h"
 
-namespace xutil {
-	Position get_pointer_pos(Window);
-	void set_pointer_pos(Window, Position);
+namespace ptr {
+	Position get_pos(Window);
+	void set_pos(Window, Position);
 }
 
-namespace util {
+namespace debug {
 	std::string gettime();
-	void spawn_process(std::string &);
-	void exec_child(std::string &);
-	int init_command_socket(std::string &);
-	void get_message(int, std::string &);
-	void init_message_socket(std::string&);
-	void free_message_socket();
-	int send_message(std::string&);
 }
-#endif // _UTIL_H_
+
+namespace process {
+	void spawn(std::string &);
+	void exec(std::string &);
+}
+
+namespace socket_in {
+	int init(std::string &);
+	const std::string& get_message();
+}
+
+namespace socket_out {
+	void init(std::string&);
+	int send(std::string&);
+	bool defined();
+	void clear();
+}
+#endif // _MISC_H_

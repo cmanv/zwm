@@ -27,7 +27,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include "util.h"
+#include "misc.h"
 #include "wmfunc.h"
 #include "binding.h"
 #include "xclient.h"

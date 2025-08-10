@@ -30,7 +30,7 @@
 #include <string>
 #include <list>
 #include <vector>
-#include "util.h"
+#include "misc.h"
 #include "config.h"
 #include "binding.h"
 #include "winmgr.h"
@@ -42,7 +42,7 @@
 XScreen::XScreen(int id): m_screenid(id)
 {
 	if (conf::debug) {
-		std::cout << util::gettime() << " [XScreen:" << __func__
+		std::cout << debug::gettime() << " [XScreen:" << __func__
 			<< "] Add screen " << m_screenid << std::endl;
 	}
 
@@ -79,7 +79,7 @@ XScreen::XScreen(int id): m_screenid(id)
 	// fonts
 	m_menufont = XftFontOpenName(wm::display, m_screenid, conf::menufont.c_str());
 	if (!m_menufont) {
-		std::cerr << util::gettime() << " [XScreen::" << __func__
+		std::cerr << debug::gettime() << " [XScreen::" << __func__
 				<< "] Cant open font name '" << conf::menufont << "'\n";
 		m_menufont = XftFontOpenName(wm::display, m_screenid, "Mono:size=10");
 	}
@@ -88,7 +88,7 @@ XScreen::XScreen(int id): m_screenid(id)
 	for (std::string& def : conf::colordefs) {
 		XftColor xc;
 		if (!XftColorAllocName(wm::display, m_visual, m_colormap, def.c_str(), &xc)) {
-			std::cerr << util::gettime() << " [XScreen::" << __func__
+			std::cerr << debug::gettime() << " [XScreen::" << __func__
 					<< "] Cant allocate color for name '" << def << "'\n";
 			XftColorAllocName(wm::display, m_visual, m_colormap, "gray50", &xc);
 		}
@@ -114,7 +114,7 @@ XScreen::XScreen(int id): m_screenid(id)
 XScreen::~XScreen()
 {
 	if (conf::debug) {
-		std::cout << util::gettime() << " [XScreen:" << __func__
+		std::cout << debug::gettime() << " [XScreen:" << __func__
 			<< "] REMOVE screen " << m_screenid << std::endl;
 	}
 
@@ -137,7 +137,7 @@ void XScreen::grab_keybindings()
 	for (Binding& kb : conf::keybindings) {
 		KeyCode kc = XKeysymToKeycode(wm::display, kb.keysym);
 		if (!kc) {
-			std::cerr << util::gettime() << " XScreen::" << __func__
+			std::cerr << debug::gettime() << " XScreen::" << __func__
 				<< "] Failed converting '" << XKeysymToString(kb.keysym)
 				<< "' keysym to keycode" << std::endl;
 			continue;
@@ -165,7 +165,7 @@ void XScreen::add_existing_clients()
 	int		 rx, ry, wx, wy;
 
 	if (conf::debug) {
-		std::cout << util::gettime() << " [XScreen:" << __func__ << "] Query clients \n";
+		std::cout << debug::gettime() << " [XScreen:" << __func__ << "] Query clients \n";
 	}
 
 	if (XQueryTree(wm::display, m_rootwin, &w0, &w1, &wins, &nwins)) {
@@ -249,7 +249,7 @@ bool XScreen::can_manage(Window w, bool query)
 void XScreen::remove_client(XClient *client)
 {
 	if (conf::debug) {
-		std::cout << util::gettime() << " [XScreen:" << __func__ << "] REMOVE Client "
+		std::cout << debug::gettime() << " [XScreen:" << __func__ << "] REMOVE Client "
 			<< std::hex << client->get_window() << std::endl;
 	}
 
@@ -393,17 +393,14 @@ void XScreen::set_net_desktop_names()
 
 void XScreen::clear_statusbar_title()
 {
-	if (conf::message_socket.empty())
-		return;
+	if (!socket_out::defined()) return;
 	std::string message = "no_window_active";
-	util::send_message(message);
+	socket_out::send(message);
 }
 
 void XScreen::update_statusbar_desktops()
 {
-	if (conf::message_socket.empty())
-		return;
-
+	if (!socket_out::defined()) return;
 	std::stringstream ss;
 	for (int i = 0; i < m_ndesktops; i++) {
 		if (i == m_desktop_active) {
@@ -416,7 +413,7 @@ void XScreen::update_statusbar_desktops()
 	}
 	std::string s(ss.str());
 	std::string message = "desktop_list=" + s;
-	util::send_message(message);
+	socket_out::send(message);
 }
 
 void XScreen::update_geometry()
@@ -495,9 +492,9 @@ void XScreen::ensure_clients_are_visible()
 
 void XScreen::move_pointer(long direction)
 {
-	Position pos = xutil::get_pointer_pos(m_rootwin);
+	Position pos = ptr::get_pos(m_rootwin);
 	pos.move(direction);
-	xutil::set_pointer_pos(m_rootwin, pos);
+	ptr::set_pos(m_rootwin, pos);
 }
 
 void XScreen::cycle_windows(long direction)

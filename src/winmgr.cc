@@ -34,7 +34,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include "util.h"
+#include "misc.h"
 #include "config.h"
 #include "xscreen.h"
 #include "xevents.h"
@@ -80,7 +80,7 @@ namespace wm {
 
 	static void	wm_startup(void);
 	static void	wm_shutdown(void);
-	static void 	process_message(std::string&);
+	static void 	process_message(void);
 	static void	setup_wmhints(void);
 	static void	setup_ewmhnts(void);
 	static int 	start_error_handler(Display *, XErrorEvent *);
@@ -146,11 +146,11 @@ static void wm::setup_ewmhnts()
 void wm::run()
 {
 	if (conf::message_socket.length()) {
-		util::init_message_socket(conf::message_socket);
+		socket_out::init(conf::message_socket);
 	}
 
 	if (conf::startupscript.length())
-		util::exec_child(conf::startupscript);
+		process::exec(conf::startupscript);
 	wm_startup();
 
 	int kq = kqueue();
@@ -168,7 +168,7 @@ void wm::run()
 
 	int sfd = -1;
 	if (conf::command_socket.length()) {
-		sfd = util::init_command_socket(conf::command_socket);
+		sfd = socket_in::init(conf::command_socket);
 		if (sfd != -1)
 			EV_SET(&watch[n++], sfd, EVFILT_READ, EV_ADD, 0, 0, 0);
 	}
@@ -191,9 +191,7 @@ void wm::run()
 			if (events[i].ident == xfd)
 				XEvents::process();
 			else if (events[i].ident == sfd) {
-				std::string mesg = "";
-				util::get_message(sfd, mesg);
-				process_message(mesg);
+				process_message();
 			}
 		}
 	}
@@ -208,13 +206,13 @@ void wm::run()
 	}
 
 	if (conf::shutdownscript.length())
-		util::exec_child(conf::shutdownscript);
+		process::exec(conf::shutdownscript);
 }
 
 // Process message received on the listening socket
-static void wm::process_message(std::string& mesg)
+static void wm::process_message()
 {
-	std::istringstream iss(mesg);
+	std::istringstream iss(socket_in::get_message());
 
 	int id;
 	std::string screenid;
@@ -255,12 +253,12 @@ static void wm::process_message(std::string& mesg)
 static void wm::wm_startup()
 {
 	if (conf::debug) {
-		std::cout << util::gettime() << " [wm::" << __func__ << "] Open X display..\n";
+		std::cout << debug::gettime() << " [wm::" << __func__ << "] Open X display..\n";
 	}
 
 	display = XOpenDisplay(displayname.c_str());
 	if (!display) {
-		std::cerr << util::gettime() << " [wm::" << __func__
+		std::cerr << debug::gettime() << " [wm::" << __func__
 			<< "] Unable to open display " << XDisplayName(displayname.c_str()) << '\n';
 		exit(1);
 	}
@@ -296,7 +294,7 @@ static void wm::wm_startup()
 static void wm::wm_shutdown()
 {
 	if (conf::debug) {
-		std::cout << util::gettime() << " [wm::" << __func__
+		std::cout << debug::gettime() << " [wm::" << __func__
 				<< "] Window manager shutdown..\n";
 	}
 
@@ -313,8 +311,7 @@ static void wm::wm_shutdown()
 	XSetInputFocus(display, PointerRoot, RevertToPointerRoot, CurrentTime);
 	XCloseDisplay(display);
 
-	if (conf::message_socket.length())
-		util::free_message_socket();
+	socket_out::clear();
 }
 
 static int  wm::start_error_handler(Display *display, XErrorEvent *e)
@@ -332,7 +329,7 @@ static int wm::error_handler(Display *display, XErrorEvent *e)
 	XGetErrorDatabaseText(display, "XRequest", number.c_str(),
 	    			"<unknown>", req, sizeof(req));
 
-	std::cerr << util::gettime() << " [wm::" << __func__ << "]:(" << req << ") (0x"
+	std::cerr << debug::gettime() << " [wm::" << __func__ << "]:(" << req << ") (0x"
 			<< std::hex << (unsigned int)e->resourceid
 			<< ") "  << msg << '\n';
 	return 0;
@@ -358,7 +355,7 @@ void wm::set_param_restart(std::string &cmd)
 	restart_argstr.clear();
 
 	if (conf::debug) {
-		std::cout << util::gettime() << " [wm::" << __func__ << "] cmd = " << cmd << std::endl;
+		std::cout << debug::gettime() << " [wm::" << __func__ << "] cmd = " << cmd << std::endl;
 	}
 
 	// Split the command into a array of space or quote delimited strings

@@ -25,7 +25,7 @@
 #include <string>
 #include <vector>
 #include "definitions.h"
-#include "util.h"
+#include "misc.h"
 #include "winmgr.h"
 #include "xclient.h"
 #include "xscreen.h"
@@ -55,7 +55,7 @@ Menu::Menu(XScreen *s, MenuDef &md, Menu *p): m_data(md)
 	m_border = conf::menu_border;
 	m_entry_height = m_font->ascent + m_font->descent;
 
-	Position pos = xutil::get_pointer_pos(m_rootwin);
+	Position pos = ptr::get_pos(m_rootwin);
 	Geometry area = m_screen->get_area(pos, 1);
 	m_geom.w = get_menu_width();
 	m_geom.h = (m_nitems + 1) * m_entry_height;
@@ -63,7 +63,7 @@ Menu::Menu(XScreen *s, MenuDef &md, Menu *p): m_data(md)
 		int ypos = m_entry_height * (m_parent->get_active() + 1);
 		m_geom.set_menu_placement(m_parent->get_geom(), area, ypos, m_border);
 	} else {
-		Position pos = xutil::get_pointer_pos(m_rootwin);
+		Position pos = ptr::get_pos(m_rootwin);
 		m_geom.set_menu_placement(pos, area, m_border);
 	}
 
@@ -131,7 +131,7 @@ bool Menu::run()
 		case MotionNotify:
 	 		pos = Position(e.xbutton.x, e.xbutton.y);
 			move_pointer(pos);
-			pos = xutil::get_pointer_pos(m_rootwin);
+			pos = ptr::get_pos(m_rootwin);
 			if (m_child) {
 				g = m_child->get_geom();
 				if (g.contains(pos, Coordinates::Root)) {
@@ -188,7 +188,7 @@ void Menu::draw()
 	XftDrawStringUtf8(m_xftdraw, m_titlecolor, m_font, 3, m_font->ascent,
 	    		(const FcChar8*)m_data.label.c_str(), m_data.label.size());
 
-	Position pos = xutil::get_pointer_pos(m_window);
+	Position pos = ptr::get_pos(m_window);
 	m_active = get_active_entry(pos);
 	for (int i = 0; i< m_nitems; i++)
 		draw_entry(i);
@@ -282,7 +282,7 @@ void Menu::run_launcher()
 	std::string function = m_data.items[m_active].function;
 	std::string path = m_data.items[m_active].path;
 	if (!function.compare("exec"))
-		util::spawn_process(path);
+		process::spawn(path);
 	if (!function.compare("quit"))
 		wm::status =  IsQuitting;
 	if (!function.compare("restart")) {

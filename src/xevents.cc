@@ -25,7 +25,7 @@
 #include <X11/Xatom.h>
 #include <X11/Xlib.h>
 #include <iostream>
-#include "util.h"
+#include "misc.h"
 #include "config.h"
 #include "binding.h"
 #include "winmgr.h"
@@ -66,14 +66,14 @@ static void XEvents::key_press(XEvent *ee)
 	XKeyEvent	*e = &ee->xkey;
 
 	if (conf::debug>2) {
-		std::cout << util::gettime() << " [XEvents::" << __func__
+		std::cout << debug::gettime() << " [XEvents::" << __func__
 			<< "] root 0x" << std::hex << e->root << " window 0x" << e->window << '\n';
 	}
 
 	XScreen *screen = XScreen::find_screen(e->root);
 	if (!screen) {
 		if (conf::debug>1) {
-			std::cout << util::gettime() << " [XEvents::" << __func__
+			std::cout << debug::gettime() << " [XEvents::" << __func__
 				<< "] screen not found for root window\n";
 		}
 		return;
@@ -106,7 +106,7 @@ static void XEvents::key_press(XEvent *ee)
 	}
 	if (!kb) {
 		if (conf::debug>1) {
-			std::cout << util::gettime() << " [XEvents::" << __func__
+			std::cout << debug::gettime() << " [XEvents::" << __func__
 				<< "] keybinding not matched!\n";
 		}
 		return;
@@ -135,14 +135,14 @@ static void XEvents::key_release(XEvent *ee)
 	XKeyEvent		*e = &ee->xkey;
 
 	if (conf::debug>2) {
-		std::cout << util::gettime() << " [XEvents::" << __func__
+		std::cout << debug::gettime() << " [XEvents::" << __func__
 			<< "] root 0x" << std::hex << e->root << " window 0x" << e->window << '\n';
 	}
 
 	XScreen *screen = XScreen::find_screen(e->root);
 	if (!screen) {
 		if (conf::debug>1) {
-			std::cout << util::gettime() << " [XEvents::" << __func__
+			std::cout << debug::gettime() << " [XEvents::" << __func__
 				<< "] screen not found for root window\n";
 		}
 		return;
@@ -167,13 +167,13 @@ static void XEvents::button_press(XEvent *ee)
 	XButtonEvent	*e = &ee->xbutton;
 
 	if (conf::debug>2)
-		std::cout << util::gettime() << " [XEvents::" << __func__
+		std::cout << debug::gettime() << " [XEvents::" << __func__
 			<< "] root 0x" << std::hex << e->root << " window 0x" << e->window << '\n';
 
 	XScreen *screen = XScreen::find_screen(e->root);
 	if (!screen) {
 		if (conf::debug>1) {
-			std::cout << util::gettime() << " [XEvents::" << __func__
+			std::cout << debug::gettime() << " [XEvents::" << __func__
 				<< "] screen not found for root window\n";
 		}
 		return;
@@ -207,7 +207,7 @@ static void XEvents::enter_notify(XEvent *ee)
 {
 	XCrossingEvent	*e = &ee->xcrossing;
 	if (conf::debug>2) {
-		std::cout << util::gettime() << " [XEvents::" << __func__
+		std::cout << debug::gettime() << " [XEvents::" << __func__
 			<< "] window 0x" << std::hex << e->window << '\n';
 	}
 
@@ -221,7 +221,7 @@ static void XEvents::expose(XEvent *ee)
 {
 	XExposeEvent	*e = &ee->xexpose;
 	if (conf::debug>2) {
-		std::cout << util::gettime() << " [XEvents::" << __func__
+		std::cout << debug::gettime() << " [XEvents::" << __func__
 			<< "] window 0x" << std::hex << e->window << '\n';
 	}
 
@@ -234,7 +234,7 @@ static void XEvents::destroy_notify(XEvent *ee)
 {
 	XDestroyWindowEvent	*e = &ee->xdestroywindow;
 	if (conf::debug>2) {
-		std::cout << util::gettime() << " [XEvents::" << __func__
+		std::cout << debug::gettime() << " [XEvents::" << __func__
 			<< "] window 0x" << std::hex << e->window << '\n';
 	}
 
@@ -249,7 +249,7 @@ static void XEvents::ummap_notify(XEvent *ee)
 {
 	XUnmapEvent		*e = &ee->xunmap;
 	if (conf::debug>2) {
-		std::cout << util::gettime() << " [XEvents::" << __func__
+		std::cout << debug::gettime() << " [XEvents::" << __func__
 			<< "] window 0x" << std::hex << e->window << '\n';
 	}
 
@@ -272,14 +272,14 @@ static void XEvents::map_request(XEvent *ee)
 {
 	XMapRequestEvent	*e = &ee->xmaprequest;
 	if (conf::debug>2) {
-		std::cout << util::gettime() << " [XEvents::" << __func__
+		std::cout << debug::gettime() << " [XEvents::" << __func__
 			<< "] parent 0x" << std::hex << e->parent << " window 0x" << e->window << '\n';
 	}
 
 	XScreen *screen = XScreen::find_screen(e->parent);
 	if (!screen) {
 		if (conf::debug>1) {
-			std::cout << util::gettime() << " [XEvents::" << __func__
+			std::cout << debug::gettime() << " [XEvents::" << __func__
 				<< "] screen not found for root window\n";
 		}
 		return;
@@ -298,7 +298,7 @@ static void XEvents::configure_request(XEvent *ee)
 {
 	XConfigureRequestEvent	*e = &ee->xconfigurerequest;
 	if (conf::debug>2) {
-		std::cout << util::gettime() << " [XEvents::" << __func__
+		std::cout << debug::gettime() << " [XEvents::" << __func__
 			<< "] window 0x" << std::hex << e->window << '\n';
 	}
 
@@ -324,7 +324,7 @@ static void XEvents::property_notify(XEvent *ee)
 {
 	XPropertyEvent	*e = &ee->xproperty;
 	if (conf::debug>2) {
-		std::cout << util::gettime() << " [XEvents::" << __func__
+		std::cout << debug::gettime() << " [XEvents::" << __func__
 			<< "] window 0x" << std::hex << e->window << '\n';
 	}
 
@@ -369,7 +369,7 @@ static void XEvents::client_message(XEvent *e)
 	XClientMessageEvent	*xev = &e->xclient;
 	XClient 		*client, *active_client;
 	if (conf::debug>2) {
-		std::cout << util::gettime() << " [XEvents::" << __func__
+		std::cout << debug::gettime() << " [XEvents::" << __func__
 			<< "] window 0x" << std::hex << xev->window << '\n';
 	}
 
@@ -423,7 +423,7 @@ static void XEvents::mappping_notify(XEvent *e)
 	XMappingEvent		*xev = &e->xmapping;
 
 	if (conf::debug>2) {
-		std::cout << util::gettime() << " [XEvents::" << __func__
+		std::cout << debug::gettime() << " [XEvents::" << __func__
 			<< "] window 0x" << std::hex << xev->window << '\n';
 	}
 
@@ -440,7 +440,7 @@ static void XEvents::screen_change_notify(XEvent *e)
 	XRRScreenChangeNotifyEvent	*xev = (XRRScreenChangeNotifyEvent *)e;
 
 	if (conf::debug>2) {
-		std::cout << util::gettime() << " [XEvents::" << __func__
+		std::cout << debug::gettime() << " [XEvents::" << __func__
 			<< "] root 0x" << std::hex << xev->root
 			<< "size:(" << std::dec << xev->width << ", " << xev->height << ")\n";
 	}
@@ -448,7 +448,7 @@ static void XEvents::screen_change_notify(XEvent *e)
 	XScreen *screen = XScreen::find_screen(xev->root);
 	if (!screen) {
 		if (conf::debug>1) {
-			std::cout << util::gettime() << " [XEvents::" << __func__
+			std::cout << debug::gettime() << " [XEvents::" << __func__
 				<< "] screen not found for root window\n";
 		}
 		return;

@@ -24,7 +24,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include "util.h"
+#include "misc.h"
 #include "config.h"
 #include "winmgr.h"
 #include "menu.h"
@@ -258,10 +258,10 @@ void wmfunc::set_wm_status(long status)
 
 void wmfunc::exec_term(long)
 {
-	util::spawn_process(conf::terminal);
+	process::spawn(conf::terminal);
 }
 
 void wmfunc::exec_cmd(std::string &cmd)
 {
-	util::spawn_process(cmd);
+	process::spawn(cmd);
 }

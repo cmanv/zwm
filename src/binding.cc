@@ -24,7 +24,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "util.h"
+#include "misc.h"
 #include "config.h"
 #include "winmgr.h"
 #include "wmfunc.h"
@@ -113,11 +113,11 @@ Binding::Binding( BindingDef& binddef, EventType eventtype)
 		}
 	}
 	if (!valid) {
-		std::cerr << util::gettime() << " [Binding::" << __func__ << "] function ("
+		std::cerr << debug::gettime() << " [Binding::" << __func__ << "] function ("
 			<< binddef.namefunc << ") is not defined!\n";
 	}
 	else if (conf::debug) {
-		std::cout << util::gettime() << " [Binding::" << __func__ << "] define {"
+		std::cout << debug::gettime() << " [Binding::" << __func__ << "] define {"
 			<< keycombo << "} -> " << function << "(" << path << ")\n";
 	}
 }

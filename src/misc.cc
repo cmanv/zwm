@@ -39,15 +39,18 @@
 #include "desktop.h"
 #include "xclient.h"
 #include "xscreen.h"
-#include "util.h"
+#include "misc.h"
 
-namespace util {
-	static void execute(std::string &);
-	struct addrinfo *sock_addr;
-	bool valid_addr = true;
+std::string debug::gettime()
+{
+	auto t = std::chrono::system_clock::now();
+	std::time_t now = std::chrono::system_clock::to_time_t(t);
+	std::string s(8, '\0');
+	std::strftime(&s[0], s.size(), "%H:%M:%S", std::localtime(&now));
+	return s;
 }
 
-Position xutil::get_pointer_pos(Window window)
+Position ptr::get_pos(Window window)
 {
 	Window		 root, child;
 	int		 rx, ry, wx, wy;
@@ -57,21 +60,16 @@ Position xutil::get_pointer_pos(Window window)
 	return Position(wx, wy);
 }
 
-void xutil::set_pointer_pos(Window window, Position p)
+void ptr::set_pos(Window window, Position p)
 {
 	XWarpPointer(wm::display, None, window, 0, 0, 0, 0, p.x, p.y);
 }
 
-std::string util::gettime()
-{
-	auto t = std::chrono::system_clock::now();
-	std::time_t now = std::chrono::system_clock::to_time_t(t);
-	std::string s(8, '\0');
-	std::strftime(&s[0], s.size(), "%H:%M:%S", std::localtime(&now));
-	return s;
+namespace process {
+	static void execute(std::string &);
 }
 
-void util::exec_child(std::string &path)
+void process::exec(std::string &path)
 {
 	pid_t pid = fork();
 	switch(pid) {
@@ -89,7 +87,7 @@ void util::exec_child(std::string &path)
 	waitpid(pid, &status, 0);
 }
 
-void util::spawn_process(std::string &path)
+void process::spawn(std::string &path)
 {
 	switch (fork()) {
 	case 0:
@@ -103,7 +101,7 @@ void util::spawn_process(std::string &path)
 	}
 }
 
-static void util::execute(std::string &path)
+static void process::execute(std::string &path)
 {
 	std::vector<std::string> arglist;
 	std::string word;
@@ -126,7 +124,12 @@ static void util::execute(std::string &path)
 	std::cerr << "Error exec: " << path << std::endl;
 }
 
-int util::init_command_socket(std::string &name)
+namespace socket_in {
+	int socket_fd = -1;
+	std::string message = "";
+}
+
+int socket_in::init(std::string &name)
 {
 	int res = 0, optval = 1;
 	bool unix_socket = false;
@@ -167,14 +170,14 @@ int util::init_command_socket(std::string &name)
 		}
 	}
 
-	int fd = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
-	if (fd < 0) {
+	socket_fd = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
+	if (socket_fd < 0) {
 		std::cerr << "socket: " << std::strerror(errno) << std::endl;
 		freeaddrinfo(result);
 		return -1;
 	}
 
-	if (bind(fd, result->ai_addr, result->ai_addrlen) < 0) {
+	if (bind(socket_fd, result->ai_addr, result->ai_addrlen) < 0) {
 		std::cerr << "bind: " << std::strerror(errno) << std::endl;
 		freeaddrinfo(result);
 		return -1;
@@ -183,41 +186,48 @@ int util::init_command_socket(std::string &name)
 	if (unix_socket)
 		std::filesystem::permissions(socket_name, std::filesystem::perms::owner_all);
 
-	if (listen(fd, 5) < 0) {
+	if (listen(socket_fd, 5) < 0) {
 		std::cerr << "listen failed on socket [" << name << "]!\n";
 	}
 
 	freeaddrinfo(result);
-	return fd;
+	return socket_fd;
 }
 
-void util::get_message(int fd, std::string &msg)
+const std::string& socket_in::get_message()
 {
-	int fd2 = accept(fd, NULL, NULL);
+	message = "";
+	int fd2 = accept(socket_fd, NULL, NULL);
 	if (fd2 < 0) {
 		std::cerr << "error on accept" << std::endl;
 		close(fd2);
-		return;
+		return message;
 	}
 	char buffer[1024];
 	bzero(buffer, 1024);
 	if (read(fd2, buffer, 1023) < 0) {
 		std::cerr << "error on read" << std::endl;
 		close(fd2);
-		return;
+		return message;
 	}
 	close(fd2);
-	msg = std::regex_replace(std::string(buffer), std::regex("\\r\\n|\\r|\\n"), "");
-	return;
+	message = std::regex_replace(std::string(buffer), std::regex("\\r\\n|\\r|\\n"), "");
+	return message;
 }
 
-void util::init_message_socket(std::string &socket_name)
+namespace socket_out {
+	struct addrinfo *address;
+	bool valid_addr = false;
+}
+
+void socket_out::init(std::string &socket_name)
 {
-	int rc;
+	int rc = -1;
 	struct addrinfo hint;
 	memset(&hint, 0, sizeof(hint));
 	hint.ai_socktype = SOCK_STREAM;
 
+	if (valid_addr) freeaddrinfo(address);
 	int pos = socket_name.find(":");
 	if (pos != socket_name.npos) {
 		std::string hostname = socket_name.substr(0, pos);
@@ -225,35 +235,41 @@ void util::init_message_socket(std::string &socket_name)
 		hint.ai_family = AF_UNSPEC;
 		hint.ai_protocol = IPPROTO_TCP;
 		hint.ai_flags = AI_ADDRCONFIG;
-		rc = getaddrinfo(hostname.c_str(), port.c_str(), &hint, &sock_addr);
+		rc = getaddrinfo(hostname.c_str(), port.c_str(), &hint, &address);
 	} else {
 		hint.ai_family = PF_LOCAL;
-		rc = getaddrinfo(socket_name.c_str(), NULL, &hint, &sock_addr);
+		rc = getaddrinfo(socket_name.c_str(), NULL, &hint, &address);
 	}
 	if (rc) {
-		valid_addr = false;
 		std::cerr << "getaddrinfo error on socket [" << socket_name << "}: "
 			<< gai_strerror(rc) << "\n";
+	} else {
+		valid_addr = true;
 	}
 }
 
-void util::free_message_socket()
+bool socket_out::defined()
 {
-	if (!valid_addr) return;
-	freeaddrinfo(sock_addr);
+	return valid_addr;
 }
 
-int util::send_message(std::string &message)
+void socket_out::clear()
+{
+	if (valid_addr) freeaddrinfo(address);
+	valid_addr = false;
+}
+
+int socket_out::send(std::string &message)
 {
 	if (!valid_addr) return 0;
 
-	int fd = socket(sock_addr->ai_family, sock_addr->ai_socktype, sock_addr->ai_protocol);
+	int fd = socket(address->ai_family, address->ai_socktype, address->ai_protocol);
 	if (fd < 0) {
 		std::cerr << "Cannot create socket!\n";
 		return -1;
 	}
 
-	if (connect(fd, sock_addr->ai_addr, sock_addr->ai_addrlen) < 0) {
+	if (connect(fd, address->ai_addr, address->ai_addrlen) < 0) {
 		std::cerr << "Cannot connect to message socket!\n";
 		close(fd);
 		return -1;

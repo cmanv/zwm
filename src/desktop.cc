@@ -25,7 +25,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "util.h"
+#include "misc.h"
 #include "config.h"
 #include "winmgr.h"
 #include "xclient.h"
@@ -51,7 +51,7 @@ Desktop::Desktop(XScreen *screen, long index, std::string &name,
 void Desktop::add_window(XClient *client)
 {
 	if (conf::debug > 1) {
-		std::cout << util::gettime() << " [Desktop::" << __func__
+		std::cout << debug::gettime() << " [Desktop::" << __func__
 			<< "] ADD Client ptr window 0x" << std::hex << client->get_window()
 			<< std::endl;
 	}
@@ -64,7 +64,7 @@ void Desktop::add_window(XClient *client)
 void Desktop::remove_window(XClient *client)
 {
 	if (conf::debug > 1) {
-		std::cout << util::gettime() << " [Desktop::" << __func__
+		std::cout << debug::gettime() << " [Desktop::" << __func__
 			<< "] REMOVE Client ptr window 0x" << std::hex << client->get_window()
 			<< std::endl;
 	}
@@ -175,9 +175,10 @@ void Desktop::show()
 	else if (!conf::desktop_modes[m_mode_index].name.compare("HTiled"))
 		tile_horizontal();
 
-	if (conf::message_socket.empty()) return;
-	std::string message = "desktop_mode=" + conf::desktop_modes[m_mode_index].letter;
-	util::send_message(message);
+	if (!socket_out::defined()) return;
+	std::string message = "desktop_mode="
+				+ conf::desktop_modes[m_mode_index].letter;
+	socket_out::send(message);
 }
 
 void Desktop::hide()
@@ -236,7 +237,7 @@ void Desktop::tile_horizontal()
 {
 	int x, y, w, h;
 
-	Position p = xutil::get_pointer_pos(m_screen->get_window());
+	Position p = ptr::get_pos(m_screen->get_window());
 	Geometry area = m_screen->get_area(p, true);
 	int border = conf::tiled_border;
 
@@ -280,7 +281,7 @@ void Desktop::tile_vertical()
 {
 	int x, y, w, h;
 
-	Position p = xutil::get_pointer_pos(m_screen->get_window());
+	Position p = ptr::get_pos(m_screen->get_window());
 	Geometry area = m_screen->get_area(p, true);
 	int border = conf::tiled_border;
 
@@ -338,7 +339,7 @@ void Desktop::master_split(long increment)
 
 void Desktop::tile_maximized()
 {
-	Position p = xutil::get_pointer_pos(m_screen->get_window());
+	Position p = ptr::get_pos(m_screen->get_window());
 	Geometry area = m_screen->get_area(p, true);
 	int border = conf::tiled_border;
 

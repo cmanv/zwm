@@ -25,7 +25,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "util.h"
+#include "misc.h"
 #include "binding.h"
 #include "config.h"
 #include "winmgr.h"
@@ -42,7 +42,7 @@ XClient::XClient(Window w, XScreen *s, bool existing): m_window(w), m_screen(s)
 	m_ignore_unmap = false;
 
 	if (conf::debug) {
-		std::cout << util::gettime() << " [XClient::" << __func__
+		std::cout << debug::gettime() << " [XClient::" << __func__
 			<< "] Create Client window 0x" << std::hex << m_window << std::endl;
 	}
 	// For existing clients, reparent will send an unmap request which should be ignored.
@@ -115,7 +115,7 @@ XClient::XClient(Window w, XScreen *s, bool existing): m_window(w), m_screen(s)
 XClient::~XClient()
 {
 	if (conf::debug) {
-		std::cout << util::gettime() << " [XClient::" << __func__
+		std::cout << debug::gettime() << " [XClient::" << __func__
 			<< "] Destroy Client window 0x" << std::hex << m_window << std::endl;
 	}
 
@@ -165,6 +165,7 @@ void XClient::reparent_window()
 	XSetWindowBorderWidth(wm::display, m_window, 0);
 	XReparentWindow(wm::display, m_window, m_parent, 0, 0);
 
+	// Grab mouse bindings in the parent windoe
 	for (Binding& mb : conf::mousebindings) {
 		if (mb.context != Context::Window) continue;
 		for (auto mod : wm::ignore_mods)
@@ -224,10 +225,9 @@ void XClient::update_net_wm_name()
 
 void XClient::update_statusbar_title()
 {
-	if (conf::message_socket.empty())
-		return;
+	if (!socket_out::defined()) return;
 	std::string message = "window_active=" + m_name;
-	util::send_message(message);
+	socket_out::send(message);
 }
 
 void XClient::get_net_wm_window_type()
@@ -360,7 +360,7 @@ void XClient::set_initial_placement()
 		if (has_state(State::Ignored))
 			m_geom.adjust_for_maximized(view, m_border_orig);
 	} else {
-		Position pos = xutil::get_pointer_pos(m_rootwin);
+		Position pos = ptr::get_pos(m_rootwin);
 		Geometry area = m_screen->get_area(pos, true);
 		m_geom.set_placement(pos, area, m_border_w);
 	}
@@ -538,7 +538,7 @@ void XClient::move_window_with_pointer()
 	Position 	 pos;
 
 	if (conf::debug) {
-		std::cout << util::gettime() << " [XClient::" << __func__
+		std::cout << debug::gettime() << " [XClient::" << __func__
 			<< "] Move window 0x" << std::hex << m_window << std::endl;
 	}
 	if (has_state(State::Frozen)) return;
@@ -610,11 +610,11 @@ void XClient::resize_window_with_pointer()
 	if (has_state(State::Frozen|State::NoResize)) return;
 
 	if (conf::debug>1) {
-		std::cout << util::gettime() << " [XClient::" << __func__ << "]\n";
+		std::cout << debug::gettime() << " [XClient::" << __func__ << "]\n";
 	}
 
 	raise_window();
-	m_ptr = xutil::get_pointer_pos(m_parent);
+	m_ptr = ptr::get_pos(m_parent);
 
 	// Pointer position determines the direction of the resize
 	Direction	direction;
@@ -624,6 +624,7 @@ void XClient::resize_window_with_pointer()
 	int limittop = m_geom.h/4;
 	int limitbottom = 3 * m_geom.h/4;
 
+	// Default to just move the window if not in a border area
 	direction = Pointer;
 	cursor = wm::cursors[Pointer::ShapeMove];
 	if ((m_ptr.x > limitright) && (m_ptr.y > limitbottom)) {
@@ -679,10 +680,6 @@ void XClient::resize_window_with_pointer()
 				continue;
 			ltime = ev.xmotion.time;
 			switch(direction) {
-			case Direction::Pointer:
-				m_geom.x = ev.xmotion.x_root - m_ptr.x - m_border_w;
-				m_geom.y = ev.xmotion.y_root - m_ptr.y - m_border_w;
-				break;
 			case Direction::North:
 				m_geom.y = ev.xmotion.y_root;
 				m_geom.h = ymax - m_geom.y;
@@ -716,6 +713,10 @@ void XClient::resize_window_with_pointer()
 				m_geom.y = ev.xmotion.y_root;
 				m_geom.w = xmax - m_geom.x;
 				m_geom.h = ymax - m_geom.y;
+				break;
+			default:
+				m_geom.x = ev.xmotion.x_root - m_ptr.x - m_border_w;
+				m_geom.y = ev.xmotion.y_root - m_ptr.y - m_border_w;
 				break;
 			}
 
@@ -761,19 +762,19 @@ void XClient::snap_window(long direction)
 
 void XClient::move_pointer_inside()
 {
-	m_ptr = xutil::get_pointer_pos(m_parent);
+	m_ptr = ptr::get_pos(m_parent);
 	m_ptr.move_inside(m_geom);
-	xutil::set_pointer_pos(m_parent, m_ptr);
+	ptr::set_pos(m_parent, m_ptr);
 }
 
 void XClient::warp_pointer()
 {
-	xutil::set_pointer_pos(m_parent, m_ptr);
+	ptr::set_pos(m_parent, m_ptr);
 }
 
 void XClient::save_pointer()
 {
-	Position p = xutil::get_pointer_pos(m_parent);
+	Position p = ptr::get_pos(m_parent);
 	if (m_geom.contains(p, Coordinates::Window)) {
 		m_ptr = p;
 	} else {
