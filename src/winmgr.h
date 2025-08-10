@@ -35,15 +35,11 @@ namespace wm {
 	extern std::string			 displayname;
 	extern Time				 last_event_time;
 	extern volatile sig_atomic_t 		 status;
-
 	extern int				 xrandr;
 	extern int				 xrandr_event_base;
-
 	extern std::vector<Cursor> 		 cursors;
-
 	extern std::vector<XScreen*>		 screenlist;
 	extern const std::vector<unsigned int>	 ignore_mods;
-
 	void		 run(void);
 	void		 set_param_restart(int, char**);
 	void		 set_param_restart(std::string &);

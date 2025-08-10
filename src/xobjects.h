@@ -154,5 +154,4 @@ struct DesktopMode {
 	DesktopMode(long i, std::string n, std::string l)
 		:index(i), name(n), letter(l) {}
 };
-
 #endif /* _XOBJECTS_H_ */

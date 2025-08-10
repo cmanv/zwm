@@ -67,5 +67,4 @@ private:
 	XClient 		*next_window(XClient *);
 	XClient 		*prev_window(XClient *);
 };
-
 #endif /* _DESKTOP_H_ */

@@ -181,5 +181,4 @@ enum class MenuType {
 	Desktop,
 	Launcher
 };
-
 #endif // _DEFINITIONS_H_

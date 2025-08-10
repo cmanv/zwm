@@ -32,7 +32,6 @@ class XScreen;
 struct ModKeyDef {
 	char		ch;
 	unsigned int	mask;
-
 	ModKeyDef(char c, int m): ch(c), mask(m) {}
 };
 
@@ -40,7 +39,6 @@ struct BindingDef {
 	std::string		keycombo;
 	std::string		namefunc;
 	std::string		path;
-
 	BindingDef() {}
 	BindingDef(std::string &k, std::string &f, std::string &p)
 		: keycombo(k), namefunc(f), path(p) {}
@@ -68,10 +66,7 @@ struct Binding {
 	long			param;
 	std::string		path;
 	bool			valid;
-
 	static std::vector<ModKeyDef> modkey_defs;
-
 	Binding(BindingDef&, EventType);
 };
-
 #endif // BINDING_H_

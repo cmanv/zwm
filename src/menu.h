@@ -81,7 +81,6 @@ class Menu {
 	int				 m_entry_height;
 	Window				 m_submenu_char_width;
 	bool				 m_running;
-
 public:
 	Menu(XScreen *s, MenuDef &d, Menu *p = NULL);
 	~Menu();
@@ -89,7 +88,6 @@ public:
 	int 			 get_active() const { return m_active; }
 	bool 			 run();
 	void 			 draw();
-
 private:
 	int 			 get_menu_width();
 	int 			 grab_pointer();
@@ -101,10 +99,8 @@ private:
 	void			 run_launcher();
 	void 			 activate_client();
 	void			 switch_to_desktop();
-
 	static const long 	 ButtonMask;
 	static const long 	 MenuMask;
 	static const long 	 MenuGrabMask;
 };
-
 #endif /* _MENU_H_ */

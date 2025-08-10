@@ -448,4 +448,3 @@ void ewmh::set_net_wm_states(Window window, long states)
 		XDeleteProperty(wm::display, window, hints[_NET_WM_STATE]);
 	}
 }
-

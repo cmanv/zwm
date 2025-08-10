@@ -30,7 +30,6 @@ class XClient;
 class XScreen;
 
 namespace wmfunc {
-
 	struct FuncDef {
 		std::string 		namefunc;
 		Context			context;
@@ -42,7 +41,6 @@ namespace wmfunc {
 			void		(*froot)(XScreen *);
 		};
 		long			param;
-
 		FuncDef(const char *n, void (*f)(XScreen *), Context c)
 			:namefunc(n), froot(f), context(c) {}
 		FuncDef(const char *n, void (*f)(long))
@@ -62,7 +60,6 @@ namespace wmfunc {
 	};
 
 	extern std::vector<FuncDef> funcdefs;
-
 	void window_resize(XClient *, long);
 	void window_move(XClient *, long);
 	void window_resize(XClient *, long);
@@ -74,7 +71,6 @@ namespace wmfunc {
 	void window_state(XClient *, long);
 	void window_to_desktop(XClient *, long);
 	void window_menu_label(XClient *, long);
-
 	void desktop_select(XScreen *, long);
 	void desktop_last(XScreen *, long);
 	void desktop_hide(XScreen *, long);
@@ -88,11 +84,9 @@ namespace wmfunc {
 	void desktop_rotate_tiles(XScreen *, long);
 	void desktop_cycle(XScreen *, long);
 	void desktop_window_cycle(XScreen *, long);
-
 	void menu_launcher(XScreen *);
 	void menu_client(XScreen *);
 	void menu_desktop(XScreen *);
-
 	void exec_term(long);
 	void set_wm_status(long);
 	void exec_cmd(std::string&);

@@ -37,7 +37,6 @@ namespace conf {
 	extern std::string 			 command_socket;
 	extern std::string 			 startupscript;
 	extern std::string 			 shutdownscript;
-
 	extern int				 debug;
 	extern int				 stacked_border;
 	extern int				 tiled_border;
@@ -46,7 +45,6 @@ namespace conf {
 	extern int				 snapdist;
 	extern BorderGap			 bordergap;
 	extern const int			 ndesktops;
-
 	extern std::vector<DesktopDef> 	 	 desktop_defs;
 	extern std::vector<DesktopMode> 	 desktop_modes;
 	extern std::vector<std::string> 	 colordefs;
@@ -59,8 +57,6 @@ namespace conf {
 	extern std::string			 menu_client;
 	extern std::string			 menu_desktop;
 	extern std::string			 menu_launcher;
-
 	void 	init();
 }
-
 #endif // _CONFIG_H_

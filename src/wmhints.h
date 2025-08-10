@@ -34,7 +34,6 @@ struct StateMap {
 
 namespace wmh {
 	extern std::vector<Atom>		 hints;
-
 	void		 setup(void);
 	long 		 get_wm_state(Window window);
 	void 		 set_wm_state(Window window, long wstate);
@@ -46,7 +45,6 @@ namespace wmh {
 namespace ewmh {
 	extern std::vector<Atom>		 hints;
 	extern std::vector<StateMap> 		 statemaps;
-
 	void		 setup(void);
 	void		 set_net_supported(Window);
 	void		 set_net_supported_wm_check(Window, std::string&);

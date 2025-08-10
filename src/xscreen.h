@@ -36,25 +36,20 @@ class XScreen {
 	int			 	 m_screenid;
 	Window			 	 m_rootwin;
 	bool				 m_cycling;
-
 	Geometry	 		 m_view; // viewable area
 	Geometry			 m_work; // workable area, gap-applied
 	BorderGap	 		 m_bordergap;
-
 	std::list<XClient*>		 m_clientlist;
 	std::vector<XClient*> 		 m_stickylist;
 	std::vector<Desktop>		 m_desktoplist;
 	std::vector<Viewport>		 m_viewportlist;
-
 	long			 	 m_ndesktops;
 	long				 m_desktop_active;
 	long				 m_desktop_last;
-
 	Visual				*m_visual;
 	Colormap			 m_colormap;
 	std::vector<XftColor>		 m_xftcolors;
 	XftFont				*m_menufont;
-
 public:
 	XScreen(int);
 	~XScreen();
@@ -73,7 +68,6 @@ public:
 	Geometry	 		 get_view() const { return m_view; }
 	bool			 	 is_cycling() const { return m_cycling; }
 	void				 stop_cycling() { m_cycling = false; };
-
 	void				 grab_keybindings();
 	XClient				*get_active_client();
 	void 				 add_client(Window);
@@ -86,20 +80,17 @@ public:
 	void 				 set_net_desktop_names();
 	void 				 clear_statusbar_title();
 	void 				 update_statusbar_desktops();
-
 	void 				 add_window_tile_to_desktop(XClient *);
 	void 				 remove_window_tile_from_desktop(XClient *);
 	void 				 assign_client_to_desktop(XClient *, long, bool);
 	void 				 show_desktop();
 	void 				 hide_desktop();
 	void 				 close_desktop();
-
 	void				 update_geometry();
 	Geometry			 get_area(Position&, bool);
 	Viewport 			*find_viewport(Position&);
 	void	 			 ensure_clients_are_visible();
 	void	 			 move_pointer(long);
-
 	void	 			 cycle_windows(long);
 	void	 			 cycle_desktops(long);
 	void				 select_desktop_mode(const std::string&);
@@ -108,17 +99,13 @@ public:
 	void 				 desktop_master(long);
 	void	 			 switch_to_desktop(int);
 	void	 			 update_desktop_names();
-
 	void				 run_menu_client();
 	void				 run_menu_desktop();
 	void				 run_menu_launcher();
-
 	static XClient			*find_active_client();
 	static XClient			*find_client(Window);
 	static XScreen			*find_screen(Window);
-
 private:
 	void 				 add_existing_clients();
 };
-
 #endif /* _XSCREEN_H_ */
