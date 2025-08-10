@@ -33,6 +33,7 @@
 #include "misc.h"
 #include "config.h"
 #include "binding.h"
+#include "wmhints.h"
 #include "winmgr.h"
 #include "menu.h"
 #include "desktop.h"
@@ -59,11 +60,11 @@ XScreen::XScreen(int id): m_screenid(id)
 
 	m_ndesktops = m_desktoplist.size();
 
-	wm::set_net_supported(m_rootwin);
-	wm::set_net_supported_wm_check(m_rootwin, conf::wmname);
-	wm::unset_net_showing_desktop(m_rootwin);
-	wm::delete_net_virtual_roots(m_rootwin);
-	wm::set_net_number_of_desktops(m_rootwin, m_ndesktops);
+	ewmh::set_net_supported(m_rootwin);
+	ewmh::set_net_supported_wm_check(m_rootwin, conf::wmname);
+	ewmh::unset_net_showing_desktop(m_rootwin);
+	ewmh::delete_net_virtual_roots(m_rootwin);
+	ewmh::set_net_number_of_desktops(m_rootwin, m_ndesktops);
 	set_net_desktop_names();
 
 	m_desktop_active = 0;
@@ -71,10 +72,10 @@ XScreen::XScreen(int id): m_screenid(id)
 
 	// Use the _NET_CURRENT_DESKTOP atom if it exists.
 	long net_current_desktop;
-	if (wm::get_net_current_desktop(m_rootwin, &net_current_desktop))
+	if (ewmh::get_net_current_desktop(m_rootwin, &net_current_desktop))
 		m_desktop_active = net_current_desktop;
 	else
-		wm::set_net_current_desktop(m_rootwin, m_desktop_active);
+		ewmh::set_net_current_desktop(m_rootwin, m_desktop_active);
 
 	// fonts
 	m_menufont = XftFontOpenName(wm::display, m_screenid, conf::menufont.c_str());
@@ -277,7 +278,7 @@ void XScreen::remove_client(XClient *client)
 
 	if (states & State::Active) {
 		XSetInputFocus(wm::display, PointerRoot, RevertToPointerRoot, CurrentTime);
-		wm::set_net_active_window(m_rootwin, None);
+		ewmh::set_net_active_window(m_rootwin, None);
 		clear_statusbar_title();
 	}
 
@@ -334,7 +335,7 @@ void XScreen::assign_client_to_desktop(XClient *client, long index, bool client_
 		m_desktoplist[index].add_window(client);
 
 	client->set_desktop_index(index);
-	wm::set_net_wm_desktop(client->get_window(), index);
+	ewmh::set_net_wm_desktop(client->get_window(), index);
 }
 
 void XScreen::show_desktop()
@@ -368,7 +369,7 @@ void XScreen::update_net_client_lists()
 
 	for (XClient *c : m_clientlist)
 		netclientlist.push_back(c->get_window());
-	wm::set_net_client_list(m_rootwin, netclientlist);
+	ewmh::set_net_client_list(m_rootwin, netclientlist);
 
 	netclientlist.clear();
 
@@ -378,7 +379,7 @@ void XScreen::update_net_client_lists()
 	for (XClient *c : m_stickylist)
 		netclientlist.push_back(c->get_window());
 
-	wm::set_net_client_list_stacking(m_rootwin, netclientlist);
+	ewmh::set_net_client_list_stacking(m_rootwin, netclientlist);
 }
 
 void XScreen::set_net_desktop_names()
@@ -388,7 +389,7 @@ void XScreen::set_net_desktop_names()
 	for (Desktop &d : m_desktoplist)
 		names.push_back(d.get_name());
 
-	wm::set_net_desktop_names(m_rootwin, names);
+	ewmh::set_net_desktop_names(m_rootwin, names);
 }
 
 void XScreen::clear_statusbar_title()
@@ -449,9 +450,9 @@ void XScreen::update_geometry()
 		m_viewportlist.push_back(viewport);
 	}
 
-	wm::set_net_desktop_geometry(m_rootwin, m_view);
-	wm::set_net_desktop_viewport(m_rootwin);
-	wm::set_net_workarea(m_rootwin, m_ndesktops, m_work);
+	ewmh::set_net_desktop_geometry(m_rootwin, m_view);
+	ewmh::set_net_desktop_viewport(m_rootwin);
+	ewmh::set_net_workarea(m_rootwin, m_ndesktops, m_work);
 }
 
 Geometry XScreen::get_area(Position &p, bool gap)
@@ -549,7 +550,7 @@ void XScreen::switch_to_desktop(int index)
 	m_desktoplist[index].show();
 	m_desktop_last = m_desktop_active;
 	m_desktop_active = index;
-	wm::set_net_current_desktop(m_rootwin, m_desktop_active);
+	ewmh::set_net_current_desktop(m_rootwin, m_desktop_active);
 	update_statusbar_desktops();
 }
 

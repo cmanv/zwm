@@ -27,15 +27,8 @@
 #include <X11/Xlib.h>
 #include <string>
 #include <vector>
-#include "xobjects.h"
 
 class XScreen;
-
-struct StateMap {
-	Atom atom;
-	long state;
-	StateMap(Atom a, long s):atom(a), state(s) {}
-};
 
 namespace wm {
 	extern Display				*display;
@@ -51,45 +44,8 @@ namespace wm {
 	extern std::vector<XScreen*>		 screenlist;
 	extern const std::vector<unsigned int>	 ignore_mods;
 
-	extern std::vector<Atom>		 ewmh;
-	extern std::vector<Atom>		 hints;
-	extern std::vector<StateMap> 		 statemaps;
-
 	void		 run(void);
 	void		 set_param_restart(int, char**);
 	void		 set_param_restart(std::string &);
-
-	// EWMH functions
-	void		 set_net_supported(Window);
-	void		 set_net_supported_wm_check(Window, std::string&);
-	void		 set_net_desktop_geometry(Window, Geometry&);
-	void		 set_net_desktop_viewport(Window);
-	void		 set_net_workarea(Window, int, Geometry&);
-	void		 set_net_client_list(Window, std::vector<Window>&);
-	void		 set_net_client_list_stacking(Window, std::vector<Window>&);
-	void		 set_net_active_window(Window, Window);
-	void		 set_net_number_of_desktops(Window, int);
-	void		 unset_net_showing_desktop(Window);
-	void		 delete_net_virtual_roots(Window);
-
-	int		 get_net_current_desktop(Window, long *);
-	void		 set_net_current_desktop(Window, int);
-	void		 set_net_desktop_names(Window, std::vector<std::string>&);
-
-	long		 get_wm_state(Window);
-	void		 set_wm_state(Window, long);
-
-	int		 get_net_wm_desktop(Window, long *);
-	void		 set_net_wm_desktop(Window, int);
-
-	int		 get_net_wm_window_type(Window, std::vector<Atom>&);
-
-	int		 get_net_wm_state_atoms(Window, std::vector<Atom>&);
-	long		 get_net_wm_states(Window, long);
-	void		 set_net_wm_states(Window, long);
-
-	void		*get_window_property(Window, Atom, Atom, long, unsigned long *);
-	int		 get_text_property(Window, Atom, std::vector<char>&);
-	void		 send_client_message(Window, Atom, Time);
 }
 #endif // _WINMGR_H_

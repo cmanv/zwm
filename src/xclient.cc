@@ -28,6 +28,7 @@
 #include "misc.h"
 #include "binding.h"
 #include "config.h"
+#include "wmhints.h"
 #include "winmgr.h"
 #include "xscreen.h"
 #include "xclient.h"
@@ -67,13 +68,13 @@ XClient::XClient(Window w, XScreen *s, bool existing): m_window(w), m_screen(s)
 	m_colormap = wattr.colormap;
 	m_border_orig = wattr.border_width;
 
-	get_net_wm_name(); 		// Get window name
-	get_net_wm_window_type(); 	// Get window type
-	get_wm_hints(); 		// Get input, urgency and initial status hints
-	get_class_hint(); 		// Get class and name hint
-	get_wm_protocols(); 		// Get wm defined protocols.
-	get_wm_normal_hints(); 		// Get hints from the window geometry
-	get_transient(); 		// Set transient windows to ignore
+	get_net_wm_name();		// Get window name
+	get_net_wm_window_type();	// Get window type
+	get_wm_hints();			// Get input, urgency and initial status hints
+	get_class_hint();		// Get class and name hint
+	get_wm_protocols();		// Get wm defined protocols.
+	get_wm_normal_hints();		// Get hints from the window geometry
+	get_transient();		// Set transient windows to ignore
 	get_motif_hints();		// Check if window wants no border
 
 	apply_user_states();	// Apply user configured states
@@ -87,7 +88,7 @@ XClient::XClient(Window w, XScreen *s, bool existing): m_window(w), m_screen(s)
 	// New window starts as hidden until reparent
 	if (wattr.map_state != IsViewable) {
 		set_initial_placement();
-		wm::set_wm_state(m_window, IconicState);
+		wmh::set_wm_state(m_window, IconicState);
 	}
 	m_geom_stack = m_geom;
 
@@ -95,7 +96,7 @@ XClient::XClient(Window w, XScreen *s, bool existing): m_window(w), m_screen(s)
 	XSelectInput(wm::display, m_window, EnterWindowMask|PropertyChangeMask);
 
 	send_configure_event();
-	m_states = wm::get_net_wm_states(m_window, m_states);
+	m_states = ewmh::get_net_wm_states(m_window, m_states);
 
 	// Set the desktop index.
 	m_deskindex = -1;
@@ -131,9 +132,9 @@ XClient::~XClient()
 
 	if (m_removed) {
 		// The client has been unmapped
-		wm::set_wm_state(m_window, WithdrawnState);
-		XDeleteProperty(wm::display, m_window, wm::ewmh[_NET_WM_DESKTOP]);
-		XDeleteProperty(wm::display, m_window, wm::ewmh[_NET_WM_STATE]);
+		wmh::set_wm_state(m_window, WithdrawnState);
+		XDeleteProperty(wm::display, m_window, ewmh::hints[_NET_WM_DESKTOP]);
+		XDeleteProperty(wm::display, m_window, ewmh::hints[_NET_WM_STATE]);
 	}
 	// Reparent the client window to root and destroy the parent
 	XReparentWindow(wm::display, m_window, m_rootwin, m_geom.x, m_geom.y);
@@ -211,8 +212,8 @@ bool XClient::ignore_unmap()
 void XClient::get_net_wm_name()
 {
 	std::vector<char> text;
-	if (!wm::get_text_property(m_window, wm::ewmh[_NET_WM_NAME], text))
-		wm::get_text_property(m_window, XA_WM_NAME, text);
+	if (!wmh::get_text_property(m_window, ewmh::hints[_NET_WM_NAME], text))
+		wmh::get_text_property(m_window, XA_WM_NAME, text);
 	m_name = std::string(text.begin(), text.end());
 	if (!m_name.empty()) m_name.pop_back();
 }
@@ -233,25 +234,25 @@ void XClient::update_statusbar_title()
 void XClient::get_net_wm_window_type()
 {
 	std::vector<Atom> atoms;
-	wm::get_net_wm_window_type(m_window, atoms);
+	ewmh::get_net_wm_window_type(m_window, atoms);
 	for (Atom atom : atoms) {
-		if (atom == wm::ewmh[_NET_WM_WINDOW_TYPE_DOCK]) {
+		if (atom == ewmh::hints[_NET_WM_WINDOW_TYPE_DOCK]) {
 			set_states(State::Docked);
 			break;
 		}
-		if (atom == wm::ewmh[_NET_WM_WINDOW_TYPE_DIALOG]) {
+		if (atom == ewmh::hints[_NET_WM_WINDOW_TYPE_DIALOG]) {
 			set_states(State::NoTile);
 			break;
 		}
-		if (atom == wm::ewmh[_NET_WM_WINDOW_TYPE_SPLASH]) {
+		if (atom == ewmh::hints[_NET_WM_WINDOW_TYPE_SPLASH]) {
 			set_states(State::NoTile|State::NoResize);
 			break;
 		}
-		if (atom == wm::ewmh[_NET_WM_WINDOW_TYPE_TOOLBAR]) {
+		if (atom == ewmh::hints[_NET_WM_WINDOW_TYPE_TOOLBAR]) {
 			set_states(State::NoTile);
 			break;
 		}
-		if (atom == wm::ewmh[_NET_WM_WINDOW_TYPE_UTILITY]) {
+		if (atom == ewmh::hints[_NET_WM_WINDOW_TYPE_UTILITY]) {
 			set_states(State::NoTile);
 			break;
 		}
@@ -277,7 +278,7 @@ void XClient::get_class_hint()
 long XClient::get_net_wm_desktop()
 {
 	long	index = -1;
-	if (wm::get_net_wm_desktop(m_window, &index)) {
+	if (ewmh::get_net_wm_desktop(m_window, &index)) {
 		index = std::min(index, (m_screen->get_num_desktops() - 1));
 	}
 	return index;
@@ -305,9 +306,9 @@ void XClient::get_wm_protocols()
 
 	if (XGetWMProtocols(wm::display, m_window, &protocol, &n)) {
 		for (i = 0; i < n; i++) {
-			if (protocol[i] == wm::hints[WM_DELETE_WINDOW])
+			if (protocol[i] == wmh::hints[WM_DELETE_WINDOW])
 				set_states(State::WMDeleteWindow);
-			else if (protocol[i] == wm::hints[WM_TAKE_FOCUS])
+			else if (protocol[i] == wmh::hints[WM_TAKE_FOCUS])
 				set_states(State::WMTakeFocus);
 		}
 		XFree(protocol);
@@ -336,9 +337,9 @@ void XClient::get_motif_hints()
 	unsigned long	 n;
 	MotifHints	*hints;
 
-	hints = (MotifHints *)wm::get_window_property(m_window,
-						wm::hints[_MOTIF_WM_HINTS],
-			 			wm::hints[_MOTIF_WM_HINTS],
+	hints = (MotifHints *)wmh::get_window_property(m_window,
+						wmh::hints[_MOTIF_WM_HINTS],
+						wmh::hints[_MOTIF_WM_HINTS],
 						Motif::HintElements, &n);
 	if (!hints) return;
 
@@ -452,7 +453,7 @@ void XClient::set_window_active()
 		XSetInputFocus(wm::display, m_window, RevertToPointerRoot, CurrentTime);
 
 	if (has_state(State::WMTakeFocus))
-		wm::send_client_message(m_window, wm::hints[WM_TAKE_FOCUS],
+		wmh::send_client_message(m_window, wmh::hints[WM_TAKE_FOCUS],
 						wm::last_event_time);
 
 	XClient *prev_client = m_screen->get_active_client();
@@ -465,15 +466,15 @@ void XClient::set_window_active()
 	clear_states(State::Urgent);
 	draw_window_border();
 	m_screen->raise_client(this);
-	wm::set_net_active_window(m_rootwin, m_window);
+	ewmh::set_net_active_window(m_rootwin, m_window);
 	update_statusbar_title();
 }
 
 void XClient::show_window()
 {
 	clear_states(State::Hidden);
-	wm::set_net_wm_states(m_window, m_states);
-	wm::set_wm_state(m_window, NormalState);
+	ewmh::set_net_wm_states(m_window, m_states);
+	wmh::set_wm_state(m_window, NormalState);
 	XMapWindow(wm::display, m_parent);
 	XMapWindow(wm::display, m_window);
 	draw_window_border();
@@ -484,17 +485,17 @@ void XClient::hide_window()
 	XUnmapWindow(wm::display, m_parent);
 	if (has_state(State::Active)) {
 		clear_states(State::Active);
-		wm::set_net_active_window(m_rootwin, None);
+		ewmh::set_net_active_window(m_rootwin, None);
 	}
 	set_states(State::Hidden);
-	wm::set_net_wm_states(m_window, m_states);
-	wm::set_wm_state(m_window, IconicState);
+	ewmh::set_net_wm_states(m_window, m_states);
+	wmh::set_wm_state(m_window, IconicState);
 }
 
 void XClient::close_window()
 {
 	if (has_state(State::WMDeleteWindow))
-		wm::send_client_message(m_window, wm::hints[WM_DELETE_WINDOW],
+		wmh::send_client_message(m_window, wmh::hints[WM_DELETE_WINDOW],
 					CurrentTime);
 	else
 		XKillClient(wm::display, m_window);
@@ -534,8 +535,8 @@ void XClient::move_window_with_pointer()
 {
 	XEvent		 ev;
 	Time		 ltime = 0;
-	Geometry 	 area;
-	Position 	 pos;
+	Geometry	 area;
+	Position	 pos;
 
 	if (conf::debug) {
 		std::cout << debug::gettime() << " [XClient::" << __func__
@@ -547,8 +548,8 @@ void XClient::move_window_with_pointer()
 	move_pointer_inside();
 
 	if (XGrabPointer(wm::display, m_parent, False, MouseMask,
-	    	GrabModeAsync, GrabModeAsync, None, wm::cursors[Pointer::ShapeMove],
-	   	 CurrentTime) != GrabSuccess) return;
+		GrabModeAsync, GrabModeAsync, None, wm::cursors[Pointer::ShapeMove],
+		 CurrentTime) != GrabSuccess) return;
 
 	PropWindow propwin(m_screen, m_parent);
 	std::string label = std::to_string(m_geom.x) + " . " + std::to_string(m_geom.y);
@@ -666,11 +667,11 @@ void XClient::resize_window_with_pointer()
 	std::string label = std::to_string(width) + " x " + std::to_string(height);
 	propwin.draw(label, m_geom.w/2, m_geom.h/2);
 
-	XEvent 	ev;
-	Time 	ltime = 0;
+	XEvent	ev;
+	Time	ltime = 0;
 	bool	buttonpress = true;
-	int 	xmax = m_geom.x + m_geom.w;
-	int 	ymax = m_geom.y + m_geom.h;
+	int	xmax = m_geom.x + m_geom.w;
+	int	ymax = m_geom.y + m_geom.h;
 	while (buttonpress) {
 		XMaskEvent(wm::display, MouseMask, &ev);
 		switch (ev.type) {
@@ -818,9 +819,9 @@ void XClient::set_notile()
 
 void XClient::change_states(int action, Atom a, Atom b)
 {
-	for (const StateMap &sm : wm::statemaps) {
-		if (a != wm::ewmh[sm.atom] &&
-		    b != wm::ewmh[sm.atom])
+	for (const StateMap &sm : ewmh::statemaps) {
+		if (a != ewmh::hints[sm.atom] &&
+		    b != ewmh::hints[sm.atom])
 			continue;
 		switch(action) {
 		case _NET_WM_STATE_ADD:
@@ -872,7 +873,7 @@ void XClient::toggle_state(long flags)
 		toggle_fullscreen();
 		break;
 	}
-	wm::set_net_wm_states(m_window, m_states);
+	ewmh::set_net_wm_states(m_window, m_states);
 }
 
 void XClient::toggle_fullscreen()
