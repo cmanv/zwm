@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef _DEFINITIONS_H_
-#define _DEFINITIONS_H_
+#ifndef _ENUMS_H_
+#define _ENUMS_H_
 enum _ewmhints {
 	_NET_SUPPORTED,
 	_NET_SUPPORTING_WM_CHECK,
@@ -181,4 +181,4 @@ enum class MenuType {
 	Desktop,
 	Launcher
 };
-#endif // _DEFINITIONS_H_
+#endif // _ENUMS_H_

@@ -24,7 +24,7 @@
 #define _BINDING_H_
 #include <X11/Xlib.h>
 #include <string>
-#include "definitions.h"
+#include "enums.h"
 
 class XClient;
 class XScreen;

@@ -24,7 +24,7 @@
 #include <X11/Xlib.h>
 #include <string>
 #include <vector>
-#include "definitions.h"
+#include "enums.h"
 #include "misc.h"
 #include "winmgr.h"
 #include "xclient.h"

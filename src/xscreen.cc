@@ -21,7 +21,6 @@
 // SOFTWARE.
 
 #include <X11/extensions/Xrandr.h>
-#include <X11/Xatom.h>
 #include <X11/XKBlib.h>
 #include <X11/Xft/Xft.h>
 #include <algorithm>

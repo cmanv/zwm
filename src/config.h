@@ -24,7 +24,7 @@
 #define _CONFIG_H_
 #include <vector>
 #include <string>
-#include "definitions.h"
+#include "enums.h"
 #include "xobjects.h"
 #include "binding.h"
 #include "menu.h"

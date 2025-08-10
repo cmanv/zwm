@@ -24,7 +24,7 @@
 #define _DESKTOP_H_
 #include <string>
 #include <vector>
-#include "definitions.h"
+#include "enums.h"
 
 class XClient;
 class XScreen;

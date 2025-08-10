@@ -25,7 +25,7 @@
 #include <X11/Xlib.h>
 #include <string>
 #include <vector>
-#include "definitions.h"
+#include "enums.h"
 #include "xobjects.h"
 
 //class XClient;

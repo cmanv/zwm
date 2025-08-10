@@ -24,7 +24,7 @@
 #define _WMFUNC_H_
 #include <vector>
 #include <string>
-#include "definitions.h"
+#include "enums.h"
 
 class XClient;
 class XScreen;

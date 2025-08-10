@@ -22,9 +22,10 @@
 
 #ifndef _XOBJECTS_H_
 #define _XOBJECTS_H_
+#include <X11/Xlib.h>
 #include <X11/Xft/Xft.h>
 #include <string>
-#include "definitions.h"
+#include "enums.h"
 
 class XScreen;
 struct Geometry;
@@ -122,6 +123,12 @@ public:
 	PropWindow(XScreen *, Window);
 	~PropWindow();
 	void 		draw(std::string &, int, int);
+};
+
+struct StateMap {
+	Atom atom;
+	long state;
+	StateMap(Atom a, long s):atom(a), state(s) {}
 };
 
 struct DefaultStates {
