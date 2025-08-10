@@ -1,4 +1,4 @@
-// zwm - a dynamic tiling/stacking window manager for X11
+// zwm - a minimal stacking/tiling window manager for X11
 //
 // Copyright (c) 2025 cmanv
 //
@@ -25,7 +25,7 @@
 #include <string>
 #include <vector>
 #include "enums.h"
-#include "misc.h"
+#include "process.h"
 #include "winmgr.h"
 #include "xclient.h"
 #include "xscreen.h"

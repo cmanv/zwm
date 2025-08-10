@@ -1,4 +1,4 @@
-// zwm - a dynamic tiling/stacking window manager for X11
+// zwm - a minimal stacking/tiling window manager for X11
 //
 // Copyright (c) 2025 cmanv
 //
@@ -31,7 +31,9 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include "misc.h"
+#include "timer.h"
+#include "process.h"
+#include "socket.h"
 #include "config.h"
 #include "xscreen.h"
 #include "xevents.h"
@@ -179,12 +181,12 @@ static void wm::process_message()
 static void wm::wm_startup()
 {
 	if (conf::debug) {
-		std::cout << debug::gettime() << " [wm::" << __func__ << "] Open X display..\n";
+		std::cout << timer::gettime() << " [wm::" << __func__ << "] Open X display..\n";
 	}
 
 	display = XOpenDisplay(displayname.c_str());
 	if (!display) {
-		std::cerr << debug::gettime() << " [wm::" << __func__
+		std::cerr << timer::gettime() << " [wm::" << __func__
 			<< "] Unable to open display " << XDisplayName(displayname.c_str()) << '\n';
 		exit(1);
 	}
@@ -220,7 +222,7 @@ static void wm::wm_startup()
 static void wm::wm_shutdown()
 {
 	if (conf::debug) {
-		std::cout << debug::gettime() << " [wm::" << __func__
+		std::cout << timer::gettime() << " [wm::" << __func__
 				<< "] Window manager shutdown..\n";
 	}
 
@@ -255,7 +257,7 @@ static int wm::error_handler(Display *display, XErrorEvent *e)
 	XGetErrorDatabaseText(display, "XRequest", number.c_str(),
 	    			"<unknown>", req, sizeof(req));
 
-	std::cerr << debug::gettime() << " [wm::" << __func__ << "]:(" << req << ") (0x"
+	std::cerr << timer::gettime() << " [wm::" << __func__ << "]:(" << req << ") (0x"
 			<< std::hex << (unsigned int)e->resourceid
 			<< ") "  << msg << '\n';
 	return 0;
@@ -281,7 +283,7 @@ void wm::set_param_restart(std::string &cmd)
 	restart_argstr.clear();
 
 	if (conf::debug) {
-		std::cout << debug::gettime() << " [wm::" << __func__ << "] cmd = " << cmd << std::endl;
+		std::cout << timer::gettime() << " [wm::" << __func__ << "] cmd = " << cmd << std::endl;
 	}
 
 	// Split the command into a array of space or quote delimited strings

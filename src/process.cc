@@ -20,28 +20,70 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef _WINMGR_H_
-#define _WINMGR_H_
-#include <signal.h>
-#include <X11/cursorfont.h>
-#include <X11/Xlib.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
+#include "process.h"
 
-class XScreen;
-
-namespace wm {
-	extern Display				*display;
-	extern std::string			 displayname;
-	extern Time				 last_event_time;
-	extern volatile sig_atomic_t 		 status;
-	extern int				 xrandr;
-	extern int				 xrandr_event_base;
-	extern std::vector<Cursor> 		 cursors;
-	extern std::vector<XScreen*>		 screenlist;
-	extern const std::vector<unsigned int>	 ignore_mods;
-	void		 run(void);
-	void		 set_param_restart(int, char**);
-	void		 set_param_restart(std::string &);
+namespace process {
+	static void execute(std::string &);
 }
-#endif // _WINMGR_H_
+
+void process::exec(std::string &path)
+{
+	pid_t pid = fork();
+	switch(pid) {
+	case 0:
+		closefrom(3);
+		execute(path);
+		exit(1);
+	case -1:
+		std::cerr << "fork\n";
+	default:
+		break;
+	}
+
+	int status = 0;
+	waitpid(pid, &status, 0);
+}
+
+void process::spawn(std::string &path)
+{
+	switch (fork()) {
+	case 0:
+		closefrom(3);
+		execute(path);
+		exit(1);
+	case -1:
+		std::cerr << "fork\n";
+	default:
+		break;
+	}
+}
+
+static void process::execute(std::string &path)
+{
+	std::vector<std::string> arglist;
+	std::string word;
+
+	// Split the command into a array of space or quote delimited strings
+	std::istringstream iss(path);
+	while (iss >> std::quoted(word))
+		arglist.push_back(word);
+
+	// Setup an array of pointers to these strings.
+	int n = 0;
+	std::vector<char *> argv(arglist.size()+1);
+	for (std::string &s : arglist)
+		argv[n++] = (char *)s.c_str();
+	argv[n] = NULL;
+
+	// Execute the command
+	setsid();
+	execvp((char *)argv[0], (char **)argv.data());
+	std::cerr << "Error exec: " << path << std::endl;
+}

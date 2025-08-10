@@ -1,4 +1,4 @@
-// zwm - a dynamic tiling/stacking window manager for X11
+// zwm - a minimal stacking/tiling window manager for X11
 //
 // Copyright (c) 2025 cmanv
 //
@@ -25,7 +25,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "misc.h"
+#include "timer.h"
+#include "socket.h"
 #include "config.h"
 #include "winmgr.h"
 #include "xclient.h"
@@ -51,7 +52,7 @@ Desktop::Desktop(XScreen *screen, long index, std::string &name,
 void Desktop::add_window(XClient *client)
 {
 	if (conf::debug > 1) {
-		std::cout << debug::gettime() << " [Desktop::" << __func__
+		std::cout << timer::gettime() << " [Desktop::" << __func__
 			<< "] ADD Client ptr window 0x" << std::hex << client->get_window()
 			<< std::endl;
 	}
@@ -64,7 +65,7 @@ void Desktop::add_window(XClient *client)
 void Desktop::remove_window(XClient *client)
 {
 	if (conf::debug > 1) {
-		std::cout << debug::gettime() << " [Desktop::" << __func__
+		std::cout << timer::gettime() << " [Desktop::" << __func__
 			<< "] REMOVE Client ptr window 0x" << std::hex << client->get_window()
 			<< std::endl;
 	}

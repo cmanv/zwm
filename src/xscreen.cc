@@ -1,4 +1,4 @@
-// zwm - a dynamic tiling/stacking window manager for X11
+// zwm - a minimal stacking/tiling window manager for X11
 //
 // Copyright (c) 2025 cmanv
 //
@@ -29,7 +29,8 @@
 #include <string>
 #include <list>
 #include <vector>
-#include "misc.h"
+#include "timer.h"
+#include "socket.h"
 #include "config.h"
 #include "binding.h"
 #include "wmhints.h"
@@ -42,7 +43,7 @@
 XScreen::XScreen(int id): m_screenid(id)
 {
 	if (conf::debug) {
-		std::cout << debug::gettime() << " [XScreen:" << __func__
+		std::cout << timer::gettime() << " [XScreen:" << __func__
 			<< "] Add screen " << m_screenid << std::endl;
 	}
 
@@ -79,7 +80,7 @@ XScreen::XScreen(int id): m_screenid(id)
 	// fonts
 	m_menufont = XftFontOpenName(wm::display, m_screenid, conf::menufont.c_str());
 	if (!m_menufont) {
-		std::cerr << debug::gettime() << " [XScreen::" << __func__
+		std::cerr << timer::gettime() << " [XScreen::" << __func__
 				<< "] Cant open font name '" << conf::menufont << "'\n";
 		m_menufont = XftFontOpenName(wm::display, m_screenid, "Mono:size=10");
 	}
@@ -88,7 +89,7 @@ XScreen::XScreen(int id): m_screenid(id)
 	for (std::string& def : conf::colordefs) {
 		XftColor xc;
 		if (!XftColorAllocName(wm::display, m_visual, m_colormap, def.c_str(), &xc)) {
-			std::cerr << debug::gettime() << " [XScreen::" << __func__
+			std::cerr << timer::gettime() << " [XScreen::" << __func__
 					<< "] Cant allocate color for name '" << def << "'\n";
 			XftColorAllocName(wm::display, m_visual, m_colormap, "gray50", &xc);
 		}
@@ -114,7 +115,7 @@ XScreen::XScreen(int id): m_screenid(id)
 XScreen::~XScreen()
 {
 	if (conf::debug) {
-		std::cout << debug::gettime() << " [XScreen:" << __func__
+		std::cout << timer::gettime() << " [XScreen:" << __func__
 			<< "] REMOVE screen " << m_screenid << std::endl;
 	}
 
@@ -137,7 +138,7 @@ void XScreen::grab_keybindings()
 	for (Binding& kb : conf::keybindings) {
 		KeyCode kc = XKeysymToKeycode(wm::display, kb.keysym);
 		if (!kc) {
-			std::cerr << debug::gettime() << " XScreen::" << __func__
+			std::cerr << timer::gettime() << " XScreen::" << __func__
 				<< "] Failed converting '" << XKeysymToString(kb.keysym)
 				<< "' keysym to keycode" << std::endl;
 			continue;
@@ -165,7 +166,7 @@ void XScreen::add_existing_clients()
 	int		 rx, ry, wx, wy;
 
 	if (conf::debug) {
-		std::cout << debug::gettime() << " [XScreen:" << __func__ << "] Query clients \n";
+		std::cout << timer::gettime() << " [XScreen:" << __func__ << "] Query clients \n";
 	}
 
 	if (XQueryTree(wm::display, m_rootwin, &w0, &w1, &wins, &nwins)) {
@@ -249,7 +250,7 @@ bool XScreen::can_manage(Window w, bool query)
 void XScreen::remove_client(XClient *client)
 {
 	if (conf::debug) {
-		std::cout << debug::gettime() << " [XScreen:" << __func__ << "] REMOVE Client "
+		std::cout << timer::gettime() << " [XScreen:" << __func__ << "] REMOVE Client "
 			<< std::hex << client->get_window() << std::endl;
 	}
 

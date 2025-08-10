@@ -1,4 +1,4 @@
-// zwm - a dynamic tiling/stacking window manager for X11
+// zwm - a minimal stacking/tiling window manager for X11
 //
 // Copyright (c) 2025 cmanv
 //
@@ -22,107 +22,13 @@
 
 #include <netinet/in.h>
 #include <sys/socket.h>
-#include <sys/types.h>
-#include <sys/wait.h>
 #include <netdb.h>
 #include <unistd.h>
-#include <cerrno>
-#include <chrono>
 #include <filesystem>
-#include <iomanip>
 #include <iostream>
 #include <regex>
-#include <sstream>
 #include <string>
-#include <vector>
-#include "winmgr.h"
-#include "desktop.h"
-#include "xclient.h"
-#include "xscreen.h"
-#include "misc.h"
-
-std::string debug::gettime()
-{
-	auto t = std::chrono::system_clock::now();
-	std::time_t now = std::chrono::system_clock::to_time_t(t);
-	std::string s(8, '\0');
-	std::strftime(&s[0], s.size(), "%H:%M:%S", std::localtime(&now));
-	return s;
-}
-
-Position ptr::get_pos(Window window)
-{
-	Window		 root, child;
-	int		 rx, ry, wx, wy;
-	unsigned int	 mask;
-
-	XQueryPointer(wm::display, window, &root, &child, &rx,  &ry, &wx, &wy, &mask);
-	return Position(wx, wy);
-}
-
-void ptr::set_pos(Window window, Position p)
-{
-	XWarpPointer(wm::display, None, window, 0, 0, 0, 0, p.x, p.y);
-}
-
-namespace process {
-	static void execute(std::string &);
-}
-
-void process::exec(std::string &path)
-{
-	pid_t pid = fork();
-	switch(pid) {
-	case 0:
-		closefrom(3);
-		execute(path);
-		exit(1);
-	case -1:
-		std::cerr << "fork\n";
-	default:
-		break;
-	}
-
-	int status = 0;
-	waitpid(pid, &status, 0);
-}
-
-void process::spawn(std::string &path)
-{
-	switch (fork()) {
-	case 0:
-		closefrom(3);
-		execute(path);
-		exit(1);
-	case -1:
-		std::cerr << "fork\n";
-	default:
-		break;
-	}
-}
-
-static void process::execute(std::string &path)
-{
-	std::vector<std::string> arglist;
-	std::string word;
-
-	// Split the command into a array of space or quote delimited strings
-	std::istringstream iss(path);
-	while (iss >> std::quoted(word))
-		arglist.push_back(word);
-
-	// Setup an array of pointers to these strings.
-	int n = 0;
-	std::vector<char *> argv(arglist.size()+1);
-	for (std::string &s : arglist)
-		argv[n++] = (char *)s.c_str();
-	argv[n] = NULL;
-
-	// Execute the command
-	setsid();
-	execvp((char *)argv[0], (char **)argv.data());
-	std::cerr << "Error exec: " << path << std::endl;
-}
+#include "socket.h"
 
 namespace socket_in {
 	int socket_fd = -1;

@@ -1,4 +1,4 @@
-// zwm - a dynamic tiling/stacking window manager for X11
+// zwm - a minimal stacking/tiling window manager for X11
 //
 // Copyright (c) 2025 cmanv
 //
@@ -404,4 +404,19 @@ void PropWindow::draw(std::string &text, int x, int y)
 	XClearWindow(wm::display, m_window);
 	XftDrawStringUtf8(m_xftdraw, m_color, m_font, 0, m_font->ascent + 1,
 				(const FcChar8*)text.c_str(), len);
+}
+
+Position ptr::get_pos(Window window)
+{
+	Window		 root, child;
+	int		 rx, ry, wx, wy;
+	unsigned int	 mask;
+
+	XQueryPointer(wm::display, window, &root, &child, &rx,  &ry, &wx, &wy, &mask);
+	return Position(wx, wy);
+}
+
+void ptr::set_pos(Window window, Position p)
+{
+	XWarpPointer(wm::display, None, window, 0, 0, 0, 0, p.x, p.y);
 }

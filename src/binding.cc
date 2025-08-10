@@ -1,4 +1,4 @@
-// zwm - a dynamic tiling/stacking window manager for X11
+// zwm - a minimal stacking/tiling window manager for X11
 //
 // Copyright (c) 2025 cmanv
 //
@@ -24,7 +24,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "misc.h"
+#include "timer.h"
 #include "config.h"
 #include "winmgr.h"
 #include "wmfunc.h"
@@ -113,11 +113,11 @@ Binding::Binding( BindingDef& binddef, EventType eventtype)
 		}
 	}
 	if (!valid) {
-		std::cerr << debug::gettime() << " [Binding::" << __func__ << "] function ("
+		std::cerr << timer::gettime() << " [Binding::" << __func__ << "] function ("
 			<< binddef.namefunc << ") is not defined!\n";
 	}
 	else if (conf::debug) {
-		std::cout << debug::gettime() << " [Binding::" << __func__ << "] define {"
+		std::cout << timer::gettime() << " [Binding::" << __func__ << "] define {"
 			<< keycombo << "} -> " << function << "(" << path << ")\n";
 	}
 }

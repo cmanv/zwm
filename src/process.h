@@ -1,4 +1,4 @@
-// zwm - a dynamic tiling/stacking window manager for X11
+// zwm - a minimal stacking/tiling window manager for X11
 //
 // Copyright (c) 2025 cmanv
 //
@@ -20,34 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef _MISC_H_
-#define _MISC_H_
+#ifndef _PROCESS_H_
+#define _PROCESS_H_
 #include <string>
-#include "xobjects.h"
-
-namespace ptr {
-	Position get_pos(Window);
-	void set_pos(Window, Position);
-}
-
-namespace debug {
-	std::string gettime();
-}
-
 namespace process {
 	void spawn(std::string &);
 	void exec(std::string &);
 }
-
-namespace socket_in {
-	int init(std::string &);
-	const std::string& get_message();
-}
-
-namespace socket_out {
-	void init(std::string&);
-	int send(std::string&);
-	bool defined();
-	void clear();
-}
-#endif // _MISC_H_
+#endif // _PROCESS_H_

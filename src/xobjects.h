@@ -1,4 +1,4 @@
-// zwm - a dynamic tiling/stacking window manager for X11
+// zwm - a minimal stacking/tiling window manager for X11
 //
 // Copyright (c) 2025 cmanv
 //
@@ -64,6 +64,11 @@ struct Position {
 	void 	move_inside(Geometry &);
 	void 	move(long);
 };
+
+namespace ptr {
+	Position get_pos(Window);
+	void set_pos(Window, Position);
+}
 
 struct BorderGap {
 	int	 top;

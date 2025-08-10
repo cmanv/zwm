@@ -1,4 +1,4 @@
-// zwm - a dynamic tiling/stacking window manager for X11
+// zwm - a minimal stacking/tiling window manager for X11
 //
 // Copyright (c) 2025 cmanv
 //
@@ -25,7 +25,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "misc.h"
+#include "timer.h"
+#include "socket.h"
 #include "binding.h"
 #include "config.h"
 #include "wmhints.h"
@@ -43,7 +44,7 @@ XClient::XClient(Window w, XScreen *s, bool existing): m_window(w), m_screen(s)
 	m_ignore_unmap = false;
 
 	if (conf::debug) {
-		std::cout << debug::gettime() << " [XClient::" << __func__
+		std::cout << timer::gettime() << " [XClient::" << __func__
 			<< "] Create Client window 0x" << std::hex << m_window << std::endl;
 	}
 	// For existing clients, reparent will send an unmap request which should be ignored.
@@ -116,7 +117,7 @@ XClient::XClient(Window w, XScreen *s, bool existing): m_window(w), m_screen(s)
 XClient::~XClient()
 {
 	if (conf::debug) {
-		std::cout << debug::gettime() << " [XClient::" << __func__
+		std::cout << timer::gettime() << " [XClient::" << __func__
 			<< "] Destroy Client window 0x" << std::hex << m_window << std::endl;
 	}
 
@@ -539,7 +540,7 @@ void XClient::move_window_with_pointer()
 	Position	 pos;
 
 	if (conf::debug) {
-		std::cout << debug::gettime() << " [XClient::" << __func__
+		std::cout << timer::gettime() << " [XClient::" << __func__
 			<< "] Move window 0x" << std::hex << m_window << std::endl;
 	}
 	if (has_state(State::Frozen)) return;
@@ -611,7 +612,7 @@ void XClient::resize_window_with_pointer()
 	if (has_state(State::Frozen|State::NoResize)) return;
 
 	if (conf::debug>1) {
-		std::cout << debug::gettime() << " [XClient::" << __func__ << "]\n";
+		std::cout << timer::gettime() << " [XClient::" << __func__ << "]\n";
 	}
 
 	raise_window();
