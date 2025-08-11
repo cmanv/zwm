@@ -1,4 +1,4 @@
-% ZWM(1) zwm version alpha13 | zwm user's manual
+% ZWM(1) zwm version alpha14 | zwm user's manual
 % cmanv
 % August 2025
 
@@ -51,25 +51,29 @@ are sent.
 > Prints the current version number.
 
 # CONFIGURATION OPTIONS
+
 This section describe all options that can be set in the configuration files.
 
-## GENERAL OPTIONS
+## GENERAL WINDOW MANAGER OPTIONS
 
-* **screen-border-gap** _top bottom left right_
+* **terminal** _path_
 
-> Sets reserved spaces at the edges of the screen. This space will not
-> be used for tiling windows by the window manager. (default: 1 1 1 1)
-
-* **message-socket** _[hoat:port|path]_
-
-> Specify a TCP socket or UNIX domain socket to which the window manager will
-> connect to send IPC messages.This can be overriden by a command line argument. If
-> unset (default), then no messages are sent.
+> Defines the default terminal program. (default is "xterm")
 
 * **debug-level** _level_
 
 > A non zero value causes the window manager to print debug information
 > on the standard output. Increasing its value increases verbosity. (default: 0)
+
+* **desktop-modes** _mode1_,_mode2,..
+
+> Sets a comma separated list of active desktop modes. The order is used
+> to rotate mode with the functions _desktop-mode-next_ and _desktop-mode-prev_
+> The list of currently valid modes is:
+> > _Stacked_ : Windows are stacked and can be moved/resized by the user.
+> > _Monocle_ : Only one window (maximized) is visible at a time.
+> > _Vtile_ : Master / slaves with the slaves tiled vertically on the right.
+> > _Htile_ : Master / slaves with the slaves tiled horizontally on the bottom.
 
 * **desktop** _num name mode_
 
@@ -78,15 +82,24 @@ This section describe all options that can be set in the configuration files.
 > _name_ is a string to identify the desktop.
 > _mode_ can be any of: _vtile_, _htile_ or _monocle_. (default: _vtile_)
 
-* **desktop-modes** _mode1_,_mode2,..
+* **screen-border-gap** _top bottom left right_
 
-> Sets a comma separated list of active desktop modes. The order is used
-> to rotate mode with the functions _desktop_mode_next_ and _desktop_mode_prev_
-> The list of currently valid modes is:
-> > _Stacked_ : Windows are stacked and can be moved/resized by the user.
-> > _Monocle_ : Only one window (maximized) is visible at a time.
-> > _Vtile_ : Master / slaves with the slaves tiled vertically on the right.
-> > _Htile_ : Master / slaves with the slaves tiled horizontally on the bottom.
+> Sets reserved spaces at the edges of the screen. This space will not
+> be used for tiling windows by the window manager. (default: 1 1 1 1)
+
+* **window-stacked-border** _width_
+
+> Specifies the border width of stacked windows. (default: 7)
+
+* **window-tiled-border** _width_
+
+> Specifies the border width of tiled windows. (default: 2)
+
+* **message-socket** _[hoat:port|path]_
+
+> Specify a TCP socket or UNIX domain socket to which the window manager will
+> connect to send IPC messages.This can be overriden by a command line argument. If
+> unset (default), then no messages are sent.
 
 * **shutdown-script** _path_
 
@@ -98,101 +111,19 @@ This section describe all options that can be set in the configuration files.
 > Defines a script that is to be run when the window manager starts.
 > (default is unset)
 
-* **terminal** _path_
+## PER APPLICATION OPTIONS
 
-> Defines the default terminal program. (default is "xterm")
+These are options to set the default desktop and default states of an application
+based on its _instance_/_class_ properties. 
 
-## WINDOWS OPTIONS
+* **default-desktop** _instance:class num_
 
-* **window-stacked-border** _width_
-
-> Specifies the border width of stacked windows. (default: 7)
-
-* **window-tiled-border** _width_
-
-> Specifies the border width of tiled windows. (default: 2)
-
-* **color** _element color_
-
-> Sets the color of the windows border.
-
-> > _window-border-active_
-> > _window-border-inactive_
-> > _window-border-urgent_
-
-## MENU OPTIONS
-
-* **color** _element color_
-
-> Sets the color of various UI elements.
-
-> > _menu-background_
-> > _menu-border_
-> > _menu-text_
-> > _menu-text-selected_
-> > _menu-text-highlight_
-> > _menu-highlight_
-> > _menu-title_
-> > _menu-title-background_
-
-* **menu-font** _font_
-
-> Sets the font of the text in menus. (default: "Mono:size=10")
-
-* **menu-start** _text_
-
-> Starts the definition of a menu with title _text_. This must be followed by a
-series of _menu-item_ lines and end with a _menu-end_ line.
-
-* **menu-item**  _text \[function \[arg\]\]_
-
-> Define an item in a menu. The _text_ is what appears in the menu. The _function_
-> and _arg_ can be any window manager function, but usually one of these:
-
-> > _exec_ _path_
-
-> > > Execute the program at the specified _path_.
-
-> > _menu_  _text_
-
-> > > Open a menu as a submenu. The _text_ is the title of a defined menu.
-
-> > _quit_
-
-> > > Terminates the window manager application.
-
-> > _restart_
-
-> > > Restarts the window manager application. Any changes in the configuration
-> > > file will be applied.
-
-* **menu-end**
-
-> Ends the definition of the menu.
-
-* **menu-launcher-title** _text_
-
-> Sets the title of the launcher menu. (default is "Applications").
-
-* **menu-desktop-title** _text_
-
-> Sets the title of the active desktops menu. (default is "Active desktops")
-
-* **menu-client-title** _text_
-
-> Sets the title of the client menu. (default is "Clients")
-
-## APPLICATION OPTIONS
-
-* **default-desktop** _appclass num_
-
-> Use this configuration option to specify that an application with class _appclass_
+> Use this configuration option to specify that an application with class _instance:class_
 > is to open on desktop _num_ (1-10).
 
+* **window-state** _instance:class_ _state1_ [,_state2_ ..,_stateN_]
 
-* **window-state** _appclass_ _state1_ [,_state2_ ..,_stateN_]
-
-> Set the default state of an application with class _appclaas_.
+> Set the default state of an application with instance/class _instance:class_.
 > The applicable states are:
 
 > > _docked_
@@ -223,16 +154,114 @@ series of _menu-item_ lines and end with a _menu-end_ line.
 
 > > > The window appears on all desktops.
 
+## MENU DEFINITIONS
+
+These options allows to define the _launcher_ menu. Any menu can contains
+a list of commands and submenus.
+A menu definition starts by _menu-start_ statement, followed by a number of _menu-item_
+statements, and ends with a _menu-end_ stetement. 
+
+> _menu-start_ _title_
+
+> _menu-item_ _title_ _function_ \[_arg_\]
+
+> ,,,
+
+> _menu-end_
+
+* **menu-start** _text_
+
+> Starts the definition of a menu with title _text_. This must be followed by a
+series of _menu-item_ lines and end with a _menu-end_ line.
+
+* **menu-item**  _text function \[arg\]_
+
+> Define an item in a menu. The _text_ is what appears in the menu. The _function_
+> and _arg_ are usually one of these:
+
+> > _exec_ _path_
+
+> > > Execute the program at the specified _path_.
+
+> > _menu_  _text_
+
+> > > Open a menu as a submenu. The _text_ is the title of a defined menu.
+
+> > _quit_
+
+> > > Terminates the window manager application.
+
+> > _restart_
+
+> > > Restarts the window manager application. Any changes in the configuration
+> > > file will be applied.
+
+* **menu-end**
+
+> Ends the definition of the menu.
+
+## MENU OPTIONS
+
+* **menu-font** _font_
+
+> Sets the font of the text in menus. (default: "Mono:size=10")
+
+* **menu-launcher-title** _text_
+
+> Sets the title of the launcher menu. (default is "Launchers").
+> The launcher menu can be defined with the _menu-start_,_menu-item_,
+> and _menu-end_ options. See _MENU DEFINITIONS_ section.
+
+* **menu-desktop-title** _text_
+
+> Sets the title of the active desktops menu. (default is "Active desktops")
+
+* **menu-client-title** _text_
+
+> Sets the title of the client menu. (default is "Clients")
+
+## UI COLOR OPTIONS
+
+* **color** _element color_
+
+> Sets the color of the UI elements.
+
+> > _window-border-active_
+
+> > _window-border-inactive_
+
+> > _window-border-urgent_
+
+> > _menu-background_
+
+> > _menu-border_
+
+> > _menu-highlight_
+
+> > _menu-text_
+
+> > _menu-text-selected_
+
+> > _menu-title_
+
+> > _menu-title-background_
+
 ## BINDING OPTIONS
+
+These options allow to bind or unbind a key/buttpn shortcut to a window manager function.
 
 * **bind-key** _modifiers-key function_
 
 > Bind a key pressed with modifiers to a window manager function.
-Modifiers include:
+
+> Any combination of these modifiers are allowed:
 
 > > _C_ for the Control key
+
 > > _M_ for the Alt key
+
 > > _4_ for the Super (Windows) key
+
 > > _S_ for the Shift key
 
 * **bind-mouse** _modifiers-button function_
@@ -306,11 +335,11 @@ or mouse binding.
 
 * **desktop-mode-next**
 
-> Switch to the next desktop tiling mode in the order defined by _desktop_modes_.
+> Switch to the next desktop tiling mode in the order defined by _desktop-modes_.
 
 * **desktop-mode-prev**
 
-> Switch to the previous desktop tiling mode in ther order defined by _desktop_modes_..
+> Switch to the previous desktop tiling mode in ther order defined by _desktop-modes_..
 
 * **desktop-next**
 
@@ -457,10 +486,10 @@ or mouse binding.
   * **M-8**		->	_desktop-select-8_
   * **M-9**		->	_desktop-select-9_
   * **M-0**		->	_desktop-select-10_
-  * **SM-s**		->	_desktop_mode_stacked_
-  * **SM-m**		->	_desktop_mode_monocle_
-  * **SM-h**		->	_desktop_mode_htiled_
-  * **SM-v**		->	_desktop_mode_vtiled_
+  * **SM-s**		->	_desktop-mode-stacked_
+  * **SM-m**		->	_desktop-mode-monocle_
+  * **SM-h**		->	_desktop-mode-htiled_
+  * **SM-v**		->	_desktop-mode-vtiled_
   * **SM-Down**		->	_desktop-mode-next_
   * **SM-Up**		->	_desktop-mode-prev_
   * **CM-Right**	->	_desktop-next_
@@ -505,50 +534,53 @@ or mouse binding.
   * **1**	->	_menu-client_
   * **2**	->	_menu-desktop_
   * **3**	->	_menu-launcher_
-  * **M+1**	->	_window_move_
-  * **M+3**	->	_window_resize_
-  * **M+4**	->	_window_lower_
-  * **M+5**	->	_window_raise_
+  * **M+1**	->	_window-move_
+  * **M+3**	->	_window-resize_
+  * **M+4**	->	_window-lower_
+  * **M+5**	->	_window-raise_
 
 # SOCKETS
 
-Command socket:
+## Command socket:
 
-> Commands can be sent programmatically to the window manager through a UNIX socket.
-> The command socket is located at \${XDG\_CACHE\_HOME}/zwm/socket
+Commands can be sent programmatically to the window manager through a UNIX socket.
+This socket is located at $XDG\_CACHE\_HOME/zwm/socket
 
-> All window manager desktop functions are accepted. These are the functions starting with "desktop-".
+All window manager desktop functions are accepted. These are the functions starting with "desktop-".
 
-> The accepted format of the command is: "_screen_:_function_", where:
-> >  _screen_ is the applicable X screen number
-> >  _function_ the name of the window manager function.
+The accepted format of the command is: "_screen_:_function_", where:
 
-> Any message not complying with the format will be ignored.
+>  _screen_ is the applicable X screen number
 
-Message socket:
+>  _function_ the name of the window manager function.
 
-> The window manager can send status messages to a UNIX socket. This can be useful for some programs such as status bars.
-> This is the list of message that can be sent by the window manager:
+Any message not complying with the format will be ignored.
 
-> > - Change of active window title.
-> > > Format:
-> > > "window\_active=_current title of active window_"
+## Message socket:
 
-> > - Absence of active window.
-> > > Format:
-> > > "no\_window\_active="
+The window manager can send status messages to a UNIX socket. This can be useful for some programs such as status bars.
 
-> > - Change of desktop mode.
-> > > Format:
-> > > "desktop\_mode=_desktop mode letter_"
+This is the list of message that can be sent by the window manager:
 
-> > - Change of active desktop list.
-> > > Format:
-> > > "desktop\_list=_space separated list of desktops numbers_"
+> - Change of active window title.
+> > Format:
+> > window\_active="current title of active window"
 
-> > > The active desktop number is prepended by '*'.
+> - Absence of active window.
+> > Format:
+> > no\_window\_active=
 
-> To activate this feature, set _message-socket_ to the path of the destination socket in the configuration file. Alternatively, use the _-m_ command line option to specify its value. If used, the command line option overrides the value defined in the configuration file.
+> - Change of desktop mode.
+> > Format:
+> > desktop\_mode="desktop mode letter"
+
+> - Change of active desktop list.
+> > Format:
+> > desktop\_list="space separated list of desktops numbers"
+
+> > The active desktop number is prepended by '*'.
+
+To activate this feature, set _message-socket_ to the path of the destination socket in the configuration file. Alternatively, use the _-m_ command line option to specify its value. If used, the command line option overrides the value defined in the configuration file.
 
 # FILES
 

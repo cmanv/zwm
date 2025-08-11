@@ -1,3 +1,9 @@
+2025-08-11
+	* Multiple refacorisations et nettoyage.
+	* Installe une config par défaut 
+	* Maj doc
+	* Version alpha14
+
 2025-08-03
 	* Exécution des fonctions desktop-* via socket
 	* Maj doc
