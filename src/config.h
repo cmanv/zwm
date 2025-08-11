@@ -60,13 +60,13 @@ struct DefaultStates {
 };
 
 namespace conf {
-	extern std::string			 cfilename;
-	extern std::string			 wmname;
-	extern std::string 			 menufont;
-	extern std::string 			 message_socket;
 	extern std::string 			 command_socket;
+	extern std::string 			 message_socket;
+	extern std::string 			 menufont;
 	extern std::string 			 startupscript;
 	extern std::string 			 shutdownscript;
+	extern std::string			 user_config;
+	extern std::string			 wmname;
 	extern int				 debug;
 	extern int				 stacked_border;
 	extern int				 tiled_border;

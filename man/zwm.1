@@ -2,12 +2,12 @@
 .\"
 .TH "ZWM" "1" "August 2025" "zwm version alpha13" "zwm user\(aqs manual"
 .SH NAME
-zwm \(em a dynamic tiling/stacking window manager for X11
+zwm \(em a simple stacking / tiling window manager for X11
 .SH SYNOPSIS
 \f[B]zwm\f[R] [OPTIONS]
 .SH DESCRIPTION
-\f[B]zwm\f[R] is an hybrid dynamic tiling/stacking window manager for
-X11.
+\f[B]zwm\f[R] is an hybrid stacking/tiling window manager for X11.
+It supports a stacking mode and 3 tiling modes.
 It features a number of configurable keyboards control functions,
 workspaces and a configurable menu.
 It is also able to send and receive messages through sockets.
@@ -37,6 +37,7 @@ Use \f[I]display\f[R] as default X display.
 Soecify a socket on which the window manager will send some status
 messages.
 This overrides any value defined in the configuration file.
+If this is unset no messages are sent.
 .RE
 .PP
 \f[B]\-h\f[R]
@@ -69,14 +70,13 @@ This space will not be used for tiling windows by the window manager.
 (default: 1 1 1 1)
 .RE
 .IP \(bu 2
-\f[B]client\-socket\f[R] \f[I][hoat:port|path]\f[R]
+\f[B]message\-socket\f[R] \f[I][hoat:port|path]\f[R]
 .RS
 .PP
-Specify an opened TCP socket or UNIX domain socket to which the window
-manager will connect to send IPC messages.
-It overrides the value of WM_CLIENT_SOCKET if it has been set in the
-environment.
-(default: unset)
+Specify a TCP socket or UNIX domain socket to which the window manager
+will connect to send IPC messages.This can be overriden by a command
+line argument.
+If unset (default), then no messages are sent.
 .RE
 .IP \(bu 2
 \f[B]debug\-level\f[R] \f[I]level\f[R]
@@ -119,17 +119,6 @@ the bottom.
 .RE
 .RE
 .IP \(bu 2
-\f[B]server\-socket\f[R] \f[I][host:port|path]\f[R]
-.RS
-.PP
-Sets up a listening socket which can be a UNIX domain socket or a tcp
-socket.
-This allows sending message to the window manager to execute functions.
-This overrides the value of WM_SERVER_SOCKET if it has been defined in
-the environment.
-(default is unset)
-.RE
-.IP \(bu 2
 \f[B]shutdown\-script\f[R] \f[I]path\f[R]
 .RS
 .PP
@@ -156,7 +145,7 @@ Defines the default terminal program.
 .RS
 .PP
 Specifies the border width of stacked windows.
-(default: 5)
+(default: 7)
 .RE
 .IP \(bu 2
 \f[B]window\-tiled\-border\f[R] \f[I]width\f[R]
@@ -655,21 +644,6 @@ Move the current window toward to the bottom of the screen.
 (\f[I]stacked\f[R] windows only)
 .RE
 .IP \(bu 2
-\f[B]window\-move\-down\-left\f[R]
-.RS
-.PP
-Move the current window toward to the bottom\-left corner of the screen.
-(\f[I]stacked\f[R] windows only)
-.RE
-.IP \(bu 2
-\f[B]window\-move\-down\-right\f[R]
-.RS
-.PP
-Move the current window toward to the bottom\-right corner of the
-screen.
-(\f[I]stacked\f[R] windows only)
-.RE
-.IP \(bu 2
 \f[B]window\-move\-left\f[R]
 .RS
 .PP
@@ -688,20 +662,6 @@ Move the current window toward to the right of the screen.
 .RS
 .PP
 Move the current window toward to the top of the screen.
-(\f[I]stacked\f[R] windows only)
-.RE
-.IP \(bu 2
-\f[B]window\-move\-up\-left\f[R]
-.RS
-.PP
-Move the current window toward to the top\-left corner of the screen.
-(\f[I]stacked\f[R] windows only)
-.RE
-.IP \(bu 2
-\f[B]window\-move\-up\-right\f[R]
-.RS
-.PP
-Move the current window toward to the bottom\-left corner of the screen.
 (\f[I]stacked\f[R] windows only)
 .RE
 .IP \(bu 2
@@ -761,20 +721,6 @@ Snap the current window to the bottom edge of the screen.
 (\f[I]stacked\f[R] windows only)
 .RE
 .IP \(bu 2
-\f[B]window\-snap\-down\-left\f[R]
-.RS
-.PP
-Snap the current window to the bottom\-left corner of the screen.
-(\f[I]stacked\f[R] windows only)
-.RE
-.IP \(bu 2
-\f[B]window\-snap\-down\-right\f[R]
-.RS
-.PP
-Snap the current window to the bottom\-right corner of the screen.
-(\f[I]stacked\f[R] windows only)
-.RE
-.IP \(bu 2
 \f[B]window\-snap\-left\f[R]
 .RS
 .PP
@@ -786,20 +732,6 @@ Snap the current window to the left edge of the screen.
 .RS
 .PP
 Snap the current window to the top edge of the screen.
-(\f[I]stacked\f[R] windows only)
-.RE
-.IP \(bu 2
-\f[B]window\-snap\-up\-left\f[R]
-.RS
-.PP
-Snap the current window to the top\-left corner of the screen.
-(\f[I]stacked\f[R] windows only)
-.RE
-.IP \(bu 2
-\f[B]window\-snap\-up\-right\f[R]
-.RS
-.PP
-Snap the current window to the top\-right corner of the screen.
 (\f[I]stacked\f[R] windows only)
 .RE
 .IP \(bu 2
@@ -857,17 +789,33 @@ window.
 .IP \(bu 2
 \f[B]M\-0\f[R] \-> \f[I]desktop\-select\-10\f[R]
 .IP \(bu 2
+\f[B]SM\-s\f[R] \-> \f[I]desktop\f[R]mode\f[I]stacked\f[R]
+.IP \(bu 2
+\f[B]SM\-m\f[R] \-> \f[I]desktop\f[R]mode\f[I]monocle\f[R]
+.IP \(bu 2
+\f[B]SM\-h\f[R] \-> \f[I]desktop\f[R]mode\f[I]htiled\f[R]
+.IP \(bu 2
+\f[B]SM\-v\f[R] \-> \f[I]desktop\f[R]mode\f[I]vtiled\f[R]
+.IP \(bu 2
+\f[B]SM\-Down\f[R] \-> \f[I]desktop\-mode\-next\f[R]
+.IP \(bu 2
+\f[B]SM\-Up\f[R] \-> \f[I]desktop\-mode\-prev\f[R]
+.IP \(bu 2
 \f[B]CM\-Right\f[R] \-> \f[I]desktop\-next\f[R]
 .IP \(bu 2
 \f[B]CM\-Left\f[R] \-> \f[I]desktop\-prev\f[R]
 .IP \(bu 2
-\f[B]SM\-Right\f[R] \-> \f[I]desktop\-mode\-next\f[R]
+\f[B]M\-Tab\f[R] \-> \f[I]desktop\-rotate\-next\f[R]
 .IP \(bu 2
-\f[B]SM\-Left\f[R] \-> \f[I]desktop\-mode\-prev\f[R]
+\f[B]SM\-Tab\f[R] \-> \f[I]desktop\-rotate\-prec\f[R]
 .IP \(bu 2
-\f[B]M\-Tab\f[R] \-> \f[I]desktop\-window\-next\f[R]
+\f[B]M\-Right\f[R] \-> \f[I]desktop\-window\-next\f[R]
 .IP \(bu 2
-\f[B]SM\-Tab\f[R] \-> \f[I]desktop\-window\-prec\f[R]
+\f[B]M\-Left\f[R] \-> \f[I]desktop\-window\-prec\f[R]
+.IP \(bu 2
+\f[B]M\-Greater\f[R] \-> \f[I]desktop\-master\-incr\f[R]
+.IP \(bu 2
+\f[B]M\-Less\f[R] \-> \f[I]desktop\-master\-decr\f[R]
 .IP \(bu 2
 \f[B]SM\-1\f[R] \-> \f[I]window\-move\-to\-desktop\-1\f[R]
 .IP \(bu 2
@@ -899,25 +847,29 @@ window.
 .IP \(bu 2
 \f[B]SM\-x\f[R] \-> \f[I]window\-close\f[R]
 .IP \(bu 2
-\f[B]M\-Down\f[R] \-> \f[I]window\-lower\f[R]
-.IP \(bu 2
-\f[B]M\-Up\f[R] \-> \f[I]window\-raise\f[R]
-.IP \(bu 2
 \f[B]M\-h\f[R] \-> \f[I]window\-move\-left\f[R]
 .IP \(bu 2
 \f[B]M\-l\f[R] \-> \f[I]window\-move\-right\f[R]
 .IP \(bu 2
-\f[B]M\-j\f[R] \-> \f[I]window\-move\-down\f[R]
+\f[B]M\-j\f[R] \-> \f[I]window\-move\-up\f[R]
 .IP \(bu 2
-\f[B]M\-k\f[R] \-> \f[I]window\-move\-up\f[R]
+\f[B]M\-k\f[R] \-> \f[I]window\-move\-down\f[R]
+.IP \(bu 2
+\f[B]SM\-h\f[R] \-> \f[I]window\-resize\-left\f[R]
+.IP \(bu 2
+\f[B]SM\-l\f[R] \-> \f[I]window\-resize\-right\f[R]
+.IP \(bu 2
+\f[B]SM\-j\f[R] \-> \f[I]window\-resize\-up\f[R]
+.IP \(bu 2
+\f[B]SM\-k\f[R] \-> \f[I]window\-resize\-down\f[R]
 .IP \(bu 2
 \f[B]CM\-h\f[R] \-> \f[I]window\-snap\-left\f[R]
 .IP \(bu 2
 \f[B]CM\-l\f[R] \-> \f[I]window\-snap\-right\f[R]
 .IP \(bu 2
-\f[B]CM\-j\f[R] \-> \f[I]window\-snap\-down\f[R]
+\f[B]CM\-j\f[R] \-> \f[I]window\-snap\-up\f[R]
 .IP \(bu 2
-\f[B]CM\-k\f[R] \-> \f[I]window\-snap\-up\f[R]
+\f[B]CM\-k\f[R] \-> \f[I]window\-snap\-down\f[R]
 .SS Mouse buttons bindings
 .IP \(bu 2
 \f[B]1\f[R] \-> \f[I]menu\-client\f[R]

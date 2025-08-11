@@ -24,4 +24,7 @@ link_libraries(-L/usr/local/lib -lm ${X11_LIBRARIES} ${X11_Xft_LIB} ${X11_Xrandr
 
 # Project sub-directories
 add_subdirectory(src)
-install(FILES zwm.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
+
+# Additional files
+install(FILES man/zwm.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
+install(FILES examples/config DESTINATION share/doc/${APP_NAME})

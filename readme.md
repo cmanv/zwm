@@ -4,7 +4,7 @@
 
 # NAME
 
-zwm — a dynamic tiling/stacking window manager for X11
+zwm — a simple stacking / tiling window manager for X11
 
 # SYNOPSIS
 
@@ -12,8 +12,9 @@ zwm — a dynamic tiling/stacking window manager for X11
 
 # DESCRIPTION
 
-**zwm** is an hybrid dynamic tiling/stacking window manager for X11. It features a number
-of configurable keyboards control functions, workspaces and a configurable menu.
+**zwm** is an hybrid stacking/tiling window manager for X11. It supports a stacking
+mode and 3 tiling modes. It features a number of configurable keyboards control
+functions, workspaces and a configurable menu.
 It is also able to send and receive messages through sockets.
 
 # COMMAND LINE OPTIONS
@@ -34,7 +35,8 @@ It is also able to send and receive messages through sockets.
 **-m** _message_socket_
 
 > Soecify a socket on which the window manager will send some status messages. This
-overrides any value defined in the configuration file.
+overrides any value defined in the configuration file. If this is unset no messages
+are sent.
 
 **-h**
 
@@ -58,11 +60,11 @@ This section describe all options that can be set in the configuration files.
 > Sets reserved spaces at the edges of the screen. This space will not
 > be used for tiling windows by the window manager. (default: 1 1 1 1)
 
-* **client-socket** _[hoat:port|path]_
+* **message-socket** _[hoat:port|path]_
 
-> Specify an opened TCP socket or UNIX domain socket to which the window manager will
-> connect to send IPC messages. It overrides the value of WM\_CLIENT\_SOCKET if
-> it has been set in the environment. (default: unset)
+> Specify a TCP socket or UNIX domain socket to which the window manager will
+> connect to send IPC messages.This can be overriden by a command line argument. If
+> unset (default), then no messages are sent.
 
 * **debug-level** _level_
 
@@ -86,12 +88,6 @@ This section describe all options that can be set in the configuration files.
 > > _Vtile_ : Master / slaves with the slaves tiled vertically on the right.
 > > _Htile_ : Master / slaves with the slaves tiled horizontally on the bottom.
 
-* **server-socket** _[host:port|path]_
-
-> Sets up a listening socket which can be a UNIX domain socket or a tcp socket. This allows
-> sending message to the window manager to execute functions. This overrides the
-> value of WM\_SERVER\_SOCKET if it has been defined in the environment. (default is unset)
-
 * **shutdown-script** _path_
 
 > Defines a script that is to be run when the window manager terminates.
@@ -110,7 +106,7 @@ This section describe all options that can be set in the configuration files.
 
 * **window-stacked-border** _width_
 
-> Specifies the border width of stacked windows. (default: 5)
+> Specifies the border width of stacked windows. (default: 7)
 
 * **window-tiled-border** _width_
 
@@ -376,16 +372,6 @@ or mouse binding.
 
 > Move the current window toward to the bottom of the screen. (_stacked_ windows only)
 
-* **window-move-down-left**
-
-> Move the current window toward to the bottom-left corner of the screen.
-> (_stacked_ windows only)
-
-* **window-move-down-right**
-
-> Move the current window toward to the bottom-right corner of the screen.
-> (_stacked_ windows only)
-
 * **window-move-left**
 
 > Move the current window toward to the left of the screen. (_stacked_ windows only)
@@ -397,16 +383,6 @@ or mouse binding.
 * **window-move-up**
 
 > Move the current window toward to the top of the screen. (_stacked_ windows only)
-
-* **window-move-up-left**
-
-> Move the current window toward to the top-left corner of the screen.
-> (_stacked_ windows only)
-
-* **window-move-up-right**
-
-> Move the current window toward to the bottom-left corner of the screen.
-> (_stacked_ windows only)
 
 * **window-move-to-desktop-_num_**
 
@@ -440,14 +416,6 @@ or mouse binding.
 
 > Snap the current window to the bottom  edge of the screen. (_stacked_ windows only)
 
-* **window-snap-down-left**
-
-> Snap the current window to the bottom-left corner of the screen. (_stacked_ windows only)
-
-* **window-snap-down-right**
-
-> Snap the current window to the bottom-right corner of the screen. (_stacked_ windows only)
-
 * **window-snap-left**
 
 > Snap the current window to the left edge of the screen. (_stacked_ windows only)
@@ -455,14 +423,6 @@ or mouse binding.
 * **window-snap-up**
 
 > Snap the current window to the top edge of the screen. (_stacked_ windows only)
-
-* **window-snap-up-left**
-
-> Snap the current window to the top-left corner of the screen. (_stacked_ windows only)
-
-* **window-snap-up-right**
-
-> Snap the current window to the top-right corner of the screen. (_stacked_ windows only)
 
 * **window-snap-right**
 
@@ -485,49 +445,60 @@ or mouse binding.
 ## Key bindings
 
   * **CM-Return**	->	_terminal_
-  * **CM-r**	->	_restart_
-  * **CM-q**	->	_quit_
-  * **M-1**	->	_desktop-select-1_
-  * **M-2**	->	_desktop-select-2_
-  * **M-3**	->	_desktop-select-3_
-  * **M-4**	->	_desktop-select-4_
-  * **M-5**	->	_desktop-select-5_
-  * **M-6**	->	_desktop-select-6_
-  * **M-7**	->	_desktop-select-7_
-  * **M-8**	->	_desktop-select-8_
-  * **M-9**	->	_desktop-select-9_
-  * **M-0**	->	_desktop-select-10_
+  * **CM-r**		->	_restart_
+  * **CM-q**		->	_quit_
+  * **M-1**		->	_desktop-select-1_
+  * **M-2**		->	_desktop-select-2_
+  * **M-3**		->	_desktop-select-3_
+  * **M-4**		->	_desktop-select-4_
+  * **M-5**		->	_desktop-select-5_
+  * **M-6**		->	_desktop-select-6_
+  * **M-7**		->	_desktop-select-7_
+  * **M-8**		->	_desktop-select-8_
+  * **M-9**		->	_desktop-select-9_
+  * **M-0**		->	_desktop-select-10_
+  * **SM-s**		->	_desktop_mode_stacked_
+  * **SM-m**		->	_desktop_mode_monocle_
+  * **SM-h**		->	_desktop_mode_htiled_
+  * **SM-v**		->	_desktop_mode_vtiled_
+  * **SM-Down**		->	_desktop-mode-next_
+  * **SM-Up**		->	_desktop-mode-prev_
   * **CM-Right**	->	_desktop-next_
-  * **CM-Left**	->	_desktop-prev_
-  * **SM-Right**	->	_desktop-mode-next_
-  * **SM-Left**	->	_desktop-mode-prev_
-  * **M-Tab**	->	_desktop-window-next_
-  * **SM-Tab**	->	_desktop-window-prec_
-  * **SM-1**	->	_window-move-to-desktop-1_
-  * **SM-2**	->	_window-move-to-desktop-2_
-  * **SM-3**	->	_window-move-to-desktop-3_
-  * **SM-4**	->	_window-move-to-desktop-4_
-  * **SM-5**	->	_window-move-to-desktop-5_
-  * **SM-6**	->	_window-move-to-desktop-6_
-  * **SM-7**	->	_window-move-to-desktop-7_
-  * **SM-8**	->	_window-move-to-desktop-8_
-  * **SM-9**	->	_window-move-to-desktop-9_
-  * **SM-0**	->	_window-move-to-desktop-10_
-  * **SM-f**	->	_window-toggle-fullscreen_
-  * **SM-s**	->	_window-toggle-sticky_
-  * **SM-t**	->	_window-toggle-tiled_
-  * **SM-i**	->	_window-hide_
-  * **SM-x**	->	_window-close_
-  * **M-Down**	->	_window-lower_
-  * **M-Up**	->	_window-raise_
-  * **M-h**	->	_window-move-left_
-  * **M-l**	->	_window-move-right_
-  * **M-j**	->	_window-move-down_
-  * **M-k**	->	_window-move-up_
-  * **CM-h**	->	_window-snap-left_
-  * **CM-l**	->	_window-snap-right_
-  * **CM-j**	->	_window-snap-down_
-  * **CM-k**	->	_window-snap-up_
+  * **CM-Left**		->	_desktop-prev_
+  * **M-Tab**		->	_desktop-rotate-next_
+  * **SM-Tab**		->	_desktop-rotate-prec_
+  * **M-Right**		->	_desktop-window-next_
+  * **M-Left**		->	_desktop-window-prec_
+  * **M-Greater**	->	_desktop-master-incr_
+  * **M-Less**		->	_desktop-master-decr_
+
+  * **SM-1**		->	_window-move-to-desktop-1_
+  * **SM-2**		->	_window-move-to-desktop-2_
+  * **SM-3**		->	_window-move-to-desktop-3_
+  * **SM-4**		->	_window-move-to-desktop-4_
+  * **SM-5**		->	_window-move-to-desktop-5_
+  * **SM-6**		->	_window-move-to-desktop-6_
+  * **SM-7**		->	_window-move-to-desktop-7_
+  * **SM-8**		->	_window-move-to-desktop-8_
+  * **SM-9**		->	_window-move-to-desktop-9_
+  * **SM-0**		->	_window-move-to-desktop-10_
+  * **SM-f**		->	_window-toggle-fullscreen_
+  * **SM-s**		->	_window-toggle-sticky_
+  * **SM-t**		->	_window-toggle-tiled_
+  * **SM-i**		->	_window-hide_
+  * **SM-x**		->	_window-close_
+  * **M-h**		->	_window-move-left_
+  * **M-l**		->	_window-move-right_
+  * **M-j**		->	_window-move-up_
+  * **M-k**		->	_window-move-down_
+  * **SM-h**		->	_window-resize-left_
+  * **SM-l**		->	_window-resize-right_
+  * **SM-j**		->	_window-resize-up_
+  * **SM-k**		->	_window-resize-down_
+  * **CM-h**		->	_window-snap-left_
+  * **CM-l**		->	_window-snap-right_
+  * **CM-j**		->	_window-snap-up_
+  * **CM-k**		->	_window-snap-down_
 
 ## Mouse buttons bindings
 

@@ -2,4 +2,5 @@
 #define ZWM_VERSION_H
 #define APP_NAME "@APP_NAME@"
 #define APP_VERSION "@APP_VERSION@"
+#define INSTALL_PREFIX "@CMAKE_INSTALL_PREFIX@"
 #endif /* ZWM_VERSION_H */

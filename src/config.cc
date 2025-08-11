@@ -22,6 +22,7 @@
 
 #include <algorithm>
 #include <cstdlib>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -68,10 +69,18 @@ namespace conf {
 		{ "M-0",	"desktop-select-10" },
 		{ "CM-Right",	"desktop-next" },
 		{ "CM-Left",	"desktop-prev" },
-		{ "SM-Right",	"desktop-mode-next" },
-		{ "SM-Left",	"desktop-mode-prev" },
-		{ "M-Tab",	"desktop-window-next" },
-		{ "SM-Tab",	"desktop-window-prev" },
+		{ "SM-Down",	"desktop-mode-next" },
+		{ "SM-Up",	"desktop-mode-prev" },
+		{ "SM-s",	"desktop-mode-stacked" },
+		{ "SM-m",	"desktop-mode-monocle" },
+		{ "SM-v",	"desktop-mode-vtiled" },
+		{ "SM-h",	"desktop-mode-htiled" },
+		{ "M-Tab",	"desktop-rotate-next" },
+		{ "SM-Tab",	"desktop-rotate-prev" },
+		{ "M-Right",	"desktop-window-next" },
+		{ "M-Left",	"desktop-window-prev" },
+		{ "M-greater",	"desktop-master-incr" },
+		{ "M-less",	"desktop-master-decr" },
 		{ "SM-1",	"window-move-to-desktop-1" },
 		{ "SM-2",	"window-move-to-desktop-2" },
 		{ "SM-3",	"window-move-to-desktop-3" },
@@ -87,16 +96,18 @@ namespace conf {
 		{ "SM-t",	"window-toggle-tiled" },
 		{ "SM-i",	"window-hide" },
 		{ "SM-x",	"window-close" },
-		{ "M-Down",	"window-lower" },
-		{ "M-Up",	"window-raise" },
 		{ "M-h",	"window-move-left" },
 		{ "M-l",	"window-move-right" },
-		{ "M-j",	"window-move-down" },
-		{ "M-k",	"window-move-up" },
+		{ "M-j",	"window-move-up" },
+		{ "M-k",	"window-move-down" },
+		{ "SM-h",	"window-resize-left" },
+		{ "SM-l",	"window-resize-right" },
+		{ "SM-j",	"window-resize-up" },
+		{ "SM-k",	"window-resize-down" },
 		{ "CM-h",	"window-snap-left" },
 		{ "CM-l",	"window-snap-right" },
-		{ "CM-j",	"window-snap-down" },
-		{ "CM-k",	"window-snap-up" },
+		{ "CM-j",	"window-snap-up" },
+		{ "CM-k",	"window-snap-down" },
 		{ "CM-Return",	"terminal" },
 		{ "CM-r",	"restart" },
 		{ "CM-q",	"quit" },
@@ -112,17 +123,18 @@ namespace conf {
 		{ "M-5",	"window-raise" },
 	};
 
-	std::string		cfilename = "";
-	std::string		wmname = "ZWM";
-	std::string 		menufont = "Mono:size=10";
-	std::string		menu_client = "X Clients";
-	std::string		menu_desktop = "Active desktops";
-	std::string		menu_launcher = "Applications";
-	std::string		command_socket = "";
-	std::string		message_socket = "";
-	std::string		terminal = "xterm";
-	std::string		startupscript = "";
-	std::string		shutdownscript = "";
+	std::string	user_config = "";
+	std::string	wmname = "ZWM";
+	std::string 	menufont = "Mono:size=10";
+	std::string	menu_client = "X Clients";
+	std::string	menu_desktop = "Active desktops";
+	std::string	menu_launcher = "Launchers";
+	std::string	command_socket = "";
+	std::string	message_socket = "";
+	std::string	terminal = "xterm";
+	std::string	startupscript = "";
+	std::string	shutdownscript = "";
+	std::string 	install_prefix(INSTALL_PREFIX);
 
 	std::vector<std::string> colordefs;
 
@@ -136,12 +148,15 @@ namespace conf {
 	BorderGap		bordergap = { 1, 1, 1, 1 };
 
 	std::vector<Binding>		keybindings;
-	std::vector<Binding>  		mousebindings;
+	std::vector<Binding>		mousebindings;
 	std::vector<DefaultDesktop>	defdesktoplist;
 	std::vector<DefaultStates>	defstateslist;
 	std::vector<MenuDef>		menulist;
 
-	void read_configfile();
+	void read_config();
+	void read_bindings();
+	void read_menus();
+
 	bool get_line(std::ifstream &, std::string &);
 	int  get_tokens(std::string &, std::vector<std::string> &);
 	int  split_string(std::string &, std::vector<std::string> &, char);
@@ -172,10 +187,10 @@ void conf::init()
 	colordefs[Color::WindowBorderActive] 	= "tan";
 	colordefs[Color::WindowBorderInactive] 	= "grey40";
 	colordefs[Color::WindowBorderUrgent] 	= "red";
-	colordefs[Color::MenuBackground] 	= "grey21";
+	colordefs[Color::MenuBackground] 	= "grey30";
 	colordefs[Color::MenuBorder] 		= "SkyBlue4";
 	colordefs[Color::MenuHighlight] 	= "SteelBlue4";
-	colordefs[Color::MenuText] 		= "grey85";
+	colordefs[Color::MenuText] 		= "grey88";
 	colordefs[Color::MenuTextSelected] 	= "WhiteSmoke";
 	colordefs[Color::MenuTitle] 		= "WhiteSmoke";
 	colordefs[Color::MenuTitleBackground] 	= "SkyBlue4";
@@ -185,7 +200,7 @@ void conf::init()
 		return;
 	}
 
-	// Define and create path to command socket
+	// Define and create path to socket
 	std::string socket_path;
 	if (std::getenv("XDG_CACHE_HOME")) {
 		socket_path = std::getenv("XDG_CACHE_HOME");
@@ -199,37 +214,50 @@ void conf::init()
 	}
 	command_socket = socket_path + "/socket";
 
-	if (cfilename.empty()) {
-		// Define and create path to config file
-		std::string config_path;
-		if (std::getenv("XDG_CONFIG_HOME")) {
-			config_path = std::getenv("XDG_CONFIG_HOME");
-		} else {
-			config_path = std::getenv("HOME") + std::string("/.config");
-		}
-		config_path = config_path + "/" + APP_NAME;
-		std::filesystem::path confdir(config_path);
-		if (!std::filesystem::exists(confdir)) {
-			create_directory(confdir);
-		}
-		cfilename = config_path + "/config";
+	// Define and create path to config files
+	std::string config_path;
+	if (std::getenv("XDG_CONFIG_HOME")) {
+		config_path = std::getenv("XDG_CONFIG_HOME");
+	} else {
+		config_path = std::getenv("HOME") + std::string("/.config");
+	}
+	config_path = config_path + "/" + APP_NAME;
+	std::filesystem::path confdir(config_path);
+	if (!std::filesystem::exists(confdir)) {
+		create_directory(confdir);
 	}
 
-	read_configfile();
+	if (user_config.empty()) {
+		// Use standard config file location
+		user_config = config_path + "/config";
+
+		// Copy example config file if one does not exist at standard location
+		if (!std::filesystem::exists(user_config)) {
+			std::string install_path = install_prefix + "/share/doc/"
+						+ APP_NAME;
+			std::filesystem::path default_config(install_path + "/config");
+			try {
+				std::filesystem::copy_file(default_config, user_config);
+			} catch (std::filesystem::filesystem_error& e) {
+				std::cerr << e.what() << '\n';
+			}
+		}
+	}
+	read_config();
 	return;
 }
 
-void conf::read_configfile()
+void conf::read_config()
 {
-	std::ifstream configfile(cfilename);
-	if (!configfile.is_open()) {
-        	std::cerr << "Could not open [" << cfilename << "] for reading.\n";
+	std::ifstream config_file(user_config);
+	if (!config_file.is_open()) {
+		std::cerr << "Could not open [" << user_config << "] for reading.\n";
 		return;
 	}
 
-       	std::string line;
+	std::string line;
 	std::vector<std::string> tokens;
-	while (get_line(configfile, line)) {
+	while (get_line(config_file, line)) {
 		if (!get_tokens(line, tokens)) continue;
 
 		// Rest need at least 2 tokens
@@ -338,6 +366,10 @@ void conf::read_configfile()
 				colordefs[Color::MenuTitleBackground] = tokens[2];
 			continue;
 		}
+		if (!tokens[0].compare("menu-start")) {
+			add_menu(tokens[1], config_file);
+			continue;
+		}
 		if (!tokens[0].compare("unbind-key")) {
 			if (!tokens[1].compare("all")) {
 				keybindings.clear();
@@ -354,11 +386,6 @@ void conf::read_configfile()
 			remove_mousebinding(mb);
 			continue;
 		}
-		if (!tokens[0].compare("menu-start")) {
-			add_menu(tokens[1], configfile);
-			continue;
-		}
-
 		if (tokens.size() < 3) continue;
 		if (!tokens[0].compare("bind-key")) {
 			BindingDef bdef;
@@ -557,7 +584,8 @@ void conf::add_menu(std::string &label, std::ifstream &configfile)
 			continue;
 		}
 		if ((tokens.size() >= 4) && (!tokens[2].compare("exec") ||
-			!tokens[2].compare("restart") || !tokens[2].compare("menu"))) {
+			!tokens[2].compare("restart") ||
+			!tokens[2].compare("menu"))) {
 			MenuItem item(tokens[1], tokens[2], tokens[3]);
 			menudef.items.push_back(item);
 		}

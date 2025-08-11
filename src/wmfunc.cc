@@ -38,7 +38,6 @@ std::vector<FuncDef> funcdefs = {
 	{ "menu-client", 		menu_client, Context::Root},
 	{ "menu-desktop", 		menu_desktop, Context::Root},
 	{ "menu-launcher", 		menu_launcher, Context::Root},
-
 	{ "window-lower", 		window_lower},
 	{ "window-hide", 		window_hide},
 	{ "window-raise", 		window_raise},
@@ -60,17 +59,11 @@ std::vector<FuncDef> funcdefs = {
 	{ "window-snap-down", 		window_snap, Direction::South},
 	{ "window-snap-right", 		window_snap, Direction::East},
 	{ "window-snap-left", 		window_snap, Direction::West},
-	{ "window-snap-up-right", 	window_snap, Direction::NorthEast},
-	{ "window-snap-up-left", 	window_snap, Direction::NorthWest},
-	{ "window-snap-down-right", 	window_snap, Direction::SouthEast},
-	{ "window-snap-down-left", 	window_snap, Direction::SouthWest},
-
 	{ "window-move", 		window_move, Direction::Pointer},
 	{ "window-move-up", 		window_move, Direction::North},
 	{ "window-move-down", 		window_move, Direction::South},
 	{ "window-move-right", 		window_move, Direction::East},
 	{ "window-move-left", 		window_move, Direction::West},
-
 	{ "window-resize", 		window_resize, Direction::Pointer},
 	{ "window-resize-up", 		window_resize, Direction::North},
 	{ "window-resize-down", 	window_resize, Direction::South},
@@ -94,7 +87,6 @@ std::vector<FuncDef> funcdefs = {
 	{ "desktop-last", 		desktop_last},
 	{ "desktop-hide", 		desktop_hide},
 	{ "desktop-close", 		desktop_close},
-
 	{ "desktop-mode-next", 		desktop_rotate_mode, 1},
 	{ "desktop-mode-prev", 		desktop_rotate_mode, -1},
 	{ "desktop-window-next", 	desktop_window_cycle, 1},

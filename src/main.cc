@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 	while ((ch = getopt(argc, argv, "X:c:s:m:hdpv")) != -1) {
 		switch (ch) {
 		case 'c':
-			conf::cfilename = optarg;
+			conf::user_config = optarg;
 			break;
 		case 'h':
 			usage(0);
