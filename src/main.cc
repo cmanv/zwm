@@ -46,22 +46,22 @@ int main(int argc, char **argv)
 
 	wm::set_param_restart(argc, argv);
 
-	while ((ch = getopt(argc, argv, "X:c:s:m:hdpv")) != -1) {
+	while ((ch = getopt(argc, argv, "D:c:m:hdpv")) != -1) {
 		switch (ch) {
+		case 'D':
+			wm::displayname = optarg;
+			break;
 		case 'c':
 			conf::user_config = optarg;
+			break;
+		case 'm':
+			conf::message_socket = optarg;
 			break;
 		case 'h':
 			usage(0);
 			break;
 		case 'd':
 			conf::debug++;
-			break;
-		case 'D':
-			wm::displayname = optarg;
-			break;
-		case 'm':
-			conf::message_socket = optarg;
 			break;
 		case 'p':
 			parse_only = 1;
@@ -125,6 +125,7 @@ static void usage(int rc)
 	std::cerr << "Usage: " << appname << " [-X display] [-c filename] [-hdpv]\n";
 	std::cerr << "  -X display 	: Name of X display.\n";
 	std::cerr << "  -c filename	: Path of configuration file.\n";
+	std::cerr << "  -m socket	: Path of message socket.\n";
 	std::cerr << "  -h 		: Show this help and exit.\n";
 	std::cerr << "  -d 		: Run in debug mode. Repeat to increase verbosity.\n";
 	std::cerr << "  -p 		: Parse configuration file and exit.\n";
