@@ -63,7 +63,7 @@ class Menu {
 	Menu				*m_child;
 	MenuDef				&m_data;
 	int				 m_nitems;
-	int				 m_active;
+	int				 m_entry;
 	Window				 m_window;
 	Window				 m_rootwin;
 	XftFont				*m_font;
@@ -79,22 +79,22 @@ class Menu {
 	XftColor			*m_bordercolor;
 	Geometry			 m_geom;
 	int				 m_border;
-	int				 m_entry_height;
+	int				 m_height_entry;
 	Window				 m_submenu_char_width;
 	bool				 m_running;
 public:
 	Menu(XScreen *s, MenuDef &d, Menu *p = NULL);
 	~Menu();
 	Geometry 		&get_geom() { return m_geom; }
-	int 			 get_active() const { return m_active; }
-	bool 			 run();
+	int 			 get_current_entry() const { return m_entry; }
+	int 			 run();
 	void 			 draw();
 private:
 	int 			 get_menu_width();
 	int 			 grab_pointer();
 	void 			 draw_entry(int);
 	void 			 move_pointer(Position);
-	int 			 get_active_entry(Position);
+	int 			 get_entry_at(Position);
 	void 			 open_submenu();
 	void 			 close_submenu();
 	void			 run_launcher();

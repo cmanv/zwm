@@ -33,6 +33,11 @@
 #include "config.h"
 #include "menu.h"
 
+enum MenuState {
+	Release	= 0x01,
+	Done	= 0x02,
+};
+
 const long Menu::ButtonMask		= ButtonPressMask|ButtonReleaseMask|ButtonMotionMask;
 const long Menu::MenuMask 		= Menu::ButtonMask|PointerMotionMask|ExposureMask;
 const long Menu::MenuGrabMask		= Menu::ButtonMask|PointerMotionMask|StructureNotifyMask;
@@ -54,14 +59,14 @@ Menu::Menu(XScreen *s, MenuDef &md, Menu *p): m_data(md)
 	m_bordercolor = m_screen->get_color(Color::MenuBorder);
 
 	m_border = conf::menu_border;
-	m_entry_height = m_font->ascent + m_font->descent;
+	m_height_entry = m_font->ascent + m_font->descent;
 
 	Position pos = xpointer::get_pos(m_rootwin);
 	Geometry area = m_screen->get_area(pos, 1);
 	m_geom.w = get_menu_width();
-	m_geom.h = (m_nitems + 1) * m_entry_height;
+	m_geom.h = (m_nitems + 1) * m_height_entry;
 	if (m_parent) {
-		int ypos = m_entry_height * (m_parent->get_active() + 1);
+		int ypos = m_height_entry * (m_parent->get_current_entry() + 1);
 		m_geom.set_menu_placement(m_parent->get_geom(), area, ypos, m_border);
 	} else {
 		Position pos = xpointer::get_pos(m_rootwin);
@@ -105,14 +110,13 @@ int Menu::get_menu_width()
 	return width;
 }
 
-bool Menu::run()
+int Menu::run()
 {
 	XEvent	 e;
 	Geometry g;
 	Position pos;
+	int menu_state = 0;
 	bool is_running = true;
-	bool is_done = false;
-	bool button_release = false;
 
 	if (!grab_pointer()) return -1;
 
@@ -122,7 +126,7 @@ bool Menu::run()
 	XSetInputFocus(wm::display, m_window, RevertToPointerRoot, CurrentTime);
 	draw();
 
-	m_active = -1;
+	m_entry = -1;
 	while (is_running) {
 		XWindowEvent(wm::display, m_window, MenuMask, &e);
 		switch (e.type) {
@@ -136,7 +140,7 @@ bool Menu::run()
 			if (m_child) {
 				g = m_child->get_geom();
 				if (g.contains(pos, Coordinates::Root)) {
-					is_done = m_child->run();
+					menu_state = m_child->run();
 					if (!grab_pointer()) return -1;
 				}
 			} else if (m_parent) {
@@ -146,19 +150,19 @@ bool Menu::run()
 			}
 			break;
 		case ButtonRelease:
-			button_release = true;
-			is_running = false;
+			menu_state |= (MenuState::Done|MenuState::Release);
 			break;
 		default:
 			break;
 		}
-		if (is_done) break;
+		if (menu_state & MenuState::Done)
+			is_running = false;
 	}
 
 	XSetInputFocus(wm::display, focuswin, focusrevert, CurrentTime);
 	XUngrabPointer(wm::display, CurrentTime);
 
-	if ((!is_done) && (m_active != -1)) {
+	if ((menu_state & MenuState::Release) && (m_entry != -1)) {
 		switch(m_data.type) {
 		case MenuType::Launcher:
 			run_launcher();
@@ -170,13 +174,9 @@ bool Menu::run()
 			activate_client();
 			break;
 		}
-		is_done = true;
 	}
 
-	if (button_release)
-		is_done = true;
-
-	return is_done;
+	return menu_state;
 }
 
 void Menu::draw()
@@ -185,12 +185,12 @@ void Menu::draw()
 	XMoveResizeWindow(wm::display, m_window, m_geom.x, m_geom.y,
 	    		m_geom.w, m_geom.h);
 
-	XftDrawRect(m_xftdraw, m_titlebgcolor, 0, 0, m_geom.w, m_entry_height);
+	XftDrawRect(m_xftdraw, m_titlebgcolor, 0, 0, m_geom.w, m_height_entry);
 	XftDrawStringUtf8(m_xftdraw, m_titlecolor, m_font, 3, m_font->ascent,
 	    		(const FcChar8*)m_data.label.c_str(), m_data.label.size());
 
 	Position pos = xpointer::get_pos(m_window);
-	m_active = get_active_entry(pos);
+	m_entry = get_entry_at(pos);
 	for (int i = 0; i< m_nitems; i++)
 		draw_entry(i);
 
@@ -199,11 +199,11 @@ void Menu::draw()
 
 void Menu::draw_entry(int n)
 {
-	int y = (n + 1) * m_entry_height;
-	XftColor *color = (n == m_active) ? m_hicolor : m_bgcolor;
-	XftDrawRect(m_xftdraw, color, 0, y, m_geom.w, m_entry_height);
+	int y = (n + 1) * m_height_entry;
+	XftColor *color = (n == m_entry) ? m_hicolor : m_bgcolor;
+	XftDrawRect(m_xftdraw, color, 0, y, m_geom.w, m_height_entry);
 
-	color = (n == m_active) ? m_textselcolor : m_textcolor;
+	color = (n == m_entry) ? m_textselcolor : m_textcolor;
 	XftDrawStringUtf8(m_xftdraw, color, m_font, 5, y + m_font->ascent,
 	    (const FcChar8*)m_data.items[n].label.c_str(), m_data.items[n].label.size());
 
@@ -211,43 +211,43 @@ void Menu::draw_entry(int n)
 		XftDrawStringUtf8(m_xftdraw, color, m_font, m_geom.w - m_submenu_char_width - 5,
 				y + m_font->ascent,
 	    			(const FcChar8*)">", 1);
-		if (n == m_active) open_submenu();
+		if (n == m_entry) open_submenu();
 	}
 
 }
 
 void Menu::move_pointer(Position p)
 {
-	int last_active = m_active;
-	m_active = get_active_entry(p);
+	int last_entry = m_entry;
+	m_entry = get_entry_at(p);
 
-	if (last_active == m_active)
+	if (last_entry == m_entry)
 		return;
 
-	if (last_active != -1) {
-		draw_entry(last_active);
-		if (!m_data.items[last_active].function.compare("menu")) {
+	if (last_entry != -1) {
+		draw_entry(last_entry);
+		if (!m_data.items[last_entry].function.compare("menu")) {
 			close_submenu();
 		}
 	}
-	if (m_active != -1) {
-		draw_entry(m_active);
-		if (!m_data.items[m_active].function.compare("menu")) {
+	if (m_entry != -1) {
+		draw_entry(m_entry);
+		if (!m_data.items[m_entry].function.compare("menu")) {
 			open_submenu();
 		}
 	}
 }
 
-int Menu::get_active_entry(Position p)
+int Menu::get_entry_at(Position p)
 {
-	int active = p.y / m_entry_height - 1;
+	int selected_entry = p.y / m_height_entry - 1;
 	if (p.x < -m_border || p.x > m_geom.w + m_border)
-		active = -1;
+		selected_entry = -1;
 
-	if ((active < 0) || (active >= m_nitems))
-		active = -1;
+	if ((selected_entry < 0) || (selected_entry >= m_nitems))
+		selected_entry = -1;
 
-	return active;
+	return selected_entry;
 }
 
 int Menu::grab_pointer()
@@ -263,7 +263,7 @@ int Menu::grab_pointer()
 void Menu::open_submenu()
 {
 	if (m_child) return;
-	std::string menupath = m_data.items[m_active].path;
+	std::string menupath = m_data.items[m_entry].path;
 	auto isSubMenu = [menupath] (MenuDef mdef)
 			{ return (!mdef.label.compare(menupath)); };
 	auto it = std::find_if(conf::menulist.begin(),conf::menulist.end(), isSubMenu);
@@ -280,8 +280,8 @@ void Menu::close_submenu()
 
 void Menu::run_launcher()
 {
-	std::string function = m_data.items[m_active].function;
-	std::string path = m_data.items[m_active].path;
+	std::string function = m_data.items[m_entry].function;
+	std::string path = m_data.items[m_entry].path;
 	if (!function.compare("exec"))
 		process::spawn(path);
 	if (!function.compare("quit"))
@@ -295,7 +295,7 @@ void Menu::run_launcher()
 
 void Menu::activate_client()
 {
-	XClient *client = m_data.items[m_active].client;
+	XClient *client = m_data.items[m_entry].client;
 	int index = client->get_desktop_index();
 	int active_desktop = m_screen->get_active_desktop();
 	if ((index != -1) && (index != active_desktop))
@@ -310,7 +310,7 @@ void Menu::activate_client()
 
 void Menu::switch_to_desktop()
 {
-	int index = m_data.items[m_active].index;
+	int index = m_data.items[m_entry].index;
 	int active_desktop = m_screen->get_active_desktop();
 	if (index != active_desktop)
 		m_screen->switch_to_desktop(index);
