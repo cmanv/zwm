@@ -38,8 +38,8 @@
 # Specify the default desktop for the specified "instance:class"
 # Default is to open on current desktop.
 # ----------------------------------------------------------------
-#default-desktop	Navigator:firefox	1
-#default-desktop	libreoffice		2
+#app-default-desktop	Navigator:firefox	1
+#app-default-desktop	libreoffice		2
 
 # ----------------------------------------------------------------
 # Default window states. Multiple states can be specified.
@@ -52,17 +52,17 @@
 # - noresize: this window cannot be resized.
 # - sticky: this window appears on all desktop.
 # ----------------------------------------------------------------
-#window-state	vncviewer		notile,noresize
-#window-state	pinentry-qt		notile,noresize,sticky
-#window-state	gcr-prompter		notile,noresize,sticky
+#app-default-state	vncviewer	notile,noresize
+#app-default-state	pinentry-qt	notile,noresize,sticky
+#app-default-state	gcr-prompter	notile,noresize,sticky
 
 # ----------------------------------------------------------------
-# Menu font and titles
+# Menu font and labels
 # ----------------------------------------------------------------
 #menu-font 			"Mono:size=10"
-#menu-launcher-title 		"Launchers"
-#menu-client-title 		"X11 clients"
-#menu-desktop-title 		"Active desktops"
+#menu-launcher-label 		"Launchers"
+#menu-client-label 		"X11 clients"
+#menu-desktop-label 		"Active desktops"
 
 # ----------------------------------------------------------------
 # Definition of the Launchers menu. (not set by default)
@@ -85,11 +85,11 @@
 #color window-border-active		tan
 #color window-border-inactive		grey40
 #color window-border-urgent		red
-#color menu-background			grey28
+#color menu-background			grey20
 #color menu-border			SkyBlue4
 #color menu-highlight			SteelBlue4
-#color menu-text		 	grey85
-#color menu-text-selected		WhiteSmoke
+#color menu-item-text		 	grey88
+#color menu-item-text-selected		WhiteSmoke
 #color menu-title			WhiteSmoke
 #color menu-title-background		SkyBlue4
 

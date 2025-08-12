@@ -120,8 +120,8 @@ enum Color {
 	MenuBackground,
 	MenuBorder,
 	MenuHighlight,
-	MenuText,
-	MenuTextSelected,
+	MenuItemText,
+	MenuItemTextSelected,
 	MenuTitle,
 	MenuTitleBackground,
 	NumColors

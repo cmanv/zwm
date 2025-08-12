@@ -59,15 +59,8 @@ Print the current version number.
 .RE
 .SH CONFIGURATION OPTIONS
 This section describes all options that can be set in the configuration
-files.
+file.
 .SS GENERAL WINDOW MANAGER OPTIONS
-.IP \(bu 2
-\f[B]terminal\f[R] \f[I]path\f[R]
-.RS
-.PP
-Define the default terminal program.
-(default is \(dqxterm\(dq)
-.RE
 .IP \(bu 2
 \f[B]debug\-level\f[R] \f[I]level\f[R]
 .RS
@@ -76,6 +69,17 @@ A non zero value causes the window manager to print debug information on
 the standard output.
 Increasing its value increases verbosity.
 (default: 0)
+.RE
+.IP \(bu 2
+\f[B]desktop\f[R] \f[I]num name mode\f[R]
+.RS
+.PP
+Define the default name and tiling mode of the desktop\f[I].
+\f[R]num_ goes from 1 to 10 \f[I]name\f[R] is a string to identify the
+desktop.
+\f[I]mode\f[R] can be any of: \f[I]Stacked\f[R], \f[I]VTiled\f[R],
+\f[I]HTiled\f[R] or \f[I]Monocle\f[R].
+(default: \f[I]Stacked\f[R])
 .RE
 .IP \(bu 2
 \f[B]desktop\-modes\f[R] \f[I]mode1\f[R],_mode2,..
@@ -106,15 +110,13 @@ the right.
 the bottom.
 .RE
 .IP \(bu 2
-\f[B]desktop\f[R] \f[I]num name mode\f[R]
+\f[B]message\-socket\f[R] \f[I][host:port|path]\f[R]
 .RS
 .PP
-Define the default name and tiling mode of the desktop\f[I].
-\f[R]num_ goes from 1 to 10 \f[I]name\f[R] is a string to identify the
-desktop.
-\f[I]mode\f[R] can be any of: \f[I]Stacked\f[R], \f[I]VTiled\f[R],
-\f[I]HTiled\f[R] or \f[I]Monocle\f[R].
-(default: \f[I]Stacked\f[R])
+Specifies a TCP socket or UNIX domain socket to which the window manager
+will connect to send IPC messages.This can be overriden by a command
+line argument.
+If unset (default), then no messages are sent.
 .RE
 .IP \(bu 2
 \f[B]screen\-border\-gap\f[R] \f[I]top bottom left right\f[R]
@@ -123,29 +125,6 @@ desktop.
 Reserves space at the edges of the screen.
 This space will not be used for tiling windows by the window manager.
 (default: 1 1 1 1)
-.RE
-.IP \(bu 2
-\f[B]window\-stacked\-border\f[R] \f[I]width\f[R]
-.RS
-.PP
-Specifies the border width of stacked windows.
-(default: 7)
-.RE
-.IP \(bu 2
-\f[B]window\-tiled\-border\f[R] \f[I]width\f[R]
-.RS
-.PP
-Specifies the border width of tiled windows.
-(default: 2)
-.RE
-.IP \(bu 2
-\f[B]message\-socket\f[R] \f[I][host:port|path]\f[R]
-.RS
-.PP
-Specifies a TCP socket or UNIX domain socket to which the window manager
-will connect to send IPC messages.This can be overriden by a command
-line argument.
-If unset (default), then no messages are sent.
 .RE
 .IP \(bu 2
 \f[B]shutdown\-script\f[R] \f[I]path\f[R]
@@ -161,18 +140,39 @@ Defines a script that is to be run when the window manager terminates.
 Defines a script that is to be run when the window manager starts.
 (default is unset)
 .RE
+.IP \(bu 2
+\f[B]terminal\f[R] \f[I]path\f[R]
+.RS
+.PP
+Define the default terminal program.
+(default is \(dqxterm\(dq)
+.RE
+.IP \(bu 2
+\f[B]window\-stacked\-border\f[R] \f[I]width\f[R]
+.RS
+.PP
+Specifies the border width of stacked windows.
+(default: 7)
+.RE
+.IP \(bu 2
+\f[B]window\-tiled\-border\f[R] \f[I]width\f[R]
+.RS
+.PP
+Specifies the border width of tiled windows.
+(default: 2)
+.RE
 .SS PER APPLICATION OPTIONS
 These are options to set the default desktop and default states of an
 application based on its \f[I]instance\f[R]/\f[I]class\f[R] properties.
 .IP \(bu 2
-\f[B]default\-desktop\f[R] \f[I]instance:class num\f[R]
+\f[B]app\-default\-desktop\f[R] \f[I]instance:class num\f[R]
 .RS
 .PP
 Use this configuration option to specify that an application with class
 \f[I]instance:class\f[R] is to open on desktop \f[I]num\f[R] (1\-10).
 .RE
 .IP \(bu 2
-\f[B]window\-state\f[R] \f[I]instance:class\f[R]\ \f[I]state1\f[R]
+\f[B]app\-default\-state\f[R] \f[I]instance:class\f[R]\ \f[I]state1\f[R]
 [,\f[I]state2\f[R] ..,\f[I]stateN\f[R]]
 .RS
 .PP
@@ -203,8 +203,8 @@ only).
 .RE
 .RS
 .IP \(bu 2
-\f[I]noresize\f[R]: The window cannot be resized (applicable to
-\f[I]stacked\f[R] windows only).
+\f[I]noresize\f[R]: The window cannot be resized (\f[I]stacked\f[R]
+windows only).
 .RE
 .RS
 .IP \(bu 2
@@ -215,18 +215,23 @@ only).
 \f[I]sticky\f[R]: The window appears on all desktops.
 .RE
 .SS MENU DEFINITIONS
-These options allows to define the \f[I]launcher\f[R] menu.
+These options allows to define a menu hierarchy that can be activated by
+the \f[I]menu\-launcher\f[R] function.
+The label of the top level menu must match the
+\f[I]menu\-launcher\-label\f[R] option.
+(Default: \(dqLaunchers\(dq)
+.PP
 Any menu can contains a list of commands and submenus.
 A menu definition starts by \f[I]menu\-start\f[R] statement, followed by
 a number of \f[I]menu\-item\f[R] statements, and ends with a
 \f[I]menu\-end\f[R] stetement.
 .RS
 .PP
-\f[I]menu\-start\f[R] \f[I]title\f[R]
+\f[I]menu\-start\f[R] \f[I]text\f[R]
 .RE
 .RS
 .PP
-\f[I]menu\-item\f[R] \f[I]title\f[R] \f[I]function\f[R] [\f[I]arg\f[R]]
+\f[I]menu\-item\f[R] \f[I]text\f[R] \f[I]function\f[R] [\f[I]arg\f[R]]
 .RE
 .RS
 .PP
@@ -240,7 +245,7 @@ a number of \f[I]menu\-item\f[R] statements, and ends with a
 \f[B]menu\-start\f[R] \f[I]text\f[R]
 .RS
 .PP
-Starts the definition of a menu with title \f[I]text\f[R].
+Starts the definition of a menu with label \f[I]text\f[R].
 This must be followed by a series of \f[I]menu\-item\f[R] lines and end
 with a \f[I]menu\-end\f[R] line.
 .RE
@@ -249,7 +254,7 @@ with a \f[I]menu\-end\f[R] line.
 .RS
 .PP
 Define an item in a menu.
-The \f[I]text\f[R] is what appears in the menu.
+The \f[I]text\f[R] is the label of the menu item.
 The \f[I]function\f[R] and \f[I]arg\f[R] are usually one of these:
 .RE
 .RS
@@ -260,7 +265,7 @@ The \f[I]function\f[R] and \f[I]arg\f[R] are usually one of these:
 .RS
 .IP \(bu 2
 \f[I]menu\f[R] \f[I]text\f[R]: Open a menu as a submenu.
-The \f[I]text\f[R] is the title of a defined menu.
+\f[I]text\f[R] is the label of a defined menu.
 .RE
 .RS
 .IP \(bu 2
@@ -286,29 +291,29 @@ Sets the font of the text in menus.
 (default: \(dqMono:size=10\(dq)
 .RE
 .IP \(bu 2
-\f[B]menu\-launcher\-title\f[R] \f[I]text\f[R]
+\f[B]menu\-client\-label\f[R] \f[I]text\f[R]
 .RS
 .PP
-Sets the title of the launcher menu.
+Sets the label of the client menu.
+(default is \(dqClients\(dq)
+.RE
+.IP \(bu 2
+\f[B]menu\-desktop\-label\f[R] \f[I]text\f[R]
+.RS
+.PP
+Sets the label of the active desktops menu.
+(default is \(dqActive desktops\(dq)
+.RE
+.IP \(bu 2
+\f[B]menu\-launcher\-label\f[R] \f[I]text\f[R]
+.RS
+.PP
+Sets the label of the launcher menu.
 (default is \(dqLaunchers\(dq).
 The launcher menu can be defined with the
 \f[I]menu\-start\f[R],\f[I]menu\-item\f[R], and \f[I]menu\-end\f[R]
 options.
 See \f[I]MENU DEFINITIONS\f[R] section.
-.RE
-.IP \(bu 2
-\f[B]menu\-desktop\-title\f[R] \f[I]text\f[R]
-.RS
-.PP
-Sets the title of the active desktops menu.
-(default is \(dqActive desktops\(dq)
-.RE
-.IP \(bu 2
-\f[B]menu\-client\-title\f[R] \f[I]text\f[R]
-.RS
-.PP
-Sets the title of the client menu.
-(default is \(dqClients\(dq)
 .RE
 .SS UI COLOR OPTIONS
 .IP \(bu 2
@@ -320,62 +325,55 @@ Possible elements are:
 .RE
 .RS
 .IP \(bu 2
-\f[I]window\-border\-active\f[R]
-.IP \(bu 2
-\f[I]window\-border\-inactive\f[R]
-.IP \(bu 2
-\f[I]window\-border\-urgent\f[R]
-.IP \(bu 2
 \f[I]menu\-background\f[R]
 .IP \(bu 2
 \f[I]menu\-border\f[R]
 .IP \(bu 2
 \f[I]menu\-highlight\f[R]
 .IP \(bu 2
-\f[I]menu\-text\f[R]
+\f[I]menu\-item\-text\f[R]
 .IP \(bu 2
-\f[I]menu\-text\-selected\f[R]
+\f[I]menu\-item\-text\-selected\f[R]
 .IP \(bu 2
 \f[I]menu\-title\f[R]
 .IP \(bu 2
 \f[I]menu\-title\-background\f[R]
+.IP \(bu 2
+\f[I]window\-border\-active\f[R]
+.IP \(bu 2
+\f[I]window\-border\-inactive\f[R]
+.IP \(bu 2
+\f[I]window\-border\-urgent\f[R]
 .RE
 .SS BINDING OPTIONS
 These options allow to bind or unbind a key/buttpn shortcut to a window
 manager function.
+A binding consists of a set of modifier keys and a regular key or button
+mouse.
+Any combination of these modifiers are allowed:
+.RS
+.IP \(bu 2
+\f[B]C\f[R] for the Control key
+.IP \(bu 2
+\f[B]M\f[R] for the Alt key
+.IP \(bu 2
+\f[B]4\f[R] for the Super (Windows) key
+.IP \(bu 2
+\f[B]S\f[R] for the Shift key
+.RE
+.PP
+The bindings options are:
 .IP \(bu 2
 \f[B]bind\-key\f[R] \f[I]modifiers\-key function\f[R]
 .RS
 .PP
 Bind a key pressed with modifiers to a window manager function.
 .RE
-.RS
-.PP
-Any combination of these modifiers are allowed:
-.RE
-.RS
-.IP \(bu 2
-\f[B]C\f[R] for the Control key
-.RE
-.RS
-.IP \(bu 2
-\f[B]M\f[R] for the Alt key
-.RE
-.RS
-.IP \(bu 2
-\f[B]4\f[R] for the Super (Windows) key
-.RE
-.RS
-.IP \(bu 2
-\f[B]S\f[R] for the Shift key
-.RE
 .IP \(bu 2
 \f[B]bind\-mouse\f[R] \f[I]modifiers\-button function\f[R]
 .RS
 .PP
-Bind a mouse button click with modifiers to a window manager function.
-\f[I]C\f[R],\f[I]M\f[R],\f[I]4\f[R],\f[I]S\f[R] are the applicable
-modifiers.
+Bind a mouse button clicked with modifiers to a window manager function.
 .RE
 .IP \(bu 2
 \f[B]unbind\-key\f[R] \f[I]modifiers\-key\f[R]
@@ -395,15 +393,6 @@ Unassigns a particular modifiers/button combination.
 This sections list all window manager functions that can be accessed
 through a key or mouse binding.
 .IP \(bu 2
-\f[B]terminal\f[R]: Open the default terminal.
-.IP \(bu 2
-\f[B]exec\f[R] \f[I]path\f[R]: Execute a program defined by
-\f[I]path\f[R].
-.IP \(bu 2
-\f[B]restart\f[R]: Restart the window manager.
-.IP \(bu 2
-\f[B]quit\f[R]: Terminate the window manager.
-.IP \(bu 2
 \f[B]desktop\-close\f[R]: Close all windows on the desktop.
 .IP \(bu 2
 \f[B]desktop\-hide\f[R]: Hide all windows on the desktop.
@@ -418,11 +407,11 @@ occupied by the master window.
 occupied by the master window.
 (HTiled, VTIled)
 .IP \(bu 2
-\f[B]desktop\-mode\-stacked\f[R]: Switch the desktop to Stacked mode.
+\f[B]desktop\-mode\-htiled\f[R]: Switch the desktop to HTiled mode.
 .IP \(bu 2
 \f[B]desktop\-mode\-monocle\f[R]: Switch the desktop to Monocle mode.
 .IP \(bu 2
-\f[B]desktop\-mode\-htiled\f[R]: Switch the desktop to HTiled mode.
+\f[B]desktop\-mode\-stacked\f[R]: Switch the desktop to Stacked mode.
 .IP \(bu 2
 \f[B]desktop\-mode\-vtiled\f[R]: Switch the desktop to VTiled mode.
 .IP \(bu 2
@@ -452,11 +441,20 @@ window.
 \f[B]desktop\-window\-prev\f[R]: Move the focus to the previous tiled
 window.
 .IP \(bu 2
+\f[B]exec\f[R] \f[I]path\f[R]: Execute a program defined by
+\f[I]path\f[R].
+.IP \(bu 2
 \f[B]menu\-client\f[R]: Shows the list of X clients.
 .IP \(bu 2
 \f[B]menu\-desktop\f[R]: Show the list of active desktops.
 .IP \(bu 2
 \f[B]menu\-launcher\f[R]: Show the launcher menu as defined by the user.
+.IP \(bu 2
+\f[B]quit\f[R]: Terminate the window manager.
+.IP \(bu 2
+\f[B]restart\f[R]: Restart the window manager.
+.IP \(bu 2
+\f[B]terminal\f[R]: Open the default terminal.
 .IP \(bu 2
 \f[B]window\-close\f[R]: Close the current window.
 .IP \(bu 2
@@ -535,6 +533,7 @@ the current window.
 \f[B]window\-toggle\-tiled\f[R]: Toggle the
 \f[I]tiled\f[R]/\f[I]stacked\f[R] state of the current window.
 .SH DEFAULT BINDINGS
+This sections list all key and mouse bindings defined by default.
 .SS Key bindings
 .IP \(bu 2
 \f[B]CM\-Return\f[R]: \f[I]terminal\f[R]
@@ -660,6 +659,7 @@ the current window.
 .IP \(bu 2
 \f[B]M+5\f[R]: \f[I]window\-raise\f[R]
 .SH SOCKETS
+This section describes the use of sockets by the window manager.
 .SS Command socket:
 Commands can be sent programmatically to the window manager through a
 UNIX socket.

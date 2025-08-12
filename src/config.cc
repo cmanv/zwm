@@ -187,11 +187,11 @@ void conf::init()
 	colordefs[Color::WindowBorderActive] 	= "tan";
 	colordefs[Color::WindowBorderInactive] 	= "grey40";
 	colordefs[Color::WindowBorderUrgent] 	= "red";
-	colordefs[Color::MenuBackground] 	= "grey30";
+	colordefs[Color::MenuBackground] 	= "grey20";
 	colordefs[Color::MenuBorder] 		= "SkyBlue4";
 	colordefs[Color::MenuHighlight] 	= "SteelBlue4";
-	colordefs[Color::MenuText] 		= "grey88";
-	colordefs[Color::MenuTextSelected] 	= "WhiteSmoke";
+	colordefs[Color::MenuItemText] 		= "grey88";
+	colordefs[Color::MenuItemTextSelected] 	= "WhiteSmoke";
 	colordefs[Color::MenuTitle] 		= "WhiteSmoke";
 	colordefs[Color::MenuTitleBackground] 	= "SkyBlue4";
 
@@ -310,15 +310,15 @@ void conf::read_config()
 			menufont = tokens[1];
 			continue;
 		}
-		if (!tokens[0].compare("menu-client-title")) {
+		if (!tokens[0].compare("menu-client-label")) {
 			menu_client = tokens[1];
 			continue;
 		}
-		if (!tokens[0].compare("menu-desktop-title")) {
+		if (!tokens[0].compare("menu-desktop-label")) {
 			menu_desktop = tokens[1];
 			continue;
 		}
-		if (!tokens[0].compare("menu-launcher-title")) {
+		if (!tokens[0].compare("menu-launcher-label")) {
 			menu_launcher = tokens[1];
 			continue;
 		}
@@ -354,10 +354,10 @@ void conf::read_config()
 				colordefs[Color::MenuBackground] = tokens[2];
 			else if (!tokens[1].compare("menu-border"))
 				colordefs[Color::MenuBorder] = tokens[2];
-			else if (!tokens[1].compare("menu-text"))
-				colordefs[Color::MenuText] = tokens[2];
-			else if (!tokens[1].compare("menu-text-selected"))
-				colordefs[Color::MenuTextSelected] = tokens[2];
+			else if (!tokens[1].compare("menu-item-text"))
+				colordefs[Color::MenuItemText] = tokens[2];
+			else if (!tokens[1].compare("menu-item-text-selected"))
+				colordefs[Color::MenuItemTextSelected] = tokens[2];
 			else if (!tokens[1].compare("menu-highlight"))
 				colordefs[Color::MenuHighlight] = tokens[2];
 			else if (!tokens[1].compare("menu-title"))
@@ -406,7 +406,7 @@ void conf::read_config()
 				add_mousebinding(mb);
 			continue;
 		}
-		if (!tokens[0].compare("default-desktop")) {
+		if (!tokens[0].compare("app-default-desktop")) {
 			std::string rname, rclass;
 			get_name_class(tokens[1], rname, rclass);
 			int index = std::strtol(tokens[2].c_str(), NULL, 10) - 1;
@@ -414,7 +414,7 @@ void conf::read_config()
 			add_default_desktop(rname, rclass, index);
 			continue;
 		}
-		if (!tokens[0].compare("window-state")) {
+		if (!tokens[0].compare("app-default-state")) {
 			std::string rname, rclass;
 			get_name_class(tokens[1], rname, rclass);
 			std::vector<std::string> states;

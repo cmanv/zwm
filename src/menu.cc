@@ -52,8 +52,8 @@ Menu::Menu(XScreen *s, MenuDef &md, Menu *p): m_data(md)
 	m_font = m_screen->get_menu_font();
 	m_titlecolor = m_screen->get_color(Color::MenuTitle);
 	m_titlebgcolor = m_screen->get_color(Color::MenuTitleBackground);
-	m_textcolor = m_screen->get_color(Color::MenuText);
-	m_textselcolor = m_screen->get_color(Color::MenuTextSelected);
+	m_itemcolor = m_screen->get_color(Color::MenuItemText);
+	m_itemselcolor = m_screen->get_color(Color::MenuItemTextSelected);
 	m_bgcolor = m_screen->get_color(Color::MenuBackground);
 	m_hicolor = m_screen->get_color(Color::MenuHighlight);
 	m_bordercolor = m_screen->get_color(Color::MenuBorder);
@@ -203,7 +203,7 @@ void Menu::draw_entry(int n)
 	XftColor *color = (n == m_entry) ? m_hicolor : m_bgcolor;
 	XftDrawRect(m_xftdraw, color, 0, y, m_geom.w, m_height_entry);
 
-	color = (n == m_entry) ? m_textselcolor : m_textcolor;
+	color = (n == m_entry) ? m_itemselcolor : m_itemcolor;
 	XftDrawStringUtf8(m_xftdraw, color, m_font, 5, y + m_font->ascent,
 	    (const FcChar8*)m_data.items[n].label.c_str(), m_data.items[n].label.size());
 

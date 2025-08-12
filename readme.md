@@ -52,18 +52,21 @@ are sent.
 
 # CONFIGURATION OPTIONS
 
-This section describes all options that can be set in the configuration files.
+This section describes all options that can be set in the configuration file.
 
 ## GENERAL WINDOW MANAGER OPTIONS
-
-- **terminal** _path_
-
-> Define the default terminal program. (default is "xterm")
 
 - **debug-level** _level_
 
 > A non zero value causes the window manager to print debug information
 > on the standard output. Increasing its value increases verbosity. (default: 0)
+
+- **desktop** _num name mode_
+
+> Define the default name and tiling mode of the desktop_.
+> _num_ goes from 1 to 10
+> _name_ is a string to identify the desktop.
+> _mode_ can be any of: _Stacked_, _VTiled_, _HTiled_ or _Monocle_. (default: _Stacked_)
 
 - **desktop-modes** _mode1_,_mode2,..
 
@@ -79,31 +82,16 @@ This section describes all options that can be set in the configuration files.
 
 > * _HTiled_ : Master / slaves with the slaves tiled horizontally on the bottom.
 
-- **desktop** _num name mode_
-
-> Define the default name and tiling mode of the desktop_.
-> _num_ goes from 1 to 10
-> _name_ is a string to identify the desktop.
-> _mode_ can be any of: _Stacked_, _VTiled_, _HTiled_ or _Monocle_. (default: _Stacked_)
-
-- **screen-border-gap** _top bottom left right_
-
-> Reserves space at the edges of the screen. This space will not
-> be used for tiling windows by the window manager. (default: 1 1 1 1)
-
-- **window-stacked-border** _width_
-
-> Specifies the border width of stacked windows. (default: 7)
-
-- **window-tiled-border** _width_
-
-> Specifies the border width of tiled windows. (default: 2)
-
 - **message-socket** _[host:port|path]_
 
 > Specifies a TCP socket or UNIX domain socket to which the window manager will
 > connect to send IPC messages.This can be overriden by a command line argument. If
 > unset (default), then no messages are sent.
+
+- **screen-border-gap** _top bottom left right_
+
+> Reserves space at the edges of the screen. This space will not
+> be used for tiling windows by the window manager. (default: 1 1 1 1)
 
 - **shutdown-script** _path_
 
@@ -115,17 +103,29 @@ This section describes all options that can be set in the configuration files.
 > Defines a script that is to be run when the window manager starts.
 > (default is unset)
 
+- **terminal** _path_
+
+> Define the default terminal program. (default is "xterm")
+
+- **window-stacked-border** _width_
+
+> Specifies the border width of stacked windows. (default: 7)
+
+- **window-tiled-border** _width_
+
+> Specifies the border width of tiled windows. (default: 2)
+
 ## PER APPLICATION OPTIONS
 
 These are options to set the default desktop and default states of an application
-based on its _instance_/_class_ properties. 
+based on its _instance_/_class_ properties.
 
-- **default-desktop** _instance:class num_
+- **app-default-desktop** _instance:class num_
 
 > Use this configuration option to specify that an application with class _instance:class_
 > is to open on desktop _num_ (1-10).
 
-- **window-state** _instance:class_ _state1_ [,_state2_ ..,_stateN_]
+- **app-default-state** _instance:class_ _state1_ [,_state2_ ..,_stateN_]
 
 > Set the default state of an application with instance/class _instance:class_.
 > The applicable states are:
@@ -138,7 +138,7 @@ based on its _instance_/_class_ properties.
 
 > -  _noborder_: The window has no border (_stacked_ windows only).
 
-> - _noresize_: The window cannot be resized (applicable to _stacked_ windows only).
+> - _noresize_: The window cannot be resized (_stacked_ windows only).
 
 > - _notile_: The window is never tiled.
 
@@ -146,14 +146,17 @@ based on its _instance_/_class_ properties.
 
 ## MENU DEFINITIONS
 
-These options allows to define the _launcher_ menu. Any menu can contains
-a list of commands and submenus.
-A menu definition starts by _menu-start_ statement, followed by a number of _menu-item_
-statements, and ends with a _menu-end_ stetement. 
+These options allows to define a menu hierarchy that can be activated by
+the _menu-launcher_ function. The label of the top level menu must match
+the _menu-launcher-label_ option. (Default: "Launchers")
 
-> _menu-start_ _title_
+Any menu can contains a list of commands and submenus. A menu
+definition starts by _menu-start_ statement, followed by a number
+of _menu-item_ statements, and ends with a _menu-end_ stetement.
 
-> _menu-item_ _title_ _function_ \[_arg_\]
+> _menu-start_ _text_
+
+> _menu-item_ _text_ _function_ \[_arg_\]
 
 > ,,,
 
@@ -161,17 +164,17 @@ statements, and ends with a _menu-end_ stetement.
 
 - **menu-start** _text_
 
-> Starts the definition of a menu with title _text_. This must be followed by a
+> Starts the definition of a menu with label _text_. This must be followed by a
 series of _menu-item_ lines and end with a _menu-end_ line.
 
 - **menu-item**  _text function \[arg\]_
 
-> Define an item in a menu. The _text_ is what appears in the menu. The _function_
-> and _arg_ are usually one of these:
+> Define an item in a menu. The _text_ is the label of the menu item.
+> The _function_ and _arg_ are usually one of these:
 
 > - _exec_ _path_: Execute the program at the specified _path_.
 
-> - _menu_  _text_: Open a menu as a submenu. The _text_ is the title of a defined menu.
+> - _menu_  _text_: Open a menu as a submenu. _text_ is the label of a defined menu.
 
 > - _quit_: Terminates the window manager application.
 
@@ -187,19 +190,19 @@ series of _menu-item_ lines and end with a _menu-end_ line.
 
 > Sets the font of the text in menus. (default: "Mono:size=10")
 
-- **menu-launcher-title** _text_
+- **menu-client-label** _text_
 
-> Sets the title of the launcher menu. (default is "Launchers").
+> Sets the label of the client menu. (default is "Clients")
+
+- **menu-desktop-label** _text_
+
+> Sets the label of the active desktops menu. (default is "Active desktops")
+
+- **menu-launcher-label** _text_
+
+> Sets the label of the launcher menu. (default is "Launchers").
 > The launcher menu can be defined with the _menu-start_,_menu-item_,
 > and _menu-end_ options. See _MENU DEFINITIONS_ section.
-
-- **menu-desktop-title** _text_
-
-> Sets the title of the active desktops menu. (default is "Active desktops")
-
-- **menu-client-title** _text_
-
-> Sets the title of the client menu. (default is "Clients")
 
 ## UI COLOR OPTIONS
 
@@ -207,38 +210,37 @@ series of _menu-item_ lines and end with a _menu-end_ line.
 
 > Sets the color of the UI elements. Possible elements are:
 
-> * _window-border-active_
-> * _window-border-inactive_
-> * _window-border-urgent_
 > * _menu-background_
 > * _menu-border_
 > * _menu-highlight_
-> * _menu-text_
-> * _menu-text-selected_
+> * _menu-item-text_
+> * _menu-item-text-selected_
 > * _menu-title_
 > * _menu-title-background_
+> * _window-border-active_
+> * _window-border-inactive_
+> * _window-border-urgent_
 
 ## BINDING OPTIONS
 
 These options allow to bind or unbind a key/buttpn shortcut to a window manager function.
+A binding consists of a set of modifier keys and a regular key or button mouse.
+Any combination of these modifiers are allowed:
+
+> - **C** for the Control key
+> - **M** for the Alt key
+> - **4** for the Super (Windows) key
+> - **S** for the Shift key
+
+The bindings options are:
 
 - **bind-key** _modifiers-key function_
 
 > Bind a key pressed with modifiers to a window manager function.
 
-> Any combination of these modifiers are allowed:
-
-> * **C** for the Control key
-
-> * **M** for the Alt key
-
-> * **4** for the Super (Windows) key
-
-> * **S** for the Shift key
-
 - **bind-mouse** _modifiers-button function_
 
-> Bind a mouse button click with modifiers to a window manager function. _C_,_M_,_4_,_S_ are the applicable modifiers.
+> Bind a mouse button clicked with modifiers to a window manager function.
 
 - **unbind-key** _modifiers-key_
 
@@ -253,18 +255,14 @@ These options allow to bind or unbind a key/buttpn shortcut to a window manager 
 This sections list all window manager functions that can be accessed through a key
 or mouse binding.
 
-- **terminal**: Open the default terminal.
-- **exec**  _path_: Execute a program defined by _path_.
-- **restart**: Restart the window manager.
-- **quit**: Terminate the window manager.
 - **desktop-close**: Close all windows on the desktop.
 - **desktop-hide**: Hide all windows on the desktop.
 - **desktop-last**: Move to the last desktop.
 - **desktop-master-decr**: Decrease the proportion of the screen occupied by the master window. (HTiled, VTIled)
 - **desktop-master-incr**: Increase the proportion of the screen occupied by the master window. (HTiled, VTIled)
-- **desktop-mode-stacked**: Switch the desktop to Stacked mode.
-- **desktop-mode-monocle**: Switch the desktop to Monocle mode.
 - **desktop-mode-htiled**: Switch the desktop to HTiled mode.
+- **desktop-mode-monocle**: Switch the desktop to Monocle mode.
+- **desktop-mode-stacked**: Switch the desktop to Stacked mode.
 - **desktop-mode-vtiled**: Switch the desktop to VTiled mode.
 - **desktop-mode-next**: Switch the desktop to the next tiling mode in the order defined by _desktop-modes_.
 - **desktop-mode-prev**: Switch the desktop to the previous tiling mode in ther order defined by _desktop-modes_..
@@ -275,9 +273,13 @@ or mouse binding.
 - **desktop-select-_num_**: Go to desktop _num_
 - **desktop-window-next**: Move the focus to the next tiled window.
 - **desktop-window-prev**: Move the focus to the previous tiled window.
+- **exec**  _path_: Execute a program defined by _path_.
 - **menu-client**: Shows the list of X clients.
 - **menu-desktop**: Show the list of active desktops.
 - **menu-launcher**: Show the launcher menu as defined by the user.
+- **quit**: Terminate the window manager.
+- **restart**: Restart the window manager.
+- **terminal**: Open the default terminal.
 - **window-close**: Close the current window.
 - **window-hide**: Hide the current window.
 - **window-lower**: Lower the position of the current window in the stack. (_stacked_ windows only).
@@ -302,6 +304,7 @@ or mouse binding.
 - **window-toggle-tiled**: Toggle the _tiled_/_stacked_ state of the current window.
 
 # DEFAULT BINDINGS
+This sections list all key and mouse bindings defined by default.
 
 ## Key bindings
 
@@ -371,6 +374,7 @@ or mouse binding.
 - **M+5**:	_window-raise_
 
 # SOCKETS
+This section describes the use of sockets by the window manager.
 
 ## Command socket:
 

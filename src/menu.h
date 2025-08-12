@@ -72,8 +72,8 @@ class Menu {
 	unsigned long			 m_fgpixel;
 	XftColor			*m_titlecolor;
 	XftColor			*m_titlebgcolor;
-	XftColor			*m_textcolor;
-	XftColor			*m_textselcolor;
+	XftColor			*m_itemcolor;
+	XftColor			*m_itemselcolor;
 	XftColor			*m_bgcolor;
 	XftColor			*m_hicolor;
 	XftColor			*m_bordercolor;
