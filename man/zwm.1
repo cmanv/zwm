@@ -62,6 +62,21 @@ This section describes all options that can be set in the configuration
 file.
 .SS GENERAL WINDOW MANAGER OPTIONS
 .IP \(bu 2
+\f[B]color\f[R] \f[I]element color\f[R]
+.RS
+.PP
+Sets the color of the UI elements.
+Possible elements are:
+.RE
+.RS
+.PP
+\f[I]menu\-background\f[R], \f[I]menu\-border\f[R],
+\f[I]menu\-highlight\f[R], \f[I]menu\-item\-text\f[R],
+\f[I]menu\-item\-text\-selected\f[R], \f[I]menu\-title\f[R],
+\f[I]menu\-title\-background\f[R], \f[I]window\-border\-active\f[R],
+\f[I]window\-border\-inactive\f[R], \f[I]window\-border\-urgent\f[R]
+.RE
+.IP \(bu 2
 \f[B]debug\-level\f[R] \f[I]level\f[R]
 .RS
 .PP
@@ -77,9 +92,20 @@ Increasing its value increases verbosity.
 Define the default name and tiling mode of the desktop\f[I].
 \f[R]num_ goes from 1 to 10 \f[I]name\f[R] is a string to identify the
 desktop.
-\f[I]mode\f[R] can be any of: \f[I]Stacked\f[R], \f[I]VTiled\f[R],
-\f[I]HTiled\f[R] or \f[I]Monocle\f[R].
-(default: \f[I]Stacked\f[R])
+\f[I]mode\f[R] can be any of:
+.RE
+.RS
+.IP \(bu 2
+\f[I]Stacked\f[R]: Windows are stacked and can be moved/resized by the
+user.
+.IP \(bu 2
+\f[I]Monocle\f[R]: Only one window (maximized) is visible at a time.
+.IP \(bu 2
+\f[I]VTiled\f[R]: Master / slaves with the slaves tiled vertically on
+the right.
+.IP \(bu 2
+\f[I]HTiled\f[R]: Master / slaves with the slaves tiled horizontally on
+the bottom.
 .RE
 .IP \(bu 2
 \f[B]desktop\-modes\f[R] \f[I]mode1\f[R],_mode2,..
@@ -87,27 +113,11 @@ desktop.
 .PP
 Define a comma separated list of active desktop modes.
 The order is used to rotate mode with the functions
-\f[I]desktop\-mode\-next\f[R] and \f[I]desktop\-mode\-prev\f[R] The list
-of currently valid modes is:
+\f[I]desktop\-mode\-next\f[R] and \f[I]desktop\-mode\-prev\f[R].
 .RE
 .RS
-.IP \(bu 2
-\f[I]Stacked\f[R] : Windows are stacked and can be moved/resized by the
-user.
-.RE
-.RS
-.IP \(bu 2
-\f[I]Monocle\f[R] : Only one window (maximized) is visible at a time.
-.RE
-.RS
-.IP \(bu 2
-\f[I]VTiled\f[R] : Master / slaves with the slaves tiled vertically on
-the right.
-.RE
-.RS
-.IP \(bu 2
-\f[I]HTiled\f[R] : Master / slaves with the slaves tiled horizontally on
-the bottom.
+.PP
+Default is : \(dqStacked,Monocle,VTiled,HTiled\(dq
 .RE
 .IP \(bu 2
 \f[B]message\-socket\f[R] \f[I][host:port|path]\f[R]
@@ -116,7 +126,36 @@ the bottom.
 Specifies a TCP socket or UNIX domain socket to which the window manager
 will connect to send IPC messages.This can be overriden by a command
 line argument.
-If unset (default), then no messages are sent.
+(default is unset)
+.RE
+.IP \(bu 2
+\f[B]menu\-font\f[R] \f[I]font\f[R]
+.RS
+.PP
+Sets the font of the text in menus.
+(default: \(dqMono:size=10\(dq)
+.RE
+.IP \(bu 2
+\f[B]menu\-client\-label\f[R] \f[I]text\f[R]
+.RS
+.PP
+Sets the label of the client menu.
+(default is \(dqX Clients\(dq)
+.RE
+.IP \(bu 2
+\f[B]menu\-desktop\-label\f[R] \f[I]text\f[R]
+.RS
+.PP
+Sets the label of the active desktops menu.
+(default is \(dqActive desktops\(dq)
+.RE
+.IP \(bu 2
+\f[B]menu\-launcher\-label\f[R] \f[I]text\f[R]
+.RS
+.PP
+Sets the label of the launcher menu.
+(default is \(dqLaunchers\(dq).
+To define the launcher menu, see the \f[I]MENU DEFINITIONS\f[R] section.
 .RE
 .IP \(bu 2
 \f[B]screen\-border\-gap\f[R] \f[I]top bottom left right\f[R]
@@ -281,69 +320,6 @@ Any changes in the configuration file will be applied.
 .RS
 .PP
 Ends the definition of the menu.
-.RE
-.SS MENU OPTIONS
-.IP \(bu 2
-\f[B]menu\-font\f[R] \f[I]font\f[R]
-.RS
-.PP
-Sets the font of the text in menus.
-(default: \(dqMono:size=10\(dq)
-.RE
-.IP \(bu 2
-\f[B]menu\-client\-label\f[R] \f[I]text\f[R]
-.RS
-.PP
-Sets the label of the client menu.
-(default is \(dqClients\(dq)
-.RE
-.IP \(bu 2
-\f[B]menu\-desktop\-label\f[R] \f[I]text\f[R]
-.RS
-.PP
-Sets the label of the active desktops menu.
-(default is \(dqActive desktops\(dq)
-.RE
-.IP \(bu 2
-\f[B]menu\-launcher\-label\f[R] \f[I]text\f[R]
-.RS
-.PP
-Sets the label of the launcher menu.
-(default is \(dqLaunchers\(dq).
-The launcher menu can be defined with the
-\f[I]menu\-start\f[R],\f[I]menu\-item\f[R], and \f[I]menu\-end\f[R]
-options.
-See \f[I]MENU DEFINITIONS\f[R] section.
-.RE
-.SS UI COLOR OPTIONS
-.IP \(bu 2
-\f[B]color\f[R] \f[I]element color\f[R]
-.RS
-.PP
-Sets the color of the UI elements.
-Possible elements are:
-.RE
-.RS
-.IP \(bu 2
-\f[I]menu\-background\f[R]
-.IP \(bu 2
-\f[I]menu\-border\f[R]
-.IP \(bu 2
-\f[I]menu\-highlight\f[R]
-.IP \(bu 2
-\f[I]menu\-item\-text\f[R]
-.IP \(bu 2
-\f[I]menu\-item\-text\-selected\f[R]
-.IP \(bu 2
-\f[I]menu\-title\f[R]
-.IP \(bu 2
-\f[I]menu\-title\-background\f[R]
-.IP \(bu 2
-\f[I]window\-border\-active\f[R]
-.IP \(bu 2
-\f[I]window\-border\-inactive\f[R]
-.IP \(bu 2
-\f[I]window\-border\-urgent\f[R]
 .RE
 .SS BINDING OPTIONS
 These options allow to bind or unbind a key/buttpn shortcut to a window

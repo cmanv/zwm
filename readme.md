@@ -56,6 +56,15 @@ This section describes all options that can be set in the configuration file.
 
 ## GENERAL WINDOW MANAGER OPTIONS
 
+* **color** _element color_
+
+> Sets the color of the UI elements. Possible elements are:
+
+> _menu-background_, _menu-border_, _menu-highlight_,
+> _menu-item-text_, _menu-item-text-selected_, _menu-title_,
+> _menu-title-background_, _window-border-active_,
+> _window-border-inactive_, _window-border-urgent_
+
 - **debug-level** _level_
 
 > A non zero value causes the window manager to print debug information
@@ -66,27 +75,42 @@ This section describes all options that can be set in the configuration file.
 > Define the default name and tiling mode of the desktop_.
 > _num_ goes from 1 to 10
 > _name_ is a string to identify the desktop.
-> _mode_ can be any of: _Stacked_, _VTiled_, _HTiled_ or _Monocle_. (default: _Stacked_)
+> _mode_ can be any of:
+
+> * _Stacked_: Windows are stacked and can be moved/resized by the user.
+> * _Monocle_: Only one window (maximized) is visible at a time.
+> * _VTiled_: Master / slaves with the slaves tiled vertically on the right.
+> * _HTiled_: Master / slaves with the slaves tiled horizontally on the bottom.
 
 - **desktop-modes** _mode1_,_mode2,..
 
 > Define a comma separated list of active desktop modes. The order is used
-> to rotate mode with the functions _desktop-mode-next_ and _desktop-mode-prev_
-> The list of currently valid modes is:
+> to rotate mode with the functions _desktop-mode-next_ and _desktop-mode-prev_.
 
-> * _Stacked_ : Windows are stacked and can be moved/resized by the user.
-
-> * _Monocle_ : Only one window (maximized) is visible at a time.
-
-> * _VTiled_ : Master / slaves with the slaves tiled vertically on the right.
-
-> * _HTiled_ : Master / slaves with the slaves tiled horizontally on the bottom.
+> Default is : "Stacked,Monocle,VTiled,HTiled"
 
 - **message-socket** _[host:port|path]_
 
 > Specifies a TCP socket or UNIX domain socket to which the window manager will
-> connect to send IPC messages.This can be overriden by a command line argument. If
-> unset (default), then no messages are sent.
+> connect to send IPC messages.This can be overriden by a command line argument.
+> (default is unset)
+
+- **menu-font** _font_
+
+> Sets the font of the text in menus. (default: "Mono:size=10")
+
+- **menu-client-label** _text_
+
+> Sets the label of the client menu. (default is "X Clients")
+
+- **menu-desktop-label** _text_
+
+> Sets the label of the active desktops menu. (default is "Active desktops")
+
+- **menu-launcher-label** _text_
+
+> Sets the label of the launcher menu. (default is "Launchers").
+> To define the launcher menu, see the _MENU DEFINITIONS_ section.
 
 - **screen-border-gap** _top bottom left right_
 
@@ -183,43 +207,6 @@ series of _menu-item_ lines and end with a _menu-end_ line.
 * **menu-end**
 
 > Ends the definition of the menu.
-
-## MENU OPTIONS
-
-- **menu-font** _font_
-
-> Sets the font of the text in menus. (default: "Mono:size=10")
-
-- **menu-client-label** _text_
-
-> Sets the label of the client menu. (default is "Clients")
-
-- **menu-desktop-label** _text_
-
-> Sets the label of the active desktops menu. (default is "Active desktops")
-
-- **menu-launcher-label** _text_
-
-> Sets the label of the launcher menu. (default is "Launchers").
-> The launcher menu can be defined with the _menu-start_,_menu-item_,
-> and _menu-end_ options. See _MENU DEFINITIONS_ section.
-
-## UI COLOR OPTIONS
-
-* **color** _element color_
-
-> Sets the color of the UI elements. Possible elements are:
-
-> * _menu-background_
-> * _menu-border_
-> * _menu-highlight_
-> * _menu-item-text_
-> * _menu-item-text-selected_
-> * _menu-title_
-> * _menu-title-background_
-> * _window-border-active_
-> * _window-border-inactive_
-> * _window-border-urgent_
 
 ## BINDING OPTIONS
 
