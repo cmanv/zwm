@@ -13,7 +13,7 @@ zwm — a simple stacking / tiling window manager for X11
 # DESCRIPTION
 
 **zwm** is an hybrid stacking/tiling window manager for X11. It supports a stacking
-mode and 3 tiling modes. It features a number of configurable keyboards control
+mode and 3 tiling modes. It features a number of configurable window manager 
 functions, workspaces and a configurable menu.
 It is also able to send and receive messages through sockets.
 
@@ -70,17 +70,18 @@ This section describes all options that can be set in the configuration file.
 > A non zero value causes the window manager to print debug information
 > on the standard output. Increasing its value increases verbosity. (default: 0)
 
-- **desktop** _num name mode_
+- **desktop-defaults** _number name mode_
 
 > Define the default name and tiling mode of the desktop_.
-> _num_ goes from 1 to 10
-> _name_ is a string to identify the desktop.
-> _mode_ can be any of:
 
-> * _Stacked_: Windows are stacked and can be moved/resized by the user.
-> * _Monocle_: Only one window (maximized) is visible at a time.
-> * _VTiled_: Master / slaves with the slaves tiled vertically on the right.
-> * _HTiled_: Master / slaves with the slaves tiled horizontally on the bottom.
+> * _number_ is the desktop number from 1 to 10.
+> * _name_ is a string to identify the desktop.
+> * _mode_ can be any of:
+
+> > * _Stacked_: Windows are stacked and can be moved/resized by the user. (default)
+> > * _Monocle_: Only one window (maximized) is visible at a time.
+> > * _VTiled_: Master / slaves with the slaves tiled vertically on the right.
+> > * _HTiled_: Master / slaves with the slaves tiled horizontally on the bottom.
 
 - **desktop-modes** _mode1_,_mode2,..
 
@@ -144,10 +145,10 @@ This section describes all options that can be set in the configuration file.
 These are options to set the default desktop and default states of an application
 based on its _instance_/_class_ properties.
 
-- **app-default-desktop** _instance:class num_
+- **app-default-desktop** _instance:class number_
 
 > Use this configuration option to specify that an application with class _instance:class_
-> is to open on desktop _num_ (1-10).
+> is to open on the desktop _number_.
 
 - **app-default-state** _instance:class_ _state1_ [,_state2_ ..,_stateN_]
 
@@ -175,7 +176,7 @@ the _menu-launcher_ function. The label of the top level menu must match
 the _menu-launcher-label_ option. (Default: "Launchers")
 
 Any menu can contains a list of commands and submenus. A menu
-definition starts by _menu-start_ statement, followed by a number
+definition starts by _menu-start_ statement, followed by a list
 of _menu-item_ statements, and ends with a _menu-end_ stetement.
 
 > _menu-start_ _text_
@@ -257,7 +258,7 @@ or mouse binding.
 - **desktop-prev**: Go to the previous active desktop. First desktop wraps to last.
 - **desktop-rotate-next**: Rotate the position of the tiled windows counterclockwise.
 - **desktop-rotate-prev**: Rotate the position of the tiled windows clockwise.
-- **desktop-select-_num_**: Go to desktop _num_
+- **desktop-select-_number_**: Go to desktop _number_
 - **desktop-window-next**: Move the focus to the next tiled window.
 - **desktop-window-prev**: Move the focus to the previous tiled window.
 - **exec**  _path_: Execute a program defined by _path_.
@@ -275,7 +276,7 @@ or mouse binding.
 - **window-move-left**: Move the current window toward to the left of the screen. (_stacked_ windows only)
 - **window-move-right**: Move the current window toward to the right of the screen. (_stacked_ windows only)
 - **window-move-up**: Move the current window toward to the top of the screen. (_stacked_ windows only)
-- **window-move-to-desktop-_num_**: Move the current window to the desktop _num_. (1 <= _num_ <= 10)
+- **window-move-to-desktop-_number_**: Move the current window to the desktop _number_.
 - **window-raise**: Moves the current window to the top the stack. (_stacked_ windows only).
 - **window-resize**: Resize the current window with the pointer.  (_stacked_ windows only)
 - **window-resize-down**: Resize the current window toward the bottom.  (_stacked_ windows only)
@@ -398,7 +399,7 @@ This is the list of messages that can be sent by the window manager:
 - _desktop\_list="space separated list of desktops numbers"_
 
 > Sent where there is a change in the list of active desktops.
-> The active desktop is prepended by a '*' in the list.
+> The active desktop number is prepended by a '*' in the list.
 
 To activate this feature, set _message-socket_ to the path of the destination socket in the configuration file. Alternatively, use the _-m_ command line option to specify its value. If used, the command line option overrides the value defined in the configuration file.
 

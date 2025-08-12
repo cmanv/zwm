@@ -1,38 +1,53 @@
+# ----------------------------------------------------------------
 # zwm configuration file
-# ----------------------------------------------------------------
-# General configuration ptions
-# ----------------------------------------------------------------
+# cmanv - August 2025
 
+# ----------------------------------------------------------------
+# Terminal program (default: xterm)
+# ----------------------------------------------------------------
+#terminal		xterm
+
+# ----------------------------------------------------------------
 # Enables debugging messages on standard output.
 # Higher value increases verbosity
-#debug-level			0
+# ----------------------------------------------------------------
+#debug-level		0
 
-# Terminal program (default: xterm)
-#terminal			xterm
-
-# Screen border gap = (top, bottom, left, right)
-#screen-border-gap		1 1 1 1
-
+# ----------------------------------------------------------------
 # List of active desktop modes
-#desktop-modes			Stacked,Monocle,VTiled,HTiled
-
-# Border width of windows
-#window-tiled-border		2
-#window-stacked-border		7
-
-# These are not set by default.
-#message-socket			/path/to/statusbar.socket
-#startup-script			/path/to/startup.sh
-#shutdown-script		/path/to/shutdown.sh
+# ----------------------------------------------------------------
+#desktop-modes		Stacked,Monocle,VTiled,HTiled
 
 # ----------------------------------------------------------------
 # Specify the name of the desktops and their default mode.
 # Default mode is 'Stacked'.
 # ----------------------------------------------------------------
-#desktop 1	One	 		Stacked
-#desktop 2	Two	 		VTiled
-#desktop 3	Three	 		HTiled
-#desktop 3	Four 			Monocle
+#desktop-defaults 1	One	 		Stacked
+#desktop-defaults 2	Two	 		VTiled
+#desktop-defaults 3	Three	 		HTiled
+#desktop-defaults 3	Four 			Monocle
+
+# ----------------------------------------------------------------
+# Border width of windows
+# ----------------------------------------------------------------
+#window-tiled-border	2
+#window-stacked-border	7
+
+# ----------------------------------------------------------------
+# Screen border gap = (top, bottom, left, right)
+# ----------------------------------------------------------------
+#screen-border-gap	1 1 1 1
+
+# ----------------------------------------------------------------
+# Path to message socket (unset by default)
+# ----------------------------------------------------------------
+#message-socket		/path/to/statusbar.socket
+
+# ----------------------------------------------------------------
+# Path to startup/shutdown scripts (unset by default)
+# ----------------------------------------------------------------
+#startup-script		/path/to/startup.sh
+#shutdown-script	/path/to/shutdown.sh
 
 # ----------------------------------------------------------------
 # Specify the default desktop for the specified "instance:class"
@@ -59,24 +74,26 @@
 # ----------------------------------------------------------------
 # Menu font and labels
 # ----------------------------------------------------------------
-#menu-font 			"Mono:size=10"
-#menu-launcher-label 		"Launchers"
-#menu-client-label 		"X11 clients"
-#menu-desktop-label 		"Active desktops"
+#menu-font 		"Mono:size=10"
+#menu-launcher-label 	"Launchers"
+#menu-client-label 	"X11 clients"
+#menu-desktop-label 	"Active desktops"
 
 # ----------------------------------------------------------------
-# Definition of the Launchers menu. (not set by default)
+# Definition of the menus. (unset by default)
 # ----------------------------------------------------------------
 #menu-start "Launchers"
-#menu-item  "Terminal"		exec xterm
-#menu-item  "Firefox"		exec firefox
-#menu-item  "Quit"		menu "Quit"
+#menu-item  "Terminal"	exec xterm
+#menu-item  "Firefox"	exec firefox
+#menu-item  "Quit"	menu "Quit"
 #menu-end
 
+# ----------------------------------------------------------------
 # Definition of submenu "Quit"
+# ----------------------------------------------------------------
 #menu-start "Quit"
-#menu-item  "Restart"		restart
-#menu-item  "Quit"		quit
+#menu-item  "Restart"	restart
+#menu-item  "Quit"	quit
 #menu-end
 
 # ----------------------------------------------------------------
@@ -99,79 +116,76 @@
 # To disable all key bindings, use 'unbind-key all''
 # ----------------------------------------------------------------
 #unbind-key all
-#bind-key M-1			desktop-select-1
-#bind-key M-2			desktop-select-2
-#bind-key M-3			desktop-select-3
-#bind-key M-4			desktop-select-4
-#bind-key M-5			desktop-select-5
-#bind-key M-6			desktop-select-6
-#bind-key M-7			desktop-select-7
-#bind-key M-8			desktop-select-8
-#bind-key M-9			desktop-select-9
-#bind-key M-0			desktop-select-10
+#bind-key M-1		desktop-select-1
+#bind-key M-2		desktop-select-2
+#bind-key M-3		desktop-select-3
+#bind-key M-4		desktop-select-4
+#bind-key M-5		desktop-select-5
+#bind-key M-6		desktop-select-6
+#bind-key M-7		desktop-select-7
+#bind-key M-8		desktop-select-8
+#bind-key M-9		desktop-select-9
+#bind-key M-0		desktop-select-10
 
-#bind-key SM-s			desktop-mode-stacked
-#bind-key SM-m			desktop-mode-monocle
-#bind-key SM-h			desktop-mode-htiled
-#bind-key SM-v			desktop-mode-vtiled
-#bind-key SM-Down		desktop-mode-next
-#bind-key SM-Up			desktop-mode-prev
-#bind-key CM-Right		desktop-next
-#bind-key CM-Left		desktop-prev
-#bind-key M-Tab			desktop-rotate-next
-#binf-key SM-Tab		desktop-rotate-prev
-#bind-key M-Right		desktop-window-next
-#bind-key M-Left		desktop-window-prev
-#bind-key M-greater		desktop-master-incr
-#bind-key M-less		desktop-master-decr
+#bind-key SM-s		desktop-mode-stacked
+#bind-key SM-m		desktop-mode-monocle
+#bind-key SM-h		desktop-mode-htiled
+#bind-key SM-v		desktop-mode-vtiled
+#bind-key SM-Down	desktop-mode-next
+#bind-key SM-Up		desktop-mode-prev
+#bind-key CM-Right	desktop-next
+#bind-key CM-Left	desktop-prev
+#bind-key M-Tab		desktop-rotate-next
+#binf-key SM-Tab	desktop-rotate-prev
+#bind-key M-Right	desktop-window-next
+#bind-key M-Left	desktop-window-prev
+#bind-key M-greater	desktop-master-incr
+#bind-key M-less	desktop-master-decr
 
-#bind-key SM-1			window-move-to-desktop-1
-#bind-key SM-2			window-move-to-desktop-2
-#bind-key SM-3			window-move-to-desktop-3
-#bind-key SM-4			window-move-to-desktop-4
-#bind-key SM-5			window-move-to-desktop-5
-#bind-key SM-6			window-move-to-desktop-6
-#bind-key SM-7			window-move-to-desktop-7
-#bind-key SM-8			window-move-to-desktop-8
-#bind-key SM-9			window-move-to-desktop-9
-#bind-key SM-0			window-move-to-desktop-10
+#bind-key SM-1		window-move-to-desktop-1
+#bind-key SM-2		window-move-to-desktop-2
+#bind-key SM-3		window-move-to-desktop-3
+#bind-key SM-4		window-move-to-desktop-4
+#bind-key SM-5		window-move-to-desktop-5
+#bind-key SM-6		window-move-to-desktop-6
+#bind-key SM-7		window-move-to-desktop-7
+#bind-key SM-8		window-move-to-desktop-8
+#bind-key SM-9		window-move-to-desktop-9
+#bind-key SM-0		window-move-to-desktop-10
 
-#bind-key SM-f			window-toggle-fullscreen
-#bind-key SM-s			window-toggle-sticky
-#bind-key SM-t			window-toggle-tiled
-#bind-key SM-i			window-hide
-#bind-key SM-x			window-close
-#bind-key M-h			window-move-left
-#bind-key M-l			window-move-right
-#bind-key M-j			window-move-up
-#bind-key M-k			window-move-down
-#bind-key SM-h			window-resize-left
-#bind-key SM-l			window-resize-right
-#bind-key SM-j			window-resize-up
-#bind-key SM-k			window-resize-down
-#bind-key CM-h			window-snap-left
-#bind-key CM-l			window-snap-right
-#bind-key CM-j			window-snap-up
-#bind-key CM-k			window-snap-down
+#bind-key SM-f		window-toggle-fullscreen
+#bind-key SM-s		window-toggle-sticky
+#bind-key SM-t		window-toggle-tiled
+#bind-key SM-i		window-hide
+#bind-key SM-x		window-close
+#bind-key M-h		window-move-left
+#bind-key M-l		window-move-right
+#bind-key M-j		window-move-up
+#bind-key M-k		window-move-down
+#bind-key SM-h		window-resize-left
+#bind-key SM-l		window-resize-right
+#bind-key SM-j		window-resize-up
+#bind-key SM-k		window-resize-down
+#bind-key CM-h		window-snap-left
+#bind-key CM-l		window-snap-right
+#bind-key CM-j		window-snap-up
+#bind-key CM-k		window-snap-down
 
-#bind-key CM-Return		terminal
-#bind-key CM-r			restart
-#bind-key CM-q			quit
+#bind-key CM-Return	terminal
+#bind-key CM-r		restart
+#bind-key CM-q		quit
 
 # Use 'exec' to create a binding to any program.
-# bind-key CM-e			exec /path/to/program
+#bind-key CM-p		exec /path/to/program
 
 # ----------------------------------------------------------------
 # Mouse bindings
 # To disable a mouse binding use 'unbind-mouse <button>'
 # ----------------------------------------------------------------
-#bind-mouse 1			menu-client
-#bind-mouse 2			menu-desktop
-#bind-mouse 3			menu-launcher
-#bind-mouse M-1			window-move
-#bind-mouse M-3			window-resize
-#bind-mouse M-4			window-lower
-#bind-mouse M-5			window-raise
-
-# ----------------------------------------------------------------
-# End of config
+#bind-mouse 1		menu-client
+#bind-mouse 2		menu-desktop
+#bind-mouse 3		menu-launcher
+#bind-mouse M-1		window-move
+#bind-mouse M-3		window-resize
+#bind-mouse M-4		window-lower
+#bind-mouse M-5		window-raise

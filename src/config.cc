@@ -322,7 +322,7 @@ void conf::read_config()
 			menu_launcher = tokens[1];
 			continue;
 		}
-		if (!tokens[0].compare("desktop")) {
+		if (!tokens[0].compare("desktop-defaults")) {
 			if (tokens.size() < 3) continue;
 			int index = std::strtol(tokens[1].c_str(), NULL, 10) - 1;
 			if ((index < 0) || (index >= ndesktops)) continue;

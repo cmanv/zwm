@@ -8,7 +8,7 @@ zwm \(em a simple stacking / tiling window manager for X11
 .SH DESCRIPTION
 \f[B]zwm\f[R] is an hybrid stacking/tiling window manager for X11.
 It supports a stacking mode and 3 tiling modes.
-It features a number of configurable keyboards control functions,
+It features a number of configurable window manager functions,
 workspaces and a configurable menu.
 It is also able to send and receive messages through sockets.
 .SH COMMAND LINE OPTIONS
@@ -86,18 +86,25 @@ Increasing its value increases verbosity.
 (default: 0)
 .RE
 .IP \(bu 2
-\f[B]desktop\f[R] \f[I]num name mode\f[R]
+\f[B]desktop\-defaults\f[R] \f[I]number name mode\f[R]
 .RS
 .PP
-Define the default name and tiling mode of the desktop\f[I].
-\f[R]num_ goes from 1 to 10 \f[I]name\f[R] is a string to identify the
-desktop.
+Define the default name and tiling mode of the desktop_.
+.RE
+.RS
+.IP \(bu 2
+\f[I]number\f[R] is the desktop number from 1 to 10.
+.IP \(bu 2
+\f[I]name\f[R] is a string to identify the desktop.
+.IP \(bu 2
 \f[I]mode\f[R] can be any of:
 .RE
+.RS
 .RS
 .IP \(bu 2
 \f[I]Stacked\f[R]: Windows are stacked and can be moved/resized by the
 user.
+(default)
 .IP \(bu 2
 \f[I]Monocle\f[R]: Only one window (maximized) is visible at a time.
 .IP \(bu 2
@@ -106,6 +113,7 @@ the right.
 .IP \(bu 2
 \f[I]HTiled\f[R]: Master / slaves with the slaves tiled horizontally on
 the bottom.
+.RE
 .RE
 .IP \(bu 2
 \f[B]desktop\-modes\f[R] \f[I]mode1\f[R],_mode2,..
@@ -204,11 +212,11 @@ Specifies the border width of tiled windows.
 These are options to set the default desktop and default states of an
 application based on its \f[I]instance\f[R]/\f[I]class\f[R] properties.
 .IP \(bu 2
-\f[B]app\-default\-desktop\f[R] \f[I]instance:class num\f[R]
+\f[B]app\-default\-desktop\f[R] \f[I]instance:class number\f[R]
 .RS
 .PP
 Use this configuration option to specify that an application with class
-\f[I]instance:class\f[R] is to open on desktop \f[I]num\f[R] (1\-10).
+\f[I]instance:class\f[R] is to open on the desktop \f[I]number\f[R].
 .RE
 .IP \(bu 2
 \f[B]app\-default\-state\f[R] \f[I]instance:class\f[R]\ \f[I]state1\f[R]
@@ -262,7 +270,7 @@ The label of the top level menu must match the
 .PP
 Any menu can contains a list of commands and submenus.
 A menu definition starts by \f[I]menu\-start\f[R] statement, followed by
-a number of \f[I]menu\-item\f[R] statements, and ends with a
+a list of \f[I]menu\-item\f[R] statements, and ends with a
 \f[I]menu\-end\f[R] stetement.
 .RS
 .PP
@@ -409,7 +417,8 @@ windows counterclockwise.
 \f[B]desktop\-rotate\-prev\f[R]: Rotate the position of the tiled
 windows clockwise.
 .IP \(bu 2
-\f[B]desktop\-select\-\f[BI]num\f[B]\f[R]: Go to desktop \f[I]num\f[R]
+\f[B]desktop\-select\-\f[BI]number\f[B]\f[R]: Go to desktop
+\f[I]number\f[R]
 .IP \(bu 2
 \f[B]desktop\-window\-next\f[R]: Move the focus to the next tiled
 window.
@@ -459,9 +468,8 @@ right of the screen.
 the screen.
 (\f[I]stacked\f[R] windows only)
 .IP \(bu 2
-\f[B]window\-move\-to\-desktop\-\f[BI]num\f[B]\f[R]: Move the current
-window to the desktop \f[I]num\f[R].
-(1 <= \f[I]num\f[R] <= 10)
+\f[B]window\-move\-to\-desktop\-\f[BI]number\f[B]\f[R]: Move the current
+window to the desktop \f[I]number\f[R].
 .IP \(bu 2
 \f[B]window\-raise\f[R]: Moves the current window to the top the stack.
 (\f[I]stacked\f[R] windows only).
@@ -680,7 +688,7 @@ Sent when the desktop mode has changed.
 .RS
 .PP
 Sent where there is a change in the list of active desktops.
-The active desktop is prepended by a \(aq*\(aq in the list.
+The active desktop number is prepended by a \(aq*\(aq in the list.
 .RE
 .PP
 To activate this feature, set \f[I]message\-socket\f[R] to the path of
