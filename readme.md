@@ -88,7 +88,7 @@ This section describes all options that can be set in the configuration file.
 > Define a comma separated list of active desktop modes. The order is used
 > to rotate mode with the functions _desktop-mode-next_ and _desktop-mode-prev_.
 
-> Default is : "Stacked,Monocle,VTiled,HTiled"
+> Default is : Stacked,Monocle,VTiled,HTiled
 
 - **message-socket** _[host:port|path]_
 
@@ -405,7 +405,7 @@ To activate this feature, set _message-socket_ to the path of the destination so
 
 # FILES
 
-If not specified at the command line, **zwm** read the configuration file _~/.config/zwm/config_
+If not specified at the command line, the configuration file _~/.config/zwm/config_ is read at startup.
 
 # BUGS
 
