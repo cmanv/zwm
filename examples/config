@@ -135,10 +135,12 @@
 #bind-key SM-Up		desktop-mode-prev
 #bind-key CM-Right	desktop-next
 #bind-key CM-Left	desktop-prev
-#bind-key M-Tab		desktop-rotate-next
-#binf-key SM-Tab	desktop-rotate-prev
-#bind-key M-Right	desktop-window-next
-#bind-key M-Left	desktop-window-prev
+#bind-key SM-Right	desktop-rotate-next
+#binf-key SM-Left	desktop-rotate-prev
+#bind-key M-Right	desktop-swap-next
+#binf-key M-Left	desktop-swap-prev
+#bind-key M-Tab		desktop-window-next
+#bind-key SM-Tab	desktop-window-prev
 #bind-key M-greater	desktop-master-incr
 #bind-key M-less	desktop-master-decr
 

@@ -95,6 +95,8 @@ std::vector<FuncDef> funcdefs = {
 	{ "desktop-prev", 		desktop_cycle, -1},
 	{ "desktop-rotate-next", 	desktop_rotate_tiles, 1},
 	{ "desktop-rotate-prev", 	desktop_rotate_tiles, -1},
+	{ "desktop-swap-next", 		desktop_swap_tiles, 1},
+	{ "desktop-swap-prev", 		desktop_swap_tiles, -1},
 	{ "desktop-master-incr",	desktop_master, 1},
 	{ "desktop-master-decr",	desktop_master, -1},
 
@@ -226,6 +228,11 @@ void wmfunc::desktop_window_cycle(XScreen *screen, long direction)
 void wmfunc::desktop_rotate_tiles(XScreen *screen, long direction)
 {
 	screen->rotate_desktop_tiles(direction);
+}
+
+void wmfunc::desktop_swap_tiles(XScreen *screen, long direction)
+{
+	screen->swap_desktop_tiles(direction);
 }
 
 void wmfunc::menu_launcher(XScreen *screen)

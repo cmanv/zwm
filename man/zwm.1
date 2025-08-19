@@ -403,7 +403,7 @@ occupied by the master window.
 mode in the order defined by \f[I]desktop\-modes\f[R].
 .IP \(bu 2
 \f[B]desktop\-mode\-prev\f[R]: Switch the desktop to the previous tiling
-mode in ther order defined by \f[I]desktop\-modes\f[R]..
+mode in ther order defined by \f[I]desktop\-modes\f[R].
 .IP \(bu 2
 \f[B]desktop\-next\f[R]: Go to the next active desktop.
 Last desktop wraps to first.
@@ -411,11 +411,17 @@ Last desktop wraps to first.
 \f[B]desktop\-prev\f[R]: Go to the previous active desktop.
 First desktop wraps to last.
 .IP \(bu 2
-\f[B]desktop\-rotate\-next\f[R]: Rotate the position of the tiled
-windows counterclockwise.
+\f[B]desktop\-rotate\-next\f[R]: Tiled mode only.
+Rotate the position of the windows counterclockwise.
 .IP \(bu 2
-\f[B]desktop\-rotate\-prev\f[R]: Rotate the position of the tiled
-windows clockwise.
+\f[B]desktop\-rotate\-prev\f[R]: Tiled mode only.
+Rotate the position of the windows clockwise.
+.IP \(bu 2
+\f[B]desktop\-swap\-next\f[R]: Tiled mode only.
+Swap the position of the active window with the next window.
+.IP \(bu 2
+\f[B]desktop\-swap\-prev\f[R]: Tiled mode only.
+Swap the position of the active window with the previous window.
 .IP \(bu 2
 \f[B]desktop\-select\-\f[BI]number\f[B]\f[R]: Go to desktop
 \f[I]number\f[R]
@@ -562,17 +568,21 @@ This sections list all key and mouse bindings defined by default.
 .IP \(bu 2
 \f[B]CM\-Left\f[R] : \f[I]desktop\-prev\f[R]
 .IP \(bu 2
-\f[B]M\-Tab\f[R] : \f[I]desktop\-rotate\-next\f[R]
+\f[B]SM\-Right\f[R] : \f[I]desktop\-rotate\-next\f[R]
 .IP \(bu 2
-\f[B]SM\-Tab\f[R] : \f[I]desktop\-rotate\-prec\f[R]
+\f[B]SM\-Left\f[R] : \f[I]desktop\-rotate\-prec\f[R]
 .IP \(bu 2
-\f[B]M\-Right\f[R] : \f[I]desktop\-window\-next\f[R]
+\f[B]M\-Right\f[R] : \f[I]desktop\-swap\-next\f[R]
 .IP \(bu 2
-\f[B]M\-Left\f[R] : \f[I]desktop\-window\-prec\f[R]
+\f[B]M\-Left\f[R] : \f[I]desktop\-swap\-prec\f[R]
 .IP \(bu 2
-\f[B]M\-Greater\f[R]: \f[I]desktop\-master\-incr\f[R]
+\f[B]M\-Tab\f[R] : \f[I]desktop\-window\-next\f[R]
 .IP \(bu 2
-\f[B]M\-Less\f[R] : \f[I]desktop\-master\-decr\f[R]
+\f[B]SM\-Tab\f[R] : \f[I]desktop\-window\-prec\f[R]
+.IP \(bu 2
+\f[B]M\-greater\f[R]: \f[I]desktop\-master\-incr\f[R]
+.IP \(bu 2
+\f[B]M\-less\f[R] : \f[I]desktop\-master\-decr\f[R]
 .IP \(bu 2
 \f[B]SM\-1\f[R] : \f[I]window\-move\-to\-desktop\-1\f[R]
 .IP \(bu 2

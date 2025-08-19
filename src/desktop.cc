@@ -53,6 +53,7 @@ Desktop::Desktop(XScreen *screen, long index, std::string &name,
 void Desktop::rotate_windows(std::vector<XClient*>&clientlist, long direction)
 {
 	if (clientlist.size() < 2) return;
+	if (!conf::desktop_modes[m_mode_index].name.compare("Stacked")) return;
 
 	if (direction < 0)  {
 		auto first = clientlist.end();
@@ -90,82 +91,122 @@ void Desktop::rotate_windows(std::vector<XClient*>&clientlist, long direction)
 
 void Desktop::cycle_windows(std::vector<XClient*>&clientlist, XClient *client, long direction)
 {
-	if (clientlist.empty()) return;
+	if (clientlist.size() < 2) return;
 	if (client->get_desktop_index() != m_index) return;
 
-	XClient *next_client = (direction == -1) ?  prev_window(clientlist, client)
-				: next_window(clientlist, client);
-
-	if (client == next_client) return;
+	XClient *client_next = NULL;
+	if (direction > 0) {
+		auto it = next_desktop_client(clientlist, client);
+		if (it == clientlist.end()) return;
+		client_next = *it;
+	} else {
+		auto it = prev_desktop_client(clientlist, client);
+		if (it == clientlist.rend()) return;
+		client_next = *it;
+	}
+	if (client == client_next) return;
 
 	client->save_pointer();
-	next_client->raise_window();
-	Position &p = next_client->get_saved_pointer();
-	Geometry &g = next_client->get_geometry();
+	client_next->raise_window();
+	Position &p = client_next->get_saved_pointer();
+	Geometry &g = client_next->get_geometry();
 	if (!g.contains(p, Coordinates::Window)) {
 		p = g.get_center(Coordinates::Window);
 	}
-	next_client->warp_pointer();
+	client_next->warp_pointer();
 }
 
-// Find next visible client on the desktop
-XClient *Desktop::prev_window(std::vector<XClient*>&clientlist, XClient *client)
+void Desktop::swap_windows(std::vector<XClient*>&clientlist, XClient *client, long direction)
 {
-	if (clientlist.empty()) return client;
+	if (clientlist.size() < 2) return;
+	if (client->get_desktop_index() != m_index) return;
+	if (!conf::desktop_modes[m_mode_index].name.compare("Stacked")) return;
 
-	// Find client in the list
-	auto current = std::find(clientlist.rbegin(), clientlist.rend(), client);
-	if (current == clientlist.rend()) return client;
-
-	auto next = clientlist.rend();
-	for (auto it = current+1; it != clientlist.rend(); it++) {
-		XClient *c = *it;
-		if ((c->get_desktop_index() == m_index) && (!c->has_state(State::SkipCycle))) {
-			next = it;
-			break;
-		}
+	if (direction > 0) {
+		auto current = std::find(clientlist.begin(), clientlist.end(), client);
+		if (current == clientlist.end()) return;
+		auto next = next_desktop_client(clientlist, client);
+		if (next == clientlist.end()) return;
+		if (current != next) iter_swap(current, next);
+	} else {
+		auto current = std::find(clientlist.rbegin(), clientlist.rend(), client);
+		if (current == clientlist.rend()) return;
+		auto prev = prev_desktop_client(clientlist, client);
+		if (prev == clientlist.rend()) return;
+		if (current != prev) iter_swap(current, prev);
 	}
-	if (next != clientlist.rend()) return *next;
-
-	for (auto it = clientlist.rbegin(); it != current; it++) {
-		XClient *c = *it;
-		if ((c->get_desktop_index() == m_index) && (!c->has_state(State::SkipCycle))) {
-			next = it;
-			break;
-		}
+	client->save_pointer();
+	show(clientlist);
+	Position &p = client->get_saved_pointer();
+	Geometry &g = client->get_geometry();
+	if (!g.contains(p, Coordinates::Window)) {
+		p = g.get_center(Coordinates::Window);
 	}
-	if (next != clientlist.rend()) return *next;
-	return client;
+	client->warp_pointer();
 }
 
-// Find previous visible client on the desktop
-XClient *Desktop::next_window(std::vector<XClient*>&clientlist, XClient *client)
+// Find next client on the desktop
+std::vector<XClient*>::iterator Desktop::next_desktop_client(
+		std::vector<XClient*>&clientlist, XClient *client)
 {
-	if (clientlist.empty()) return client;
+	if (clientlist.empty()) return clientlist.end();
 
-	// Find client in the list
 	auto current = std::find(clientlist.begin(), clientlist.end(), client);
-	if (current == clientlist.end()) return client;
+	if (current == clientlist.end()) return current;
 
-	auto prev = clientlist.end();
+	auto next = clientlist.end();
 	for (auto it = current+1; it != clientlist.end(); it++) {
 		XClient *c = *it;
-		if ((c->get_desktop_index() == m_index) && (!c->has_state(State::SkipCycle))) {
-			prev = it;
+		if ((c->get_desktop_index() == m_index)
+			&& (!c->has_state(State::SkipCycle))) {
+			next = it;
 			break;
 		}
 	}
-	if (prev != clientlist.end()) return *prev;
+	if (next != clientlist.end()) return next;
 
 	for (auto it = clientlist.begin(); it != current; it++) {
 		XClient *c = *it;
-		if ((c->get_desktop_index() == m_index) && (!c->has_state(State::SkipCycle))) {
+		if ((c->get_desktop_index() == m_index)
+			&& (!c->has_state(State::SkipCycle))) {
+			next = it;
+			break;
+		}
+	}
+	if (next != clientlist.end()) return next;
+	return current;
+}
+
+// Find previous client on the desktop
+std::vector<XClient*>::reverse_iterator Desktop::prev_desktop_client(
+		std::vector<XClient*>&clientlist, XClient *client)
+{
+	if (clientlist.empty()) return clientlist.rend();
+
+	auto current = std::find(clientlist.rbegin(), clientlist.rend(), client);
+	if (current == clientlist.rend()) return current;
+
+	auto prev = clientlist.rend();
+	for (auto it = current+1; it != clientlist.rend(); it++) {
+		XClient *c = *it;
+		if ((c->get_desktop_index() == m_index)
+			&& (!c->has_state(State::SkipCycle))) {
 			prev = it;
 			break;
 		}
 	}
-	if (prev != clientlist.end()) return *prev;
-	return client;
+	if (prev != clientlist.rend()) return prev;
+
+	for (auto it = clientlist.rbegin(); it != current; it++) {
+		XClient *c = *it;
+		if ((c->get_desktop_index() == m_index)
+			&& (!c->has_state(State::SkipCycle))) {
+			prev = it;
+			break;
+		}
+	}
+	if (prev != clientlist.rend()) return prev;
+	return current;
 }
 
 void Desktop::show(std::vector<XClient*> &clientlist)

@@ -1,6 +1,7 @@
 2025-08-19
 	* Supprime les liste de clients dans l'objet Desktop.
 	* Supprime stickylist
+	* Ajout des fonctions desktop-swap-*
 	* Version alpha15 
 
 2025-08-11

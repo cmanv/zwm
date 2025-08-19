@@ -93,6 +93,7 @@ public:
 	void				 select_desktop_mode(const std::string&);
 	void 				 rotate_desktop_mode(long);
 	void	 			 rotate_desktop_tiles(long);
+	void	 			 swap_desktop_tiles(long);
 	void 				 desktop_master(long);
 	void	 			 switch_to_desktop(int);
 	void	 			 update_desktop_names();

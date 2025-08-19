@@ -38,14 +38,13 @@ class Desktop {
 public:
 	Desktop(XScreen *, long, std::string&, std::string&, float);
 	std::string		&get_name() { return m_name; }
-	long			 get_index() const { return m_index; }
 	void			 rotate_windows(std::vector<XClient*>&, long);
 	void 			 cycle_windows(std::vector<XClient*>&, XClient *, long);
+	void 			 swap_windows(std::vector<XClient*>&, XClient *, long);
 	void			 master_split(std::vector<XClient*>&, long);
 	void			 show(std::vector<XClient*>&);
 	void			 hide(std::vector<XClient*>&);
 	void			 close(std::vector<XClient*>&);
-	void			 toggle();
 	void			 select_mode(std::vector<XClient*>&, const std::string&);
 	void			 rotate_mode(std::vector<XClient*>&, long);
 private:
@@ -54,8 +53,9 @@ private:
 	void 			 tile_vertical(std::vector<XClient*>&);
 	void 			 tile_maximized(std::vector<XClient*>&);
 	void 			 stacked_desktop(std::vector<XClient*>&);
-	bool			 has_hidden_only();
-	XClient 		*next_window(std::vector<XClient*>&, XClient *);
-	XClient 		*prev_window(std::vector<XClient*>&, XClient *);
+	std::vector<XClient*>::iterator next_desktop_client(std::vector<XClient*>&,
+								XClient *);
+	std::vector<XClient*>::reverse_iterator prev_desktop_client(std::vector<XClient*>&, 
+								XClient *);
 };
 #endif /* _DESKTOP_H_ */

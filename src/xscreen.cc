@@ -166,7 +166,7 @@ void XScreen::add_existing_clients()
 	int		 rx, ry, wx, wy;
 
 	if (conf::debug) {
-		std::cout << timer::gettime() << " [XScreen:" << __func__ << "] Query clients \n";
+		std::cout << timer::gettime() << " [XScreen:" << __func__ << "]\n";
 	}
 
 	if (XQueryTree(wm::display, m_rootwin, &w0, &w1, &wins, &nwins)) {
@@ -205,6 +205,9 @@ void XScreen::add_existing_clients()
 void XScreen::add_client(Window window)
 {
 	if (!can_manage(window, false)) return;
+	if (conf::debug) {
+		std::cout << timer::gettime() << " [XScreen:" << __func__ << "]\n";
+	}
 	m_clientlist.insert(m_clientlist.begin(), new XClient(window, this, false));
 
 	update_net_client_lists();
@@ -247,7 +250,7 @@ bool XScreen::can_manage(Window w, bool query)
 void XScreen::remove_client(XClient *client)
 {
 	if (conf::debug) {
-		std::cout << timer::gettime() << " [XScreen:" << __func__ << "] REMOVE Client "
+		std::cout << timer::gettime() << " [XScreen:" << __func__ << "] "
 			<< std::hex << client->get_window() << std::endl;
 	}
 
@@ -465,9 +468,8 @@ void XScreen::cycle_windows(long direction)
 	XClient *client = get_active_client();
 	if (!client) return;
 
-	// For X apps that ignore/steal events.
-	XGrabKeyboard(wm::display, m_rootwin, True, GrabModeAsync, GrabModeAsync, CurrentTime);
-
+	XGrabKeyboard(wm::display, m_rootwin, True, GrabModeAsync, GrabModeAsync,
+			CurrentTime);
 	m_cycling = true;  // Reset when mod key is released.
 	m_desktoplist[m_desktop_active].cycle_windows(m_clientlist, client, direction);
 }
@@ -499,6 +501,17 @@ void XScreen::cycle_desktops(long direction)
 void XScreen::rotate_desktop_tiles(long direction)
 {
 	m_desktoplist[m_desktop_active].rotate_windows(m_clientlist, direction);
+}
+
+void XScreen::swap_desktop_tiles(long direction)
+{
+	XClient *client = get_active_client();
+	if (!client) return;
+
+	XGrabKeyboard(wm::display, m_rootwin, True, GrabModeAsync, GrabModeAsync,
+			CurrentTime);
+	m_cycling = true;  // Reset when mod key is released.
+	m_desktoplist[m_desktop_active].swap_windows(m_clientlist, client, direction);
 }
 
 void XScreen::desktop_master(long increment)

@@ -253,11 +253,13 @@ or mouse binding.
 - **desktop-mode-stacked**: Switch the desktop to Stacked mode.
 - **desktop-mode-vtiled**: Switch the desktop to VTiled mode.
 - **desktop-mode-next**: Switch the desktop to the next tiling mode in the order defined by _desktop-modes_.
-- **desktop-mode-prev**: Switch the desktop to the previous tiling mode in ther order defined by _desktop-modes_..
+- **desktop-mode-prev**: Switch the desktop to the previous tiling mode in ther order defined by _desktop-modes_.
 - **desktop-next**: Go to the next active desktop. Last desktop wraps to first.
 - **desktop-prev**: Go to the previous active desktop. First desktop wraps to last.
-- **desktop-rotate-next**: Rotate the position of the tiled windows counterclockwise.
-- **desktop-rotate-prev**: Rotate the position of the tiled windows clockwise.
+- **desktop-rotate-next**: Tiled mode only. Rotate the position of the windows counterclockwise.
+- **desktop-rotate-prev**: Tiled mode only. Rotate the position of the windows clockwise.
+- **desktop-swap-next**: Tiled mode only. Swap the position of the active window with the next window.
+- **desktop-swap-prev**: Tiled mode only. Swap the position of the active window with the previous window.
 - **desktop-select-_number_**: Go to desktop _number_
 - **desktop-window-next**: Move the focus to the next tiled window.
 - **desktop-window-prev**: Move the focus to the previous tiled window.
@@ -317,12 +319,14 @@ This sections list all key and mouse bindings defined by default.
 - **SM-Up**	:	_desktop-mode-prev_
 - **CM-Right**	:	_desktop-next_
 - **CM-Left**	:	_desktop-prev_
-- **M-Tab**	:	_desktop-rotate-next_
-- **SM-Tab**	:	_desktop-rotate-prec_
-- **M-Right**	:	_desktop-window-next_
-- **M-Left**	:	_desktop-window-prec_
-- **M-Greater**:	_desktop-master-incr_
-- **M-Less**	:	_desktop-master-decr_
+- **SM-Right**	:	_desktop-rotate-next_
+- **SM-Left**	:	_desktop-rotate-prec_
+- **M-Right**	:	_desktop-swap-next_
+- **M-Left**	:	_desktop-swap-prec_
+- **M-Tab**	:	_desktop-window-next_
+- **SM-Tab**	:	_desktop-window-prec_
+- **M-greater**:	_desktop-master-incr_
+- **M-less**	:	_desktop-master-decr_
 - **SM-1**	:	_window-move-to-desktop-1_
 - **SM-2**	:	_window-move-to-desktop-2_
 - **SM-3**	:	_window-move-to-desktop-3_

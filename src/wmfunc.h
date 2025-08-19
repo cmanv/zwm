@@ -82,6 +82,7 @@ namespace wmfunc {
 	void desktop_mode_vtiled(XScreen *, long);
 	void desktop_rotate_mode(XScreen *, long);
 	void desktop_rotate_tiles(XScreen *, long);
+	void desktop_swap_tiles(XScreen *, long);
 	void desktop_cycle(XScreen *, long);
 	void desktop_window_cycle(XScreen *, long);
 	void menu_launcher(XScreen *);
