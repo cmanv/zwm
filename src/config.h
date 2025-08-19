@@ -31,7 +31,7 @@
 struct DesktopDef {
 	long		index;
 	std::string 	name;
-	std::string	mode;
+	long		mode;
 	float		split;
 };
 
@@ -45,10 +45,10 @@ struct DefaultDesktop {
 
 struct DesktopMode {
 	long		index;
-	std::string	name;
+	long		mode;
 	std::string	letter;
-	DesktopMode(long i, std::string n, std::string l)
-		:index(i), name(n), letter(l) {}
+	DesktopMode(long i, long m, std::string l)
+		:index(i), mode(m), letter(l) {}
 };
 
 struct DefaultStates {

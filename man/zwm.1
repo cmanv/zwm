@@ -412,10 +412,12 @@ Last desktop wraps to first.
 First desktop wraps to last.
 .IP \(bu 2
 \f[B]desktop\-rotate\-next\f[R]: Tiled mode only.
-Rotate the position of the windows counterclockwise.
+Rotate the position of the windows counterclockwise while keeping the
+focus at the same position.
 .IP \(bu 2
 \f[B]desktop\-rotate\-prev\f[R]: Tiled mode only.
-Rotate the position of the windows clockwise.
+Rotate the position of the windows clockwise while keeping the focus at
+the same position.
 .IP \(bu 2
 \f[B]desktop\-swap\-next\f[R]: Tiled mode only.
 Swap the position of the active window with the next window.
@@ -423,14 +425,12 @@ Swap the position of the active window with the next window.
 \f[B]desktop\-swap\-prev\f[R]: Tiled mode only.
 Swap the position of the active window with the previous window.
 .IP \(bu 2
-\f[B]desktop\-select\-\f[BI]number\f[B]\f[R]: Go to desktop
-\f[I]number\f[R]
+\f[B]desktop\-select\-{\f[BI]number\f[B]}\f[R]: Go to desktop
+\f[I]number\f[R].
 .IP \(bu 2
-\f[B]desktop\-window\-next\f[R]: Move the focus to the next tiled
-window.
+\f[B]desktop\-window\-next\f[R]: Move the focus to the next window.
 .IP \(bu 2
-\f[B]desktop\-window\-prev\f[R]: Move the focus to the previous tiled
-window.
+\f[B]desktop\-window\-prev\f[R]: Move the focus to the previous window.
 .IP \(bu 2
 \f[B]exec\f[R] \f[I]path\f[R]: Execute a program defined by
 \f[I]path\f[R].
@@ -474,8 +474,8 @@ right of the screen.
 the screen.
 (\f[I]stacked\f[R] windows only)
 .IP \(bu 2
-\f[B]window\-move\-to\-desktop\-\f[BI]number\f[B]\f[R]: Move the current
-window to the desktop \f[I]number\f[R].
+\f[B]window\-move\-to\-desktop\-{\f[BI]number\f[B]}\f[R]: Move the
+current window to the desktop \f[I]number\f[R].
 .IP \(bu 2
 \f[B]window\-raise\f[R]: Moves the current window to the top the stack.
 (\f[I]stacked\f[R] windows only).

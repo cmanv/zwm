@@ -256,13 +256,13 @@ or mouse binding.
 - **desktop-mode-prev**: Switch the desktop to the previous tiling mode in ther order defined by _desktop-modes_.
 - **desktop-next**: Go to the next active desktop. Last desktop wraps to first.
 - **desktop-prev**: Go to the previous active desktop. First desktop wraps to last.
-- **desktop-rotate-next**: Tiled mode only. Rotate the position of the windows counterclockwise.
-- **desktop-rotate-prev**: Tiled mode only. Rotate the position of the windows clockwise.
+- **desktop-rotate-next**: Tiled mode only. Rotate the position of the windows counterclockwise while keeping the focus at the same position.
+- **desktop-rotate-prev**: Tiled mode only. Rotate the position of the windows clockwise while keeping the focus at the same position.
 - **desktop-swap-next**: Tiled mode only. Swap the position of the active window with the next window.
 - **desktop-swap-prev**: Tiled mode only. Swap the position of the active window with the previous window.
-- **desktop-select-_number_**: Go to desktop _number_
-- **desktop-window-next**: Move the focus to the next tiled window.
-- **desktop-window-prev**: Move the focus to the previous tiled window.
+- **desktop-select-{_number_}**: Go to desktop _number_.
+- **desktop-window-next**: Move the focus to the next window.
+- **desktop-window-prev**: Move the focus to the previous window.
 - **exec**  _path_: Execute a program defined by _path_.
 - **menu-client**: Shows the list of X clients.
 - **menu-desktop**: Show the list of active desktops.
@@ -278,7 +278,7 @@ or mouse binding.
 - **window-move-left**: Move the current window toward to the left of the screen. (_stacked_ windows only)
 - **window-move-right**: Move the current window toward to the right of the screen. (_stacked_ windows only)
 - **window-move-up**: Move the current window toward to the top of the screen. (_stacked_ windows only)
-- **window-move-to-desktop-_number_**: Move the current window to the desktop _number_.
+- **window-move-to-desktop-{_number_}**: Move the current window to the desktop _number_.
 - **window-raise**: Moves the current window to the top the stack. (_stacked_ windows only).
 - **window-resize**: Resize the current window with the pointer.  (_stacked_ windows only)
 - **window-resize-down**: Resize the current window toward the bottom.  (_stacked_ windows only)

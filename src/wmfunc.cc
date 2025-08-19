@@ -192,22 +192,22 @@ void wmfunc::desktop_master(XScreen *screen, long increment)
 
 void wmfunc::desktop_mode_stacked(XScreen *screen, long)
 {
-	screen->select_desktop_mode("Stacked");
+	screen->select_desktop_mode(Mode::Stacked);
 }
 
 void wmfunc::desktop_mode_monocle(XScreen *screen, long)
 {
-	screen->select_desktop_mode("Monocle");
+	screen->select_desktop_mode(Mode::Monocle);
 }
 
 void wmfunc::desktop_mode_htiled(XScreen *screen, long)
 {
-	screen->select_desktop_mode("HTiled");
+	screen->select_desktop_mode(Mode::HTiled);
 }
 
 void wmfunc::desktop_mode_vtiled(XScreen *screen, long)
 {
-	screen->select_desktop_mode("VTiled");
+	screen->select_desktop_mode(Mode::VTiled);
 }
 
 void wmfunc::desktop_rotate_mode(XScreen *screen, long direction)

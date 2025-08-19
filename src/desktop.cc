@@ -34,15 +34,14 @@
 #include "xscreen.h"
 #include "desktop.h"
 
-Desktop::Desktop(XScreen *screen, long index, std::string &name,
-		std::string &mode_name, float split)
+Desktop::Desktop(XScreen *screen, long index, std::string &name, long mode, float split)
 {
 	m_screen = screen;
-	m_name = name;
 	m_index = index;
-	m_mode_index = 0;
+	m_name = name;
+	m_mode = mode;
 	for (DesktopMode &dm : conf::desktop_modes) {
-		if (!dm.name.compare(mode_name)) {
+		if (dm.mode == m_mode) {
 			m_mode_index = dm.index;
 			break;
 		}
@@ -52,8 +51,8 @@ Desktop::Desktop(XScreen *screen, long index, std::string &name,
 
 void Desktop::rotate_windows(std::vector<XClient*>&clientlist, long direction)
 {
+	if (!(m_mode & Mode::Tiling)) return;
 	if (clientlist.size() < 2) return;
-	if (!conf::desktop_modes[m_mode_index].name.compare("Stacked")) return;
 
 	if (direction < 0)  {
 		auto first = clientlist.end();
@@ -91,6 +90,7 @@ void Desktop::rotate_windows(std::vector<XClient*>&clientlist, long direction)
 
 void Desktop::cycle_windows(std::vector<XClient*>&clientlist, XClient *client, long direction)
 {
+	if (m_mode & Mode::Monocle) return;
 	if (clientlist.size() < 2) return;
 	if (client->get_desktop_index() != m_index) return;
 
@@ -118,9 +118,9 @@ void Desktop::cycle_windows(std::vector<XClient*>&clientlist, XClient *client, l
 
 void Desktop::swap_windows(std::vector<XClient*>&clientlist, XClient *client, long direction)
 {
+	if (!(m_mode & Mode::TSplit)) return;
 	if (clientlist.size() < 2) return;
 	if (client->get_desktop_index() != m_index) return;
-	if (!conf::desktop_modes[m_mode_index].name.compare("Stacked")) return;
 
 	if (direction > 0) {
 		auto current = std::find(clientlist.begin(), clientlist.end(), client);
@@ -212,18 +212,26 @@ std::vector<XClient*>::reverse_iterator Desktop::prev_desktop_client(
 void Desktop::show(std::vector<XClient*> &clientlist)
 {
 	restack_windows(clientlist);
-	if (!conf::desktop_modes[m_mode_index].name.compare("Stacked"))
-		stacked_desktop(clientlist);
-	else if (!conf::desktop_modes[m_mode_index].name.compare("Monocle"))
+	switch (m_mode)
+	{
+	case Mode::Monocle:
 		tile_maximized(clientlist);
-	else if (!conf::desktop_modes[m_mode_index].name.compare("VTiled"))
+		break;
+	case Mode::VTiled:
 		tile_vertical(clientlist);
-	else if (!conf::desktop_modes[m_mode_index].name.compare("HTiled"))
+		break;
+	case Mode::HTiled:
 		tile_horizontal(clientlist);
+		break;
+	default:
+		stacked_desktop(clientlist);
+		break;
+	}
 
 	for (XClient *client : clientlist)
-		if (client->has_state(State::Sticky))
+		if (client->has_state(State::Sticky)) {
 			client->show_window();
+	}
 
 	if (!socket_out::defined()) return;
 	std::string message = "desktop_mode="
@@ -252,7 +260,7 @@ void Desktop::close(std::vector<XClient*> &clientlist)
 void Desktop::restack_windows(std::vector<XClient*>&clientlist)
 {
 	std::vector<Window> winlist;
-	for (auto it=clientlist.rbegin(); it!=clientlist.rend(); it++) {
+	for (auto it=clientlist.begin(); it!=clientlist.end(); it++) {
 		XClient *client = *it;
 		if (client->get_desktop_index() == m_index)
 			winlist.push_back(client->get_window());
@@ -260,11 +268,12 @@ void Desktop::restack_windows(std::vector<XClient*>&clientlist)
 	XRestackWindows(wm::display, (Window *)winlist.data(), winlist.size());
 }
 
-void Desktop::select_mode(std::vector<XClient*> &clientlist, const std::string& id)
+void Desktop::select_mode(std::vector<XClient*> &clientlist, long mode)
 {
-	for (DesktopMode &mode : conf::desktop_modes) {
-		if (!mode.name.compare(id)) {
-			m_mode_index = mode.index;
+	for (DesktopMode &dm : conf::desktop_modes) {
+		if (dm.mode == mode) {
+			m_mode_index = dm.index;
+			m_mode = dm.mode;
 			show(clientlist);
 			break;
 		}
@@ -276,6 +285,8 @@ void Desktop::rotate_mode(std::vector<XClient*> &clientlist, long direction)
 	m_mode_index += direction;
 	if (m_mode_index == conf::desktop_modes.size()) m_mode_index = 0;
 	else if (m_mode_index < 0) m_mode_index = conf::desktop_modes.size() - 1;
+	m_mode =  conf::desktop_modes[m_mode_index].mode;
+
 	show(clientlist);
 }
 
@@ -393,10 +404,7 @@ void Desktop::tile_vertical(std::vector<XClient*>&clientlist)
 
 void Desktop::master_split(std::vector<XClient*> &clientlist, long increment)
 {
-	if ((conf::desktop_modes[m_mode_index].name.compare("VTiled")) &&
-		(conf::desktop_modes[m_mode_index].name.compare("HTiled")))
-		return;
-
+	if (!(m_mode & Mode::TSplit)) return;
 	if (increment > 0) {
 		m_split += 0.01;
 		if (m_split > 0.9) m_split = 0.9;

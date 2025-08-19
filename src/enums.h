@@ -98,6 +98,15 @@ enum State {
 	Docked		= Sticky|Frozen|Ignored|NoBorder,
 };
 
+enum Mode {
+	Stacked		= 0x01,
+	Monocle		= 0x02,
+	HTiled		= 0x04,
+	VTiled		= 0x08,
+	TSplit		= VTiled|HTiled,
+	Tiling		= Monocle|HTiled|VTiled,
+};
+
 enum Motif {
 	HintElements	= 5L,
 	HintFunctions	= (1L << 0),

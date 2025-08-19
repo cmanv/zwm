@@ -37,23 +37,23 @@
 
 namespace conf {
 	std::vector<DesktopDef> desktop_defs = {
-		{ 0, "one", "Stacked", 0.5 },
-		{ 1, "two", "Stacked", 0.5 },
-		{ 2, "three", "Stacked", 0.5 },
-		{ 3, "four", "Stacked", 0.5 },
-		{ 4, "five", "Stacked", 0.5 },
-		{ 5, "six", "Stacked", 0.5 },
-		{ 6, "seven", "Stacked", 0.5 },
-		{ 7, "eigth", "Stacked", 0.5 },
-		{ 8, "nine", "Stacked", 0.5 },
-		{ 9, "ten", "Stacked", 0.5 },
+		{ 0, "one", Mode::Stacked, 0.5 },
+		{ 1, "two", Mode::Stacked, 0.5 },
+		{ 2, "three", Mode::Stacked, 0.5 },
+		{ 3, "four", Mode::Stacked, 0.5 },
+		{ 4, "five", Mode::Stacked, 0.5 },
+		{ 5, "six", Mode::Stacked, 0.5 },
+		{ 6, "seven", Mode::Stacked, 0.5 },
+		{ 7, "eigth", Mode::Stacked, 0.5 },
+		{ 8, "nine", Mode::Stacked, 0.5 },
+		{ 9, "ten", Mode::Stacked, 0.5 },
 	};
 
 	std::vector<DesktopMode> desktop_modes = {
-		{ 0,	"Stacked",	"S" },
-		{ 1,	"Monocle",	"M" },
-		{ 2,	"VTiled",	"V" },
-		{ 3,	"HTiled",	"H" },
+		{ 0,	Mode::Stacked,	"S" },
+		{ 1,	Mode::Monocle,	"M" },
+		{ 2,	Mode::VTiled,	"V" },
+		{ 3,	Mode::HTiled,	"H" },
 	};
 
 	std::vector<BindingDef>	keybinding_defs = {
@@ -329,14 +329,15 @@ void conf::read_config()
 			int index = std::strtol(tokens[1].c_str(), NULL, 10) - 1;
 			if ((index < 0) || (index >= ndesktops)) continue;
 			desktop_defs[index].name = tokens[2];
+			desktop_defs[index].mode = Mode::Stacked;
+			desktop_defs[index].split = 0.5;
 			if (tokens.size() < 4) continue;
-
-			desktop_defs[index].mode = "Stacked";
-			desktop_defs[index].split = 0.52;
-
-			if ((!tokens[3].compare("VTiled")) || (!tokens[3].compare("HTiled"))
-				|| (!tokens[3].compare("Monocle")))
-					desktop_defs[index].mode = tokens[3];
+			if (!tokens[3].compare("Monocle"))
+					desktop_defs[index].mode = Mode::Monocle;
+			if (!tokens[3].compare("HTiled"))
+					desktop_defs[index].mode = Mode::HTiled;
+			if (!tokens[3].compare("VTiled"))
+					desktop_defs[index].mode = Mode::VTiled;
 			if (tokens.size() < 5) continue;
 
 			float split = std::strtof(tokens[4].c_str(), NULL);
@@ -524,16 +525,16 @@ void conf::add_desktop_modes(std::vector<std::string> &modes)
 	desktop_modes.clear();
 	for (std::string &mode : modes) {
 		if (!mode.compare("Stacked"))
-			desktop_modes.push_back(DesktopMode(index++, "Stacked", "S"));
+			desktop_modes.push_back(DesktopMode(index++, Mode::Stacked, "S"));
 		else if (!mode.compare("Monocle"))
-			desktop_modes.push_back(DesktopMode(index++, "Monocle", "M"));
+			desktop_modes.push_back(DesktopMode(index++, Mode::Monocle, "M"));
 		else if (!mode.compare("VTiled"))
-			desktop_modes.push_back(DesktopMode(index++, "VTiled", "V"));
+			desktop_modes.push_back(DesktopMode(index++, Mode::VTiled, "V"));
 		else if (!mode.compare("HTiled"))
-			desktop_modes.push_back(DesktopMode(index++, "HTiled", "H"));
+			desktop_modes.push_back(DesktopMode(index++, Mode::HTiled, "H"));
 	}
 	if (desktop_modes.empty())
-		desktop_modes.push_back(DesktopMode(0, "Stacked", "F"));
+		desktop_modes.push_back(DesktopMode(0, Mode::Stacked, "S"));
 }
 
 void conf::add_window_states(std::string &rname, std::string &rclass,

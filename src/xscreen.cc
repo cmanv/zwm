@@ -321,7 +321,7 @@ void XScreen::close_desktop()
 	m_desktoplist[m_desktop_active].close(m_clientlist);
 }
 
-void XScreen::select_desktop_mode(const std::string &mode)
+void XScreen::select_desktop_mode(long mode)
 {
 	m_desktoplist[m_desktop_active].select_mode(m_clientlist, mode);
 }
