@@ -332,14 +332,14 @@ void XScreen::update_net_client_lists()
 {
 	// _NET_CLIENT_LIST is ordered from oldest to newest
 	std::vector<Window> netclientlist;
-	for (XClient *c : m_clientlist)
-		netclientlist.insert(netclientlist.begin(), c->get_window());
+	for (auto it = m_clientlist.rbegin(); it != m_clientlist.rend(); it++)
+		netclientlist.push_back((*it)->get_window());
 	ewmh::set_net_client_list(m_rootwin, netclientlist);
 
 	// _NET_CLIENT_LIST_STACKING use reverse order
 	netclientlist.clear();
-	for (XClient *c : m_clientlist)
-		netclientlist.push_back(c->get_window());
+	for (auto it = m_clientlist.begin(); it != m_clientlist.end(); it++)
+		netclientlist.push_back((*it)->get_window());
 	ewmh::set_net_client_list_stacking(m_rootwin, netclientlist);
 }
 
