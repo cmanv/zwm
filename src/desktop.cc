@@ -50,74 +50,51 @@ Desktop::Desktop(XScreen *screen, long index, std::string &name,
 	m_split = split;
 }
 
-void Desktop::add_window(XClient *client)
+void Desktop::rotate_windows(std::vector<XClient*>&clientlist, long direction)
 {
-	if (conf::debug > 1) {
-		std::cout << timer::gettime() << " [Desktop::" << __func__
-			<< "] ADD Client ptr window 0x" << std::hex << client->get_window()
-			<< std::endl;
-	}
+	if (clientlist.size() < 2) return;
 
-	m_clientstack.push_back(client);
-	if (!client->has_state(State::NoTile))
-		add_window_tile(client);
-}
-
-void Desktop::remove_window(XClient *client)
-{
-	if (conf::debug > 1) {
-		std::cout << timer::gettime() << " [Desktop::" << __func__
-			<< "] REMOVE Client ptr window 0x" << std::hex << client->get_window()
-			<< std::endl;
-	}
-
-	auto itstack = std::find(m_clientstack.begin(), m_clientstack.end(), client);
-	if (itstack != m_clientstack.end())
-			m_clientstack.erase(itstack);
-
-	remove_window_tile(client);
-}
-
-void Desktop::add_window_tile(XClient *client)
-{
-	m_clienttile.insert(m_clienttile.begin(), client);
-}
-
-void Desktop::remove_window_tile(XClient *client)
-{
-	auto ittile = std::find(m_clienttile.begin(), m_clienttile.end(), client);
-	if (ittile != m_clienttile.end())
-			m_clienttile.erase(ittile);
-}
-
-void Desktop::raise_window(XClient *client)
-{
-	auto it = std::find(m_clientstack.rbegin(), m_clientstack.rend(), client);
-	if (it != m_clientstack.rend())
-			std::rotate(m_clientstack.rbegin(), it, it+1);
-}
-
-void Desktop::rotate_windows(long direction)
-{
-	if (m_clienttile.size() < 2) return;
-
-	if (direction > 0) {
-		auto it = m_clienttile.begin() + 1;
-		std::rotate(m_clienttile.begin(), it, m_clienttile.end());
+	if (direction < 0)  {
+		auto first = clientlist.end();
+		auto second = clientlist.end();
+		auto last = clientlist.end();
+		for (auto it = clientlist.begin(); it != clientlist.end(); it++) {
+			XClient *c = *it;
+			if (c->get_desktop_index() != m_index) continue;
+			if (c->has_state(State::NoTile)) continue;
+			if (first == clientlist.end()) {
+				first = it;
+				second = it + 1;
+			}
+			last = it + 1;
+		}
+		std::rotate(first, second, last);
 	} else {
-		auto it = m_clienttile.rbegin() + 1;
-		std::rotate(m_clienttile.rbegin(), it, m_clienttile.rend());
+		auto first = clientlist.rend();
+		auto second = clientlist.rend();
+		auto last = clientlist.rend();
+		for (auto it = clientlist.rbegin(); it != clientlist.rend(); it++) {
+			XClient *c = *it;
+			if (c->get_desktop_index() != m_index) continue;
+			if (c->has_state(State::NoTile)) continue;
+			if (first == clientlist.rend()) {
+				first = it;
+				second = it + 1;
+			}
+			last = it + 1;
+		}
+		std::rotate(first, second, last);
 	}
-	show();
+	show(clientlist);
 }
 
-void Desktop::cycle_windows(XClient *client, long direction)
+void Desktop::cycle_windows(std::vector<XClient*>&clientlist, XClient *client, long direction)
 {
-	if (m_clientstack.empty())
-		return;
+	if (clientlist.empty()) return;
+	if (client->get_desktop_index() != m_index) return;
 
-	XClient *next_client = (direction == -1) ?  prev_window(client)
-				: next_window(client);
+	XClient *next_client = (direction == -1) ?  prev_window(clientlist, client)
+				: next_window(clientlist, client);
 
 	if (client == next_client) return;
 
@@ -132,50 +109,80 @@ void Desktop::cycle_windows(XClient *client, long direction)
 }
 
 // Find next visible client on the desktop
-XClient *Desktop::next_window(XClient *client)
+XClient *Desktop::prev_window(std::vector<XClient*>&clientlist, XClient *client)
 {
-	if (m_clientstack.empty()) return client;
+	if (clientlist.empty()) return client;
 
-	auto current = std::find(m_clientstack.rbegin(), m_clientstack.rend(), client);
-	if (current == m_clientstack.rend())
-		return client;
+	// Find client in the list
+	auto current = std::find(clientlist.rbegin(), clientlist.rend(), client);
+	if (current == clientlist.rend()) return client;
 
-	auto isNext = [](XClient *c) { return (!c->has_state(State::SkipCycle)); };
-	auto next = std::find_if(current+1, m_clientstack.rend(), isNext);
-	if (next == m_clientstack.rend())
-		next = std::find_if(m_clientstack.rbegin(), current, isNext);
+	auto next = clientlist.rend();
+	for (auto it = current+1; it != clientlist.rend(); it++) {
+		XClient *c = *it;
+		if ((c->get_desktop_index() == m_index) && (!c->has_state(State::SkipCycle))) {
+			next = it;
+			break;
+		}
+	}
+	if (next != clientlist.rend()) return *next;
 
-	return *next;
+	for (auto it = clientlist.rbegin(); it != current; it++) {
+		XClient *c = *it;
+		if ((c->get_desktop_index() == m_index) && (!c->has_state(State::SkipCycle))) {
+			next = it;
+			break;
+		}
+	}
+	if (next != clientlist.rend()) return *next;
+	return client;
 }
 
 // Find previous visible client on the desktop
-XClient *Desktop::prev_window(XClient *client)
+XClient *Desktop::next_window(std::vector<XClient*>&clientlist, XClient *client)
 {
-	if (m_clientstack.empty()) return client;
+	if (clientlist.empty()) return client;
 
-	auto current = std::find(m_clientstack.begin(), m_clientstack.end(), client);
-	if (current == m_clientstack.end())
-		return client;
+	// Find client in the list
+	auto current = std::find(clientlist.begin(), clientlist.end(), client);
+	if (current == clientlist.end()) return client;
 
-	auto isPrev = [](XClient *c) { return (!c->has_state(State::SkipCycle)); };
-	auto prev = std::find_if(current+1, m_clientstack.end(), isPrev);
-	if (prev == m_clientstack.end())
-		prev = std::find_if(m_clientstack.begin(), current, isPrev);
+	auto prev = clientlist.end();
+	for (auto it = current+1; it != clientlist.end(); it++) {
+		XClient *c = *it;
+		if ((c->get_desktop_index() == m_index) && (!c->has_state(State::SkipCycle))) {
+			prev = it;
+			break;
+		}
+	}
+	if (prev != clientlist.end()) return *prev;
 
-	return *prev;
+	for (auto it = clientlist.begin(); it != current; it++) {
+		XClient *c = *it;
+		if ((c->get_desktop_index() == m_index) && (!c->has_state(State::SkipCycle))) {
+			prev = it;
+			break;
+		}
+	}
+	if (prev != clientlist.end()) return *prev;
+	return client;
 }
 
-void Desktop::show()
+void Desktop::show(std::vector<XClient*> &clientlist)
 {
-	restack_windows();
+	restack_windows(clientlist);
 	if (!conf::desktop_modes[m_mode_index].name.compare("Stacked"))
-		stacked_desktop();
+		stacked_desktop(clientlist);
 	else if (!conf::desktop_modes[m_mode_index].name.compare("Monocle"))
-		tile_maximized();
+		tile_maximized(clientlist);
 	else if (!conf::desktop_modes[m_mode_index].name.compare("VTiled"))
-		tile_vertical();
+		tile_vertical(clientlist);
 	else if (!conf::desktop_modes[m_mode_index].name.compare("HTiled"))
-		tile_horizontal();
+		tile_horizontal(clientlist);
+
+	for (XClient *client : clientlist)
+		if (client->has_state(State::Sticky))
+			client->show_window();
 
 	if (!socket_out::defined()) return;
 	std::string message = "desktop_mode="
@@ -183,59 +190,65 @@ void Desktop::show()
 	socket_out::send(message);
 }
 
-void Desktop::hide()
+void Desktop::hide(std::vector<XClient*> &clientlist)
 {
-	for (XClient *client : m_clientstack)
-		client->hide_window();
+	for (XClient *client : clientlist) {
+		if (client->get_desktop_index() == m_index)
+			client->hide_window();
+	}
 	m_screen->clear_statusbar_title();
 }
 
-void Desktop::close()
+void Desktop::close(std::vector<XClient*> &clientlist)
 {
-	for (XClient *client : m_clientstack)
-		client->close_window();
+	for (XClient *client : clientlist) {
+		if (client->get_desktop_index() == m_index)
+			client->close_window();
+	}
 	m_screen->clear_statusbar_title();
 }
 
-void Desktop::restack_windows()
+void Desktop::restack_windows(std::vector<XClient*>&clientlist)
 {
 	std::vector<Window> winlist;
-	for (auto it=m_clientstack.rbegin(); it!=m_clientstack.rend(); it++) {
-		XClient *c = *it;
-		winlist.push_back(c->get_window());
+	for (auto it=clientlist.rbegin(); it!=clientlist.rend(); it++) {
+		XClient *client = *it;
+		if (client->get_desktop_index() == m_index)
+			winlist.push_back(client->get_window());
 	}
 	XRestackWindows(wm::display, (Window *)winlist.data(), winlist.size());
 }
 
-void Desktop::select_mode(const std::string& id)
+void Desktop::select_mode(std::vector<XClient*> &clientlist, const std::string& id)
 {
 	for (DesktopMode &mode : conf::desktop_modes) {
 		if (!mode.name.compare(id)) {
 			m_mode_index = mode.index;
-			show();
+			show(clientlist);
 			break;
 		}
 	}
 }
 
-void Desktop::rotate_mode(long direction)
+void Desktop::rotate_mode(std::vector<XClient*> &clientlist, long direction)
 {
 	m_mode_index += direction;
 	if (m_mode_index == conf::desktop_modes.size()) m_mode_index = 0;
 	else if (m_mode_index < 0) m_mode_index = conf::desktop_modes.size() - 1;
-	show();
+	show(clientlist);
 }
 
-void Desktop::stacked_desktop()
+void Desktop::stacked_desktop(std::vector<XClient*>&clientlist)
 {
-	for (XClient *client : m_clientstack) {
+	for (XClient *client : clientlist) {
+		if (client->get_desktop_index() != m_index) continue;
 		client->clear_states(State::Tiled|State::Frozen|State::Hidden);
 		client->set_stacked_geom();
 		client->show_window();
 	}
 }
 
-void Desktop::tile_horizontal()
+void Desktop::tile_horizontal(std::vector<XClient*>&clientlist)
 {
 	int x, y, w, h;
 
@@ -244,7 +257,11 @@ void Desktop::tile_horizontal()
 	int border = conf::tiled_border;
 
 	float mh = area.h;
-	int nwins = m_clienttile.size();
+	int nwins = 0;
+	for (XClient *client : clientlist) {
+		if (client->get_desktop_index() != m_index) continue;
+		if (!client->has_state(State::NoTile)) nwins++;
+	}
 	if (nwins > 1) {
 		mh *= m_split;
 		x = area.x;
@@ -255,7 +272,9 @@ void Desktop::tile_horizontal()
 
 	Geometry geom_master(area.x, area.y, area.w - 2 * border , mh - 2 * border);
 	bool master = true;
-	for (XClient *client : m_clienttile) {
+	for (XClient *client : clientlist) {
+		if (client->get_desktop_index() != m_index) continue;
+		if (client->has_state(State::NoTile)) continue;
 		client->set_states(State::Tiled|State::Frozen);
 		if (master) {
 			client->set_states(State::HMaximized);
@@ -271,7 +290,8 @@ void Desktop::tile_horizontal()
 		client->show_window();
 	}
 
-	for (XClient *client : m_clientstack) {
+	for (XClient *client : clientlist) {
+		if (client->get_desktop_index() != m_index) continue;
 		if (client->has_state(State::NoTile)) {
 			client->show_window();
 			client->raise_window();
@@ -279,7 +299,7 @@ void Desktop::tile_horizontal()
 	}
 }
 
-void Desktop::tile_vertical()
+void Desktop::tile_vertical(std::vector<XClient*>&clientlist)
 {
 	int x, y, w, h;
 
@@ -288,7 +308,11 @@ void Desktop::tile_vertical()
 	int border = conf::tiled_border;
 
 	float mw = area.w;
-	int nwins = m_clienttile.size();
+	int nwins = 0;
+	for (XClient *client : clientlist) {
+		if (client->get_desktop_index() != m_index) continue;
+		if (!client->has_state(State::NoTile)) nwins++;
+	}
 	if (nwins > 1) {
 		mw *= m_split;
 		x = area.x + mw;
@@ -299,7 +323,9 @@ void Desktop::tile_vertical()
 
 	Geometry geom_master(area.x, area.y, mw - 2 * border, area.h - 2 * border);
 	bool master = true;
-	for (XClient *client : m_clienttile) {
+	for (XClient *client : clientlist) {
+		if (client->get_desktop_index() != m_index) continue;
+		if (client->has_state(State::NoTile)) continue;
 		client->set_states(State::Tiled|State::Frozen);
 		if (master) {
 			client->set_states(State::VMaximized);
@@ -315,7 +341,8 @@ void Desktop::tile_vertical()
 		client->show_window();
 	}
 
-	for (XClient *client : m_clientstack) {
+	for (XClient *client : clientlist) {
+		if (client->get_desktop_index() != m_index) continue;
 		if (client->has_state(State::NoTile)) {
 			client->show_window();
 			client->raise_window();
@@ -323,7 +350,7 @@ void Desktop::tile_vertical()
 	}
 }
 
-void Desktop::master_split(long increment)
+void Desktop::master_split(std::vector<XClient*> &clientlist, long increment)
 {
 	if ((conf::desktop_modes[m_mode_index].name.compare("VTiled")) &&
 		(conf::desktop_modes[m_mode_index].name.compare("HTiled")))
@@ -336,10 +363,10 @@ void Desktop::master_split(long increment)
 		m_split -= 0.01;
 		if (m_split < 0.1) m_split = 0.1;
 	}
-	show();
+	show(clientlist);
 }
 
-void Desktop::tile_maximized()
+void Desktop::tile_maximized(std::vector<XClient*>&clientlist)
 {
 	Position p = xpointer::get_pos(m_screen->get_window());
 	Geometry area = m_screen->get_area(p, true);
@@ -347,7 +374,9 @@ void Desktop::tile_maximized()
 
 	Geometry maximized(area.x, area.y, area.w - 2 * border, area.h - 2 * border);
 	bool master = true;
-	for (XClient *client : m_clienttile) {
+	for (XClient *client : clientlist) {
+		if (client->get_desktop_index() != m_index) continue;
+		if (client->has_state(State::NoTile)) continue;
 		client->set_states(State::Tiled|State::Maximized|State::Frozen);
 		if (master) {
 			client->clear_states(State::Hidden);
@@ -361,7 +390,8 @@ void Desktop::tile_maximized()
 		}
 	}
 
-	for (XClient *client : m_clientstack) {
+	for (XClient *client : clientlist) {
+		if (client->get_desktop_index() != m_index) continue;
 		if (client->has_state(State::NoTile)) {
 			client->show_window();
 			client->raise_window();

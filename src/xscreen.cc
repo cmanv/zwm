@@ -27,7 +27,6 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <list>
 #include <vector>
 #include "timer.h"
 #include "socket.h"
@@ -181,13 +180,10 @@ void XScreen::add_existing_clients()
 
 	for (int i = 0; i < m_ndesktops; i++) {
 		if (i == m_desktop_active)
-			m_desktoplist[i].show();
+			m_desktoplist[i].show(m_clientlist);
 		else
-			m_desktoplist[i].hide();
+			m_desktoplist[i].hide(m_clientlist);
 	}
-
-	for (XClient *client : m_stickylist)
-		client->show_window();
 
 	update_statusbar_desktops();
 
@@ -209,19 +205,19 @@ void XScreen::add_existing_clients()
 void XScreen::add_client(Window window)
 {
 	if (!can_manage(window, false)) return;
-	m_clientlist.push_back(new XClient(window, this, false));
+	m_clientlist.insert(m_clientlist.begin(), new XClient(window, this, false));
 
 	update_net_client_lists();
 
-	XClient *client = m_clientlist.back();
-	int index = client->get_desktop_index();
-	if (index == -1) {
+	XClient *client = m_clientlist.front();
+	if (client->has_state(State::Sticky)) {
 		client->show_window();
 		return;
 	}
 
+	int index = client->get_desktop_index();
 	if (index == m_desktop_active) {
-		m_desktoplist[index].show();
+		m_desktoplist[index].show(m_clientlist);
 	 	if (!(client->has_states(State::Ignored))) {
 			client->warp_pointer();
 			client->raise_window();
@@ -255,18 +251,7 @@ void XScreen::remove_client(XClient *client)
 			<< std::hex << client->get_window() << std::endl;
 	}
 
-	int index = client->get_desktop_index();
 	long states = client->get_states();
-
-	if (index == -1L) {
-		remove_sticky(client);
-		client->hide_window();
-		m_desktoplist[m_desktop_active].show();
-	} else {
-		m_desktoplist[index].remove_window(client);
-		if (m_desktop_active == index)
-			m_desktoplist[m_desktop_active].show();
-	}
 
 	auto it = std::find(m_clientlist.begin(), m_clientlist.end(), client);
 	if (it != m_clientlist.end()) {
@@ -276,28 +261,25 @@ void XScreen::remove_client(XClient *client)
 	}
 
 	update_net_client_lists();
-
 	if (states & State::Active) {
 		XSetInputFocus(wm::display, PointerRoot, RevertToPointerRoot, CurrentTime);
 		ewmh::set_net_active_window(m_rootwin, None);
 		clear_statusbar_title();
 	}
 
+	m_desktoplist[m_desktop_active].show(m_clientlist);
 	update_statusbar_desktops();
-}
-
-void XScreen::remove_sticky(XClient *client)
-{
-	auto it = std::find(m_stickylist.begin(), m_stickylist.end(), client);
-	if (it != m_stickylist.end())
-		m_stickylist.erase(it);
 }
 
 void XScreen::raise_client(XClient *client)
 {
 	if (m_cycling) return; 	// Dont change order of clients while cycling
+	if (client->get_desktop_index() != m_desktop_active) return;
 	if (client->has_state(State::Tiled)) return; // Dont change the order in tiling mode.
-	m_desktoplist[m_desktop_active].raise_window(client);
+
+	auto it = std::find(m_clientlist.rbegin(), m_clientlist.rend(), client);
+	if (it != m_clientlist.rend())
+			std::rotate(m_clientlist.rbegin(), it, it+1);
 }
 
 void XScreen::move_client_to_desktop(XClient *client, long index)
@@ -306,18 +288,8 @@ void XScreen::move_client_to_desktop(XClient *client, long index)
 	if ((desktop_index == -1) || (desktop_index == index)) return;
 	client->hide_window();
 	assign_client_to_desktop(client, index, true);
-	m_desktoplist[m_desktop_active].show();
+	m_desktoplist[m_desktop_active].show(m_clientlist);
 	update_statusbar_desktops();
-}
-
-void XScreen::add_window_tile_to_desktop(XClient *client)
-{
-	m_desktoplist[m_desktop_active].add_window_tile(client);
-}
-
-void XScreen::remove_window_tile_from_desktop(XClient *client)
-{
-	m_desktoplist[m_desktop_active].remove_window_tile(client);
 }
 
 void XScreen::assign_client_to_desktop(XClient *client, long index, bool client_assigned)
@@ -325,15 +297,7 @@ void XScreen::assign_client_to_desktop(XClient *client, long index, bool client_
 	if (client_assigned) {
 		long desktop_index = client->get_desktop_index();
 		if (desktop_index == index) return;
-		if (desktop_index == -1)
-			remove_sticky(client);
-		else
-			m_desktoplist[desktop_index].remove_window(client);
 	}
-	if (index == -1)
-		m_stickylist.push_back(client);
-	else
-		m_desktoplist[index].add_window(client);
 
 	client->set_desktop_index(index);
 	ewmh::set_net_wm_desktop(client->get_window(), index);
@@ -341,45 +305,41 @@ void XScreen::assign_client_to_desktop(XClient *client, long index, bool client_
 
 void XScreen::show_desktop()
 {
-	m_desktoplist[m_desktop_active].show();
+	m_desktoplist[m_desktop_active].show(m_clientlist);
 }
 
 void XScreen::hide_desktop()
 {
-	m_desktoplist[m_desktop_active].hide();
+	m_desktoplist[m_desktop_active].hide(m_clientlist);
 }
 
 void XScreen::close_desktop()
 {
-	m_desktoplist[m_desktop_active].close();
+	m_desktoplist[m_desktop_active].close(m_clientlist);
 }
 
 void XScreen::select_desktop_mode(const std::string &mode)
 {
-	m_desktoplist[m_desktop_active].select_mode(mode);
+	m_desktoplist[m_desktop_active].select_mode(m_clientlist, mode);
 }
 
 void XScreen::rotate_desktop_mode(long direction)
 {
-	m_desktoplist[m_desktop_active].rotate_mode(direction);
+	m_desktoplist[m_desktop_active].rotate_mode(m_clientlist, direction);
 }
 
 void XScreen::update_net_client_lists()
 {
+	// _NET_CLIENT_LIST is ordered from oldest to newest
 	std::vector<Window> netclientlist;
-
 	for (XClient *c : m_clientlist)
-		netclientlist.push_back(c->get_window());
+		netclientlist.insert(netclientlist.begin(), c->get_window());
 	ewmh::set_net_client_list(m_rootwin, netclientlist);
 
+	// _NET_CLIENT_LIST_STACKING use reverse order
 	netclientlist.clear();
-
-	for (Desktop &desktop : m_desktoplist)
-		for (XClient *c : desktop.get_clients())
-			netclientlist.push_back(c->get_window());
-	for (XClient *c : m_stickylist)
+	for (XClient *c : m_clientlist)
 		netclientlist.push_back(c->get_window());
-
 	ewmh::set_net_client_list_stacking(m_rootwin, netclientlist);
 }
 
@@ -405,13 +365,14 @@ void XScreen::update_statusbar_desktops()
 	if (!socket_out::defined()) return;
 	std::stringstream ss;
 	for (int i = 0; i < m_ndesktops; i++) {
-		if (i == m_desktop_active) {
-			ss << '+' << i+1 << ' ';
+		char prefix = ' ';
+		if (i == m_desktop_active)
+			prefix = '+';
+		else if (desktop_empty(i))
 			continue;
-		}
-		if (m_desktoplist[i].is_empty())
-			continue;
-		ss << ' ' << i+1 << ' ';
+		else if (desktop_urgent(i))
+			prefix = '!';
+		ss << prefix << i+1 << ' ';
 	}
 	std::string s(ss.str());
 	std::string message = "desktop_list=" + s;
@@ -508,7 +469,7 @@ void XScreen::cycle_windows(long direction)
 	XGrabKeyboard(wm::display, m_rootwin, True, GrabModeAsync, GrabModeAsync, CurrentTime);
 
 	m_cycling = true;  // Reset when mod key is released.
-	m_desktoplist[m_desktop_active].cycle_windows(client, direction);
+	m_desktoplist[m_desktop_active].cycle_windows(m_clientlist, client, direction);
 }
 
 void XScreen::cycle_desktops(long direction)
@@ -525,7 +486,7 @@ void XScreen::cycle_desktops(long direction)
 		if (nextdesktop == m_desktop_active)
 			break;
 
-		if ((!m_desktoplist[nextdesktop].is_empty()) && showdesktop == -1) {
+		if ((!desktop_empty(nextdesktop)) && showdesktop == -1) {
 			showdesktop = nextdesktop;
 		}
 	}
@@ -537,18 +498,34 @@ void XScreen::cycle_desktops(long direction)
 
 void XScreen::rotate_desktop_tiles(long direction)
 {
-	m_desktoplist[m_desktop_active].rotate_windows(direction);
+	m_desktoplist[m_desktop_active].rotate_windows(m_clientlist, direction);
 }
 
 void XScreen::desktop_master(long increment)
 {
-	m_desktoplist[m_desktop_active].master_split(increment);
+	m_desktoplist[m_desktop_active].master_split(m_clientlist, increment);
+}
+
+bool XScreen::desktop_empty(long index)
+{
+	for (XClient *c : m_clientlist)
+		if (c->get_desktop_index() == index) return false;
+	return true;
+}
+
+bool XScreen::desktop_urgent(long index)
+{
+	for (XClient *c : m_clientlist)
+		if ((c->get_desktop_index() == index) &&
+			(c->has_state(State::Urgent)))
+			return true;
+	return false;
 }
 
 void XScreen::switch_to_desktop(int index)
 {
-	m_desktoplist[m_desktop_active].hide();
-	m_desktoplist[index].show();
+	m_desktoplist[m_desktop_active].hide(m_clientlist);
+	m_desktoplist[index].show(m_clientlist);
 	m_desktop_last = m_desktop_active;
 	m_desktop_active = index;
 	ewmh::set_net_current_desktop(m_rootwin, m_desktop_active);
@@ -570,24 +547,22 @@ void XScreen::run_menu_launcher()
 void XScreen::run_menu_client()
 {
 	MenuDef menudef(conf::menu_client, MenuType::Client);
-	for (XClient *client : m_stickylist) {
-		char ws = '+';
-		if (client->has_states(State::Docked)) continue;
-		if (client->has_state(State::Hidden)) ws = '.';
-		std::stringstream ss;
-		ss << "[s]" << ws  << ' ' << client->get_name();
-		std::string s(ss.str().substr(0,127));
-		menudef.items.push_back(MenuItem(s, client));
-	}
-
-	for (int i = 0; i < m_ndesktops; i++) {
-		for (XClient *client : m_desktoplist[i].get_clients()) {
+	for (int i = -1; i < m_ndesktops; i++) {
+		for (XClient *client : m_clientlist) {
+			if (client->has_states(State::Ignored)) continue;
+			long index = client->get_desktop_index();
+			if (index != i) continue;
 			char ws = '+';
 			if (client->has_state(State::Active)) ws = '#';
 			if (client->has_state(State::Hidden)) ws = '.';
+			if (client->has_state(State::Urgent)) ws = '!';
 			std::stringstream ss;
-			ss << "[" << client->get_desktop_index()+1 << "]" << ws
-				<< ' ' << client->get_name();
+			if (index < 0)
+				ss << "[s]" << ws  << ' ' << client->get_name();
+			else
+				ss << "[" << index+1 << "]" << ws << ' '
+					<< client->get_name();
+
 			std::string s(ss.str().substr(0,127));
 			menudef.items.push_back(MenuItem(s, client));
 		}
@@ -601,7 +576,7 @@ void XScreen::run_menu_desktop()
 {
 	MenuDef menudef(conf::menu_desktop, MenuType::Desktop);
 	for (int i = 0; i < m_ndesktops; i++) {
-		if (m_desktoplist[i].is_empty()) continue;
+		if (desktop_empty(i)) continue;
 		std::stringstream ss;
 		ss << "[" << m_desktoplist[i].get_name() << "]";
 		std::string s(ss.str());

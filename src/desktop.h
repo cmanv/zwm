@@ -33,38 +33,29 @@ class Desktop {
 	std::string		 m_name;
 	XScreen			*m_screen;
 	long		 	 m_index;
-	std::vector<XClient*>	 m_clientstack;
-	std::vector<XClient*>	 m_clienttile;
 	long			 m_mode_index;
 	float			 m_split;
 public:
 	Desktop(XScreen *, long, std::string&, std::string&, float);
 	std::string		&get_name() { return m_name; }
 	long			 get_index() const { return m_index; }
-	std::vector<XClient*>	&get_clients() { return m_clientstack; }
-	bool			 is_empty() const { return m_clientstack.empty(); }
-	void 			 add_window(XClient *);
-	void 			 remove_window(XClient *);
-	void			 add_window_tile(XClient *);
-	void			 remove_window_tile(XClient *);
-	void			 raise_window(XClient *);
-	void			 rotate_windows(long);
-	void 			 cycle_windows(XClient *, long);
-	void			 master_split(long);
-	void			 show();
-	void			 hide();
-	void			 close();
+	void			 rotate_windows(std::vector<XClient*>&, long);
+	void 			 cycle_windows(std::vector<XClient*>&, XClient *, long);
+	void			 master_split(std::vector<XClient*>&, long);
+	void			 show(std::vector<XClient*>&);
+	void			 hide(std::vector<XClient*>&);
+	void			 close(std::vector<XClient*>&);
 	void			 toggle();
-	void			 select_mode(const std::string&);
-	void			 rotate_mode(long);
+	void			 select_mode(std::vector<XClient*>&, const std::string&);
+	void			 rotate_mode(std::vector<XClient*>&, long);
 private:
-	void			 restack_windows();
-	void 			 tile_horizontal();
-	void 			 tile_vertical();
-	void 			 tile_maximized();
-	void 			 stacked_desktop();
+	void			 restack_windows(std::vector<XClient*>&);
+	void 			 tile_horizontal(std::vector<XClient*>&);
+	void 			 tile_vertical(std::vector<XClient*>&);
+	void 			 tile_maximized(std::vector<XClient*>&);
+	void 			 stacked_desktop(std::vector<XClient*>&);
 	bool			 has_hidden_only();
-	XClient 		*next_window(XClient *);
-	XClient 		*prev_window(XClient *);
+	XClient 		*next_window(std::vector<XClient*>&, XClient *);
+	XClient 		*prev_window(std::vector<XClient*>&, XClient *);
 };
 #endif /* _DESKTOP_H_ */

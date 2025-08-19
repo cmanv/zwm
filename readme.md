@@ -1,4 +1,4 @@
-% ZWM(1) zwm version alpha14 | zwm user's manual
+% ZWM(1) zwm version alpha15 | zwm user's manual
 % cmanv
 % August 2025
 

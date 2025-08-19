@@ -865,9 +865,7 @@ void XClient::toggle_state(long flags)
 	case State::NoTile:
 		if (has_state(State::NoTile)) {
 			clear_states(State::NoTile);
-			m_screen->add_window_tile_to_desktop(this);
 		} else {
-			m_screen->remove_window_tile_from_desktop(this);
 			set_notile();
 		}
 		break;

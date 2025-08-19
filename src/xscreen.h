@@ -25,7 +25,6 @@
 #include <X11/Xft/Xft.h>
 #include <X11/Xlib.h>
 #include <string>
-#include <list>
 #include <vector>
 #include "geometry.h"
 
@@ -39,8 +38,7 @@ class XScreen {
 	Geometry	 		 m_view; // viewable area
 	Geometry			 m_work; // workable area, gap-applied
 	BorderGap	 		 m_bordergap;
-	std::list<XClient*>		 m_clientlist;
-	std::vector<XClient*> 		 m_stickylist;
+	std::vector<XClient*>		 m_clientlist;
 	std::vector<Desktop>		 m_desktoplist;
 	std::vector<Viewport>		 m_viewportlist;
 	long			 	 m_ndesktops;
@@ -59,7 +57,7 @@ public:
 	Colormap		 	 get_colormap() const { return m_colormap; }
 	long			 	 get_active_desktop() const { return m_desktop_active; }
 	long			 	 get_last_desktop() const { return m_desktop_last; }
-	std::list<XClient*> 		&get_clients() { return m_clientlist; }
+	std::vector<XClient*> 		&get_clients() { return m_clientlist; }
 	std::vector<Desktop> 		&get_desktops() { return m_desktoplist; }
 	XftFont				*get_menu_font() { return m_menufont; }
 	XftColor			*get_color(Color c) { return &m_xftcolors[c]; }
@@ -68,20 +66,19 @@ public:
 	Geometry	 		 get_view() const { return m_view; }
 	bool			 	 is_cycling() const { return m_cycling; }
 	void				 stop_cycling() { m_cycling = false; };
+	bool			 	 desktop_empty(long);
+	bool			 	 desktop_urgent(long);
 	void				 grab_keybindings();
 	XClient				*get_active_client();
 	void 				 add_client(Window);
 	bool  				 can_manage(Window, bool);
 	void 				 remove_client(XClient *);
-	void 				 remove_sticky(XClient *);
 	void 				 update_net_client_lists();
 	void 				 move_client_to_desktop(XClient *, long);
 	void 				 raise_client(XClient *);
 	void 				 set_net_desktop_names();
 	void 				 clear_statusbar_title();
 	void 				 update_statusbar_desktops();
-	void 				 add_window_tile_to_desktop(XClient *);
-	void 				 remove_window_tile_from_desktop(XClient *);
 	void 				 assign_client_to_desktop(XClient *, long, bool);
 	void 				 show_desktop();
 	void 				 hide_desktop();
