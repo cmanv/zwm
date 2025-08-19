@@ -233,6 +233,11 @@ void Desktop::show(std::vector<XClient*> &clientlist)
 			client->show_window();
 	}
 
+	update_statusbar_mode();
+}
+
+void Desktop::update_statusbar_mode()
+{
 	if (!socket_out::defined()) return;
 	std::string message = "desktop_mode="
 				+ conf::desktop_modes[m_mode_index].letter;
@@ -286,7 +291,6 @@ void Desktop::rotate_mode(std::vector<XClient*> &clientlist, long direction)
 	if (m_mode_index == conf::desktop_modes.size()) m_mode_index = 0;
 	else if (m_mode_index < 0) m_mode_index = conf::desktop_modes.size() - 1;
 	m_mode =  conf::desktop_modes[m_mode_index].mode;
-
 	show(clientlist);
 }
 
