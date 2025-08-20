@@ -34,11 +34,11 @@
 #include "xscreen.h"
 #include "desktop.h"
 
-Desktop::Desktop(XScreen *screen, long index, std::string &name, long mode, float split)
+Desktop::Desktop(std::string &name, XScreen *screen, long index, long mode, float split)
 {
+	m_name = name;
 	m_screen = screen;
 	m_index = index;
-	m_name = name;
 	m_mode = mode;
 	for (DesktopMode &dm : conf::desktop_modes) {
 		if (dm.mode == m_mode) {
@@ -46,7 +46,7 @@ Desktop::Desktop(XScreen *screen, long index, std::string &name, long mode, floa
 			break;
 		}
 	}
-	m_split = split;
+	m_master_split = split;
 }
 
 void Desktop::rotate_windows(std::vector<XClient*>&clientlist, long direction)
@@ -319,7 +319,7 @@ void Desktop::tile_horizontal(std::vector<XClient*>&clientlist)
 		if (!client->has_state(State::NoTile)) nwins++;
 	}
 	if (nwins > 1) {
-		mh *= m_split;
+		mh *= m_master_split;
 		x = area.x;
 		y = area.y + mh;
 		w = area.w/(nwins -1);
@@ -370,7 +370,7 @@ void Desktop::tile_vertical(std::vector<XClient*>&clientlist)
 		if (!client->has_state(State::NoTile)) nwins++;
 	}
 	if (nwins > 1) {
-		mw *= m_split;
+		mw *= m_master_split;
 		x = area.x + mw;
 		y = area.y;
 		w = area.w - mw;
@@ -406,15 +406,15 @@ void Desktop::tile_vertical(std::vector<XClient*>&clientlist)
 	}
 }
 
-void Desktop::master_split(std::vector<XClient*> &clientlist, long increment)
+void Desktop::master_resize(std::vector<XClient*> &clientlist, long increment)
 {
 	if (!(m_mode & Mode::TSplit)) return;
 	if (increment > 0) {
-		m_split += 0.01;
-		if (m_split > 0.9) m_split = 0.9;
+		m_master_split += 0.01;
+		if (m_master_split > 0.9) m_master_split = 0.9;
 	} else {
-		m_split -= 0.01;
-		if (m_split < 0.1) m_split = 0.1;
+		m_master_split -= 0.01;
+		if (m_master_split < 0.1) m_master_split = 0.1;
 	}
 	show(clientlist);
 }

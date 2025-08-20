@@ -71,11 +71,11 @@ namespace wmfunc {
 	void window_state(XClient *, long);
 	void window_to_desktop(XClient *, long);
 	void window_menu_label(XClient *, long);
-	void desktop_select(XScreen *, long);
-	void desktop_last(XScreen *, long);
+	void desktop_switch(XScreen *, long);
+	void desktop_switch_last(XScreen *, long);
 	void desktop_hide(XScreen *, long);
 	void desktop_close(XScreen *, long);
-	void desktop_master(XScreen *, long);
+	void desktop_master_resize(XScreen *, long);
 	void desktop_mode_stacked(XScreen *, long);
 	void desktop_mode_monocle(XScreen *, long);
 	void desktop_mode_htiled(XScreen *, long);

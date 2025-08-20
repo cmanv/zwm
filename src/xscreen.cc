@@ -56,7 +56,7 @@ XScreen::XScreen(int id): m_screenid(id)
 
 	// Desktops
 	for (DesktopDef &def : conf::desktop_defs)
-		m_desktoplist.push_back(Desktop(this, def.index, def.name, def.mode, def.split));
+		m_desktoplist.push_back(Desktop(def.name, this, def.index, def.mode, def.master_split));
 
 	m_ndesktops = m_desktoplist.size();
 
@@ -514,9 +514,9 @@ void XScreen::swap_desktop_tiles(long direction)
 	m_desktoplist[m_desktop_active].swap_windows(m_clientlist, client, direction);
 }
 
-void XScreen::desktop_master(long increment)
+void XScreen::desktop_master_resize(long increment)
 {
-	m_desktoplist[m_desktop_active].master_split(m_clientlist, increment);
+	m_desktoplist[m_desktop_active].master_resize(m_clientlist, increment);
 }
 
 bool XScreen::desktop_empty(long index)

@@ -116,33 +116,34 @@
 # To disable all key bindings, use 'unbind-key all''
 # ----------------------------------------------------------------
 #unbind-key all
-#bind-key M-1		desktop-select-1
-#bind-key M-2		desktop-select-2
-#bind-key M-3		desktop-select-3
-#bind-key M-4		desktop-select-4
-#bind-key M-5		desktop-select-5
-#bind-key M-6		desktop-select-6
-#bind-key M-7		desktop-select-7
-#bind-key M-8		desktop-select-8
-#bind-key M-9		desktop-select-9
-#bind-key M-0		desktop-select-10
-
-#bind-key SM-s		desktop-mode-stacked
+#bind-key SM-v		desktop-mode-stacked
+#bind-key SM-b		desktop-mode-vtiled
+#bind-key SM-n		desktop-mode-htiled
 #bind-key SM-m		desktop-mode-monocle
-#bind-key SM-h		desktop-mode-htiled
-#bind-key SM-v		desktop-mode-vtiled
 #bind-key SM-Down	desktop-mode-next
 #bind-key SM-Up		desktop-mode-prev
-#bind-key CM-Right	desktop-next
-#bind-key CM-Left	desktop-prev
-#bind-key SM-Right	desktop-rotate-next
-#binf-key SM-Left	desktop-rotate-prev
-#bind-key M-Right	desktop-swap-next
-#binf-key M-Left	desktop-swap-prev
-#bind-key M-Tab		desktop-window-next
-#bind-key SM-Tab	desktop-window-prev
-#bind-key M-greater	desktop-master-incr
-#bind-key M-less	desktop-master-decr
+
+#bind-key CM-1		desktop-switch-1
+#bind-key CM-2		desktop-switch-2
+#bind-key CM-3		desktop-switch-3
+#bind-key CM-4		desktop-switch-4
+#bind-key CM-5		desktop-switch-5
+#bind-key CM-6		desktop-switch-6
+#bind-key CM-7		desktop-switch-7
+#bind-key CM-8		desktop-switch-8
+#bind-key CM-9		desktop-switch-9
+#bind-key CM-0		desktop-switch-10
+#bind-key CM-Right	desktop-switch-next
+#bind-key CM-Left	desktop-switch-prev
+
+#bind-key M-Tab		desktop-window-focus-next
+#bind-key SM-Tab	desktop-window-focus-prev
+#bind-key M-greater	desktop-window-master-incr
+#bind-key M-less	desktop-window-master-decr
+#bind-key SM-Right	desktop-window-rotate-next
+#binf-key SM-Left	desktop-window-rotate-prev
+#bind-key M-Right	desktop-window-swap-next
+#binf-key M-Left	desktop-window-swap-prev
 
 #bind-key SM-1		window-move-to-desktop-1
 #bind-key SM-2		window-move-to-desktop-2
@@ -155,11 +156,12 @@
 #bind-key SM-9		window-move-to-desktop-9
 #bind-key SM-0		window-move-to-desktop-10
 
+#bind-key SM-i		window-hide
+#bind-key SM-x		window-close
 #bind-key SM-f		window-toggle-fullscreen
 #bind-key SM-s		window-toggle-sticky
 #bind-key SM-t		window-toggle-tiled
-#bind-key SM-i		window-hide
-#bind-key SM-x		window-close
+
 #bind-key M-h		window-move-left
 #bind-key M-l		window-move-right
 #bind-key M-j		window-move-up
@@ -173,12 +175,12 @@
 #bind-key CM-j		window-snap-up
 #bind-key CM-k		window-snap-down
 
-#bind-key CM-Return	terminal
+#bind-key C-Return	terminal
 #bind-key CM-r		restart
 #bind-key CM-q		quit
 
 # Use 'exec' to create a binding to any program.
-#bind-key CM-p		exec /path/to/program
+#bind-key CM-F1		exec /path/to/program
 
 # ----------------------------------------------------------------
 # Mouse bindings

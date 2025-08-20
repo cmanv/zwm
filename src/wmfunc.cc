@@ -35,16 +35,40 @@
 
 namespace wmfunc {
 std::vector<FuncDef> funcdefs = {
-	{ "menu-client", 		menu_client, Context::Root},
-	{ "menu-desktop", 		menu_desktop, Context::Root},
-	{ "menu-launcher", 		menu_launcher, Context::Root},
+	{ "desktop-close", 		desktop_close},
+	{ "desktop-hide", 		desktop_hide},
+	{ "desktop-mode-next", 		desktop_rotate_mode, 1},
+	{ "desktop-mode-prev", 		desktop_rotate_mode, -1},
+	{ "desktop-mode-stacked", 	desktop_mode_stacked},
+	{ "desktop-mode-monocle", 	desktop_mode_monocle},
+	{ "desktop-mode-htiled", 	desktop_mode_htiled},
+	{ "desktop-mode-vtiled", 	desktop_mode_vtiled},
+	{ "desktop-switch-1", 		desktop_switch, 0},
+	{ "desktop-switch-2", 		desktop_switch, 1},
+	{ "desktop-switch-3", 		desktop_switch, 2},
+	{ "desktop-switch-4", 		desktop_switch, 3},
+	{ "desktop-switch-5", 		desktop_switch, 4},
+	{ "desktop-switch-6", 		desktop_switch, 5},
+	{ "desktop-switch-7", 		desktop_switch, 6},
+	{ "desktop-switch-8", 		desktop_switch, 7},
+	{ "desktop-switch-9", 		desktop_switch, 8},
+	{ "desktop-switch-10", 		desktop_switch, 9},
+	{ "desktop-switch-last", 	desktop_switch_last},
+	{ "desktop-switch-next", 	desktop_cycle, 1},
+	{ "desktop-switch-prev", 	desktop_cycle, -1},
+	{ "desktop-window-focus-next", 	desktop_window_cycle, 1},
+	{ "desktop-window-focus-prev", 	desktop_window_cycle, -1},
+	{ "desktop-window-rotate-next",	desktop_rotate_tiles, 1},
+	{ "desktop-window-rotate-prev",	desktop_rotate_tiles, -1},
+	{ "desktop-window-swap-next", 	desktop_swap_tiles, 1},
+	{ "desktop-window-swap-prev", 	desktop_swap_tiles, -1},
+	{ "desktop-window-master-incr",	desktop_master_resize, 1},
+	{ "desktop-window-master-decr",	desktop_master_resize, -1},
+
 	{ "window-lower", 		window_lower},
 	{ "window-hide", 		window_hide},
 	{ "window-raise", 		window_raise},
 	{ "window-close", 		window_close},
-	{ "window-toggle-fullscreen", 	window_state, State::FullScreen},
-	{ "window-toggle-sticky", 	window_state, State::Sticky},
-	{ "window-toggle-tiled", 	window_state, State::NoTile},
 	{ "window-move-to-desktop-1", 	window_to_desktop, 0},
 	{ "window-move-to-desktop-2", 	window_to_desktop, 1},
 	{ "window-move-to-desktop-3", 	window_to_desktop, 2},
@@ -69,36 +93,13 @@ std::vector<FuncDef> funcdefs = {
 	{ "window-resize-down", 	window_resize, Direction::South},
 	{ "window-resize-right", 	window_resize, Direction::East},
 	{ "window-resize-left", 	window_resize, Direction::West},
+	{ "window-toggle-fullscreen", 	window_state, State::FullScreen},
+	{ "window-toggle-sticky", 	window_state, State::Sticky},
+	{ "window-toggle-tiled", 	window_state, State::NoTile},
 
-	{ "desktop-mode-stacked", 	desktop_mode_stacked},
-	{ "desktop-mode-monocle", 	desktop_mode_monocle},
-	{ "desktop-mode-htiled", 	desktop_mode_htiled},
-	{ "desktop-mode-vtiled", 	desktop_mode_vtiled},
-	{ "desktop-select-1", 		desktop_select, 0},
-	{ "desktop-select-2", 		desktop_select, 1},
-	{ "desktop-select-3", 		desktop_select, 2},
-	{ "desktop-select-4", 		desktop_select, 3},
-	{ "desktop-select-5", 		desktop_select, 4},
-	{ "desktop-select-6", 		desktop_select, 5},
-	{ "desktop-select-7", 		desktop_select, 6},
-	{ "desktop-select-8", 		desktop_select, 7},
-	{ "desktop-select-9", 		desktop_select, 8},
-	{ "desktop-select-10", 		desktop_select, 9},
-	{ "desktop-last", 		desktop_last},
-	{ "desktop-hide", 		desktop_hide},
-	{ "desktop-close", 		desktop_close},
-	{ "desktop-mode-next", 		desktop_rotate_mode, 1},
-	{ "desktop-mode-prev", 		desktop_rotate_mode, -1},
-	{ "desktop-window-next", 	desktop_window_cycle, 1},
-	{ "desktop-window-prev", 	desktop_window_cycle, -1},
-	{ "desktop-next", 		desktop_cycle, 1},
-	{ "desktop-prev", 		desktop_cycle, -1},
-	{ "desktop-rotate-next", 	desktop_rotate_tiles, 1},
-	{ "desktop-rotate-prev", 	desktop_rotate_tiles, -1},
-	{ "desktop-swap-next", 		desktop_swap_tiles, 1},
-	{ "desktop-swap-prev", 		desktop_swap_tiles, -1},
-	{ "desktop-master-incr",	desktop_master, 1},
-	{ "desktop-master-decr",	desktop_master, -1},
+	{ "menu-client", 		menu_client, Context::Root},
+	{ "menu-desktop", 		menu_desktop, Context::Root},
+	{ "menu-launcher", 		menu_launcher, Context::Root},
 
 	{ "terminal", 			exec_term},
 	{ "restart", 			set_wm_status, IsRestarting},
@@ -164,12 +165,12 @@ void wmfunc::window_to_desktop(XClient *client, long index)
 	screen->move_client_to_desktop(client, index);
 }
 
-void wmfunc::desktop_select(XScreen *screen, long index)
+void wmfunc::desktop_switch(XScreen *screen, long index)
 {
 	screen->switch_to_desktop(index);
 }
 
-void wmfunc::desktop_last(XScreen *screen, long)
+void wmfunc::desktop_switch_last(XScreen *screen, long)
 {
 	int last = screen->get_last_desktop();
 	screen->switch_to_desktop(last);
@@ -185,9 +186,9 @@ void wmfunc::desktop_close(XScreen *screen, long)
 	screen->close_desktop();
 }
 
-void wmfunc::desktop_master(XScreen *screen, long increment)
+void wmfunc::desktop_master_resize(XScreen *screen, long increment)
 {
-	screen->desktop_master(increment);
+	screen->desktop_master_resize(increment);
 }
 
 void wmfunc::desktop_mode_stacked(XScreen *screen, long)

@@ -32,7 +32,7 @@ struct DesktopDef {
 	long		index;
 	std::string 	name;
 	long		mode;
-	float		split;
+	float		master_split;
 };
 
 struct DefaultDesktop {

@@ -57,32 +57,32 @@ namespace conf {
 	};
 
 	std::vector<BindingDef>	keybinding_defs = {
-		{ "M-1",	"desktop-select-1" },
-		{ "M-2",	"desktop-select-2" },
-		{ "M-3",	"desktop-select-3" },
-		{ "M-4",	"desktop-select-4" },
-		{ "M-5",	"desktop-select-5" },
-		{ "M-6",	"desktop-select-6" },
-		{ "M-7",	"desktop-select-7" },
-		{ "M-8",	"desktop-select-8" },
-		{ "M-9",	"desktop-select-9" },
-		{ "M-0",	"desktop-select-10" },
-		{ "CM-Right",	"desktop-next" },
-		{ "CM-Left",	"desktop-prev" },
-		{ "SM-Down",	"desktop-mode-next" },
-		{ "SM-Up",	"desktop-mode-prev" },
-		{ "SM-s",	"desktop-mode-stacked" },
-		{ "SM-m",	"desktop-mode-monocle" },
-		{ "SM-v",	"desktop-mode-vtiled" },
-		{ "SM-h",	"desktop-mode-htiled" },
-		{ "SM-Right",	"desktop-rotate-next" },
-		{ "SM-Left",	"desktop-rotate-prev" },
-		{ "M-Right",	"desktop-swap-next" },
-		{ "M-Left",	"desktop-swap-prev" },
-		{ "M-Tab",	"desktop-window-next" },
-		{ "SM-Tab",	"desktop-window-prev" },
-		{ "M-greater",	"desktop-master-incr" },
-		{ "M-less",	"desktop-master-decr" },
+		{ "CM-1",	"desktop-switch-1" },
+		{ "CM-2",	"desktop-switch-2" },
+		{ "CM-3",	"desktop-switch-3" },
+		{ "CM-4",	"desktop-switch-4" },
+		{ "CM-5",	"desktop-switch-5" },
+		{ "CM-6",	"desktop-switch-6" },
+		{ "CM-7",	"desktop-switch-7" },
+		{ "CM-8",	"desktop-switch-8" },
+		{ "CM-9",	"desktop-switch-9" },
+		{ "CM-0",	"desktop-switch-10" },
+		{ "CM-Right",	"desktop-switch-next" },
+		{ "CM-Left",	"desktop-switch-prev" },
+		{ "CM-v",	"desktop-mode-vtiled" },
+		{ "CM-b",	"desktop-mode-htiled" },
+		{ "CM-n",	"desktop-mode-stacked" },
+		{ "CM-m",	"desktop-mode-monocle" },
+		{ "CM-Down",	"desktop-mode-next" },
+		{ "CM-Up",	"desktop-mode-prev" },
+		{ "M-Tab",	"desktop-window-focus-next" },
+		{ "SM-Tab",	"desktop-window-focus-prev" },
+		{ "M-greater",	"desktop-window-master-incr" },
+		{ "M-less",	"desktop-window-master-decr" },
+		{ "SM-Right",	"desktop-window-rotate-next" },
+		{ "SM-Left",	"desktop-window-rotate-prev" },
+		{ "M-Right",	"desktop-window-swap-next" },
+		{ "M-Left",	"desktop-window-swap-prev" },
 		{ "SM-1",	"window-move-to-desktop-1" },
 		{ "SM-2",	"window-move-to-desktop-2" },
 		{ "SM-3",	"window-move-to-desktop-3" },
@@ -110,7 +110,7 @@ namespace conf {
 		{ "CM-l",	"window-snap-right" },
 		{ "CM-j",	"window-snap-up" },
 		{ "CM-k",	"window-snap-down" },
-		{ "CM-Return",	"terminal" },
+		{ "C-Return",	"terminal" },
 		{ "CM-r",	"restart" },
 		{ "CM-q",	"quit" },
 	};
@@ -330,7 +330,7 @@ void conf::read_config()
 			if ((index < 0) || (index >= ndesktops)) continue;
 			desktop_defs[index].name = tokens[2];
 			desktop_defs[index].mode = Mode::Stacked;
-			desktop_defs[index].split = 0.5;
+			desktop_defs[index].master_split = 0.5;
 			if (tokens.size() < 4) continue;
 			if (!tokens[3].compare("Monocle"))
 					desktop_defs[index].mode = Mode::Monocle;
@@ -343,7 +343,7 @@ void conf::read_config()
 			float split = std::strtof(tokens[4].c_str(), NULL);
 			if (split < 0.1) split = 0.1;
 			if (split > 0.9) split = 0.9;
-			desktop_defs[index].split = split;
+			desktop_defs[index].master_split = split;
 		}
 		if (!tokens[0].compare("color")) {
 			if (tokens.size() < 3) continue;

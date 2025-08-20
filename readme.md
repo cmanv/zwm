@@ -161,7 +161,7 @@ based on its _instance_/_class_ properties.
 
 > - _ignored_: Do not add the window to the task list or the window list.
 
-> -  _noborder_: The window has no border (_stacked_ windows only).
+> - _noborder_: The window has no border (_stacked_ windows only).
 
 > - _noresize_: The window cannot be resized (_stacked_ windows only).
 
@@ -245,24 +245,24 @@ or mouse binding.
 
 - **desktop-close**: Close all windows on the desktop.
 - **desktop-hide**: Hide all windows on the desktop.
-- **desktop-last**: Move to the last desktop.
-- **desktop-master-decr**: Decrease the proportion of the screen occupied by the master window. (HTiled, VTIled)
-- **desktop-master-incr**: Increase the proportion of the screen occupied by the master window. (HTiled, VTIled)
 - **desktop-mode-htiled**: Switch the desktop to HTiled mode.
 - **desktop-mode-monocle**: Switch the desktop to Monocle mode.
 - **desktop-mode-stacked**: Switch the desktop to Stacked mode.
 - **desktop-mode-vtiled**: Switch the desktop to VTiled mode.
 - **desktop-mode-next**: Switch the desktop to the next tiling mode in the order defined by _desktop-modes_.
 - **desktop-mode-prev**: Switch the desktop to the previous tiling mode in ther order defined by _desktop-modes_.
-- **desktop-next**: Go to the next active desktop. Last desktop wraps to first.
-- **desktop-prev**: Go to the previous active desktop. First desktop wraps to last.
-- **desktop-rotate-next**: Tiled mode only. Rotate the position of the windows counterclockwise while keeping the focus at the same position.
-- **desktop-rotate-prev**: Tiled mode only. Rotate the position of the windows clockwise while keeping the focus at the same position.
-- **desktop-swap-next**: Tiled mode only. Swap the position of the active window with the next window.
-- **desktop-swap-prev**: Tiled mode only. Swap the position of the active window with the previous window.
-- **desktop-select-{_number_}**: Go to desktop _number_.
-- **desktop-window-next**: Move the focus to the next window.
-- **desktop-window-prev**: Move the focus to the previous window.
+- **desktop-switch-{_number_}**: Go to desktop _number_.
+- **desktop-switch-last**: Move back to the last used desktop.
+- **desktop-switch-next**: Go to the next active desktop. Last desktop wraps to first.
+- **desktop-switch-prev**: Go to the previous active desktop. First desktop wraps to last.
+- **desktop-window-focus-next**: Move the focus to the next window. (All modes except Monocle)
+- **desktop-window-focus-prev**: Move the focus to the previous window. (All modes except Monocle)
+- **desktop-window-master-decr**: Decrease the proportion of the screen occupied by the master window. (HTiled, VTIled)
+- **desktop-window-master-incr**: Increase the proportion of the screen occupied by the master window. (HTiled, VTIled)
+- **desktop-window-rotate-next**: Rotate the position of the windows counterclockwise while keeping the focus at the same position. (All tiled modes)
+- **desktop-window-rotate-prev**: Rotate the position of the windows clockwise while keeping the focus at the same position. (All tiled modes)
+- **desktop-window-swap-next**: Swap the position of the active window and the next window. (HTiled, VTiled)
+- **desktop-window-swap-prev**: Swap the position of the active window and the previous window. (HTiled, VTiled)
 - **exec**  _path_: Execute a program defined by _path_.
 - **menu-client**: Shows the list of X clients.
 - **menu-desktop**: Show the list of active desktops.
@@ -298,35 +298,35 @@ This sections list all key and mouse bindings defined by default.
 
 ## Key bindings
 
-- **CM-Return**:	_terminal_
+- **C-Return**	:	_terminal_
 - **CM-r**	:	_restart_
 - **CM-q**	:	_quit_
-- **M-1**	:	_desktop-select-1_
-- **M-2**	:	_desktop-select-2_
-- **M-3**	:	_desktop-select-3_
-- **M-4**	:	_desktop-select-4_
-- **M-5**	:	_desktop-select-5_
-- **M-6**	:	_desktop-select-6_
-- **M-7**	:	_desktop-select-7_
-- **M-8**	:	_desktop-select-8_
-- **M-9**	:	_desktop-select-9_
-- **M-0**	:	_desktop-select-10_
-- **SM-s**	:	_desktop-mode-stacked_
-- **SM-m**	:	_desktop-mode-monocle_
-- **SM-h**	:	_desktop-mode-htiled_
 - **SM-v**	:	_desktop-mode-vtiled_
+- **SM-b**	:	_desktop-mode-htiled_
+- **SM-n**	:	_desktop-mode-stacked_
+- **SM-m**	:	_desktop-mode-monocle_
 - **SM-Down**	:	_desktop-mode-next_
 - **SM-Up**	:	_desktop-mode-prev_
-- **CM-Right**	:	_desktop-next_
-- **CM-Left**	:	_desktop-prev_
-- **SM-Right**	:	_desktop-rotate-next_
-- **SM-Left**	:	_desktop-rotate-prec_
-- **M-Right**	:	_desktop-swap-next_
-- **M-Left**	:	_desktop-swap-prec_
-- **M-Tab**	:	_desktop-window-next_
-- **SM-Tab**	:	_desktop-window-prec_
-- **M-greater**:	_desktop-master-incr_
-- **M-less**	:	_desktop-master-decr_
+- **CM-1**	:	_desktop-switch-1_
+- **CM-2**	:	_desktop-switch-2_
+- **CM-3**	:	_desktop-switch-3_
+- **CM-4**	:	_desktop-switch-4_
+- **CM-5**	:	_desktop-switch-5_
+- **CM-6**	:	_desktop-switch-6_
+- **CM-7**	:	_desktop-switch-7_
+- **CM-8**	:	_desktop-switch-8_
+- **CM-9**	:	_desktop-switch-9_
+- **CM-0**	:	_desktop-switch-10_
+- **CM-Right**	:	_desktop-switch-next_
+- **CM-Left**	:	_desktop-switch-prev_
+- **M-Tab**	:	_desktop-window-focus-next_
+- **SM-Tab**	:	_desktop-window-focus-prec_
+- **M-greater**:	_desktop-window-master-incr_
+- **M-less**	:	_desktop-window-master-decr_
+- **SM-Right**	:	_desktop-window-rotate-next_
+- **SM-Left**	:	_desktop-window-rotate-prec_
+- **M-Right**	:	_desktop-window-swap-next_
+- **M-Left**	:	_desktop-window-swap-prec_
 - **SM-1**	:	_window-move-to-desktop-1_
 - **SM-2**	:	_window-move-to-desktop-2_
 - **SM-3**	:	_window-move-to-desktop-3_
@@ -337,11 +337,6 @@ This sections list all key and mouse bindings defined by default.
 - **SM-8**	:	_window-move-to-desktop-8_
 - **SM-9**	:	_window-move-to-desktop-9_
 - **SM-0**	:	_window-move-to-desktop-10_
-- **SM-f**	:	_window-toggle-fullscreen_
-- **SM-s**	:	_window-toggle-sticky_
-- **SM-t**	:	_window-toggle-tiled_
-- **SM-i**	:	_window-hide_
-- **SM-x**	:	_window-close_
 - **M-h**	:	_window-move-left_
 - **M-l**	:	_window-move-right_
 - **M-j**	:	_window-move-up_
@@ -354,6 +349,11 @@ This sections list all key and mouse bindings defined by default.
 - **CM-l**	:	_window-snap-right_
 - **CM-j**	:	_window-snap-up_
 - **CM-k**	:	_window-snap-down_
+- **SM-f**	:	_window-toggle-fullscreen_
+- **SM-s**	:	_window-toggle-sticky_
+- **SM-t**	:	_window-toggle-tiled_
+- **SM-i**	:	_window-hide_
+- **SM-x**	:	_window-close_
 
 ## Mouse buttons bindings
 

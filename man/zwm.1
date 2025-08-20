@@ -381,16 +381,6 @@ through a key or mouse binding.
 .IP \(bu 2
 \f[B]desktop\-hide\f[R]: Hide all windows on the desktop.
 .IP \(bu 2
-\f[B]desktop\-last\f[R]: Move to the last desktop.
-.IP \(bu 2
-\f[B]desktop\-master\-decr\f[R]: Decrease the proportion of the screen
-occupied by the master window.
-(HTiled, VTIled)
-.IP \(bu 2
-\f[B]desktop\-master\-incr\f[R]: Increase the proportion of the screen
-occupied by the master window.
-(HTiled, VTIled)
-.IP \(bu 2
 \f[B]desktop\-mode\-htiled\f[R]: Switch the desktop to HTiled mode.
 .IP \(bu 2
 \f[B]desktop\-mode\-monocle\f[R]: Switch the desktop to Monocle mode.
@@ -405,32 +395,48 @@ mode in the order defined by \f[I]desktop\-modes\f[R].
 \f[B]desktop\-mode\-prev\f[R]: Switch the desktop to the previous tiling
 mode in ther order defined by \f[I]desktop\-modes\f[R].
 .IP \(bu 2
-\f[B]desktop\-next\f[R]: Go to the next active desktop.
-Last desktop wraps to first.
-.IP \(bu 2
-\f[B]desktop\-prev\f[R]: Go to the previous active desktop.
-First desktop wraps to last.
-.IP \(bu 2
-\f[B]desktop\-rotate\-next\f[R]: Tiled mode only.
-Rotate the position of the windows counterclockwise while keeping the
-focus at the same position.
-.IP \(bu 2
-\f[B]desktop\-rotate\-prev\f[R]: Tiled mode only.
-Rotate the position of the windows clockwise while keeping the focus at
-the same position.
-.IP \(bu 2
-\f[B]desktop\-swap\-next\f[R]: Tiled mode only.
-Swap the position of the active window with the next window.
-.IP \(bu 2
-\f[B]desktop\-swap\-prev\f[R]: Tiled mode only.
-Swap the position of the active window with the previous window.
-.IP \(bu 2
-\f[B]desktop\-select\-{\f[BI]number\f[B]}\f[R]: Go to desktop
+\f[B]desktop\-switch\-{\f[BI]number\f[B]}\f[R]: Go to desktop
 \f[I]number\f[R].
 .IP \(bu 2
-\f[B]desktop\-window\-next\f[R]: Move the focus to the next window.
+\f[B]desktop\-switch\-last\f[R]: Move back to the last used desktop.
 .IP \(bu 2
-\f[B]desktop\-window\-prev\f[R]: Move the focus to the previous window.
+\f[B]desktop\-switch\-next\f[R]: Go to the next active desktop.
+Last desktop wraps to first.
+.IP \(bu 2
+\f[B]desktop\-switch\-prev\f[R]: Go to the previous active desktop.
+First desktop wraps to last.
+.IP \(bu 2
+\f[B]desktop\-window\-focus\-next\f[R]: Move the focus to the next
+window.
+(All modes except Monocle)
+.IP \(bu 2
+\f[B]desktop\-window\-focus\-prev\f[R]: Move the focus to the previous
+window.
+(All modes except Monocle)
+.IP \(bu 2
+\f[B]desktop\-window\-master\-decr\f[R]: Decrease the proportion of the
+screen occupied by the master window.
+(HTiled, VTIled)
+.IP \(bu 2
+\f[B]desktop\-window\-master\-incr\f[R]: Increase the proportion of the
+screen occupied by the master window.
+(HTiled, VTIled)
+.IP \(bu 2
+\f[B]desktop\-window\-rotate\-next\f[R]: Rotate the position of the
+windows counterclockwise while keeping the focus at the same position.
+(All tiled modes)
+.IP \(bu 2
+\f[B]desktop\-window\-rotate\-prev\f[R]: Rotate the position of the
+windows clockwise while keeping the focus at the same position.
+(All tiled modes)
+.IP \(bu 2
+\f[B]desktop\-window\-swap\-next\f[R]: Swap the position of the active
+window and the next window.
+(HTiled, VTiled)
+.IP \(bu 2
+\f[B]desktop\-window\-swap\-prev\f[R]: Swap the position of the active
+window and the previous window.
+(HTiled, VTiled)
 .IP \(bu 2
 \f[B]exec\f[R] \f[I]path\f[R]: Execute a program defined by
 \f[I]path\f[R].
@@ -526,63 +532,63 @@ the current window.
 This sections list all key and mouse bindings defined by default.
 .SS Key bindings
 .IP \(bu 2
-\f[B]CM\-Return\f[R]: \f[I]terminal\f[R]
+\f[B]C\-Return\f[R] : \f[I]terminal\f[R]
 .IP \(bu 2
 \f[B]CM\-r\f[R] : \f[I]restart\f[R]
 .IP \(bu 2
 \f[B]CM\-q\f[R] : \f[I]quit\f[R]
 .IP \(bu 2
-\f[B]M\-1\f[R] : \f[I]desktop\-select\-1\f[R]
+\f[B]SM\-v\f[R] : \f[I]desktop\-mode\-vtiled\f[R]
 .IP \(bu 2
-\f[B]M\-2\f[R] : \f[I]desktop\-select\-2\f[R]
+\f[B]SM\-b\f[R] : \f[I]desktop\-mode\-htiled\f[R]
 .IP \(bu 2
-\f[B]M\-3\f[R] : \f[I]desktop\-select\-3\f[R]
-.IP \(bu 2
-\f[B]M\-4\f[R] : \f[I]desktop\-select\-4\f[R]
-.IP \(bu 2
-\f[B]M\-5\f[R] : \f[I]desktop\-select\-5\f[R]
-.IP \(bu 2
-\f[B]M\-6\f[R] : \f[I]desktop\-select\-6\f[R]
-.IP \(bu 2
-\f[B]M\-7\f[R] : \f[I]desktop\-select\-7\f[R]
-.IP \(bu 2
-\f[B]M\-8\f[R] : \f[I]desktop\-select\-8\f[R]
-.IP \(bu 2
-\f[B]M\-9\f[R] : \f[I]desktop\-select\-9\f[R]
-.IP \(bu 2
-\f[B]M\-0\f[R] : \f[I]desktop\-select\-10\f[R]
-.IP \(bu 2
-\f[B]SM\-s\f[R] : \f[I]desktop\-mode\-stacked\f[R]
+\f[B]SM\-n\f[R] : \f[I]desktop\-mode\-stacked\f[R]
 .IP \(bu 2
 \f[B]SM\-m\f[R] : \f[I]desktop\-mode\-monocle\f[R]
-.IP \(bu 2
-\f[B]SM\-h\f[R] : \f[I]desktop\-mode\-htiled\f[R]
-.IP \(bu 2
-\f[B]SM\-v\f[R] : \f[I]desktop\-mode\-vtiled\f[R]
 .IP \(bu 2
 \f[B]SM\-Down\f[R] : \f[I]desktop\-mode\-next\f[R]
 .IP \(bu 2
 \f[B]SM\-Up\f[R] : \f[I]desktop\-mode\-prev\f[R]
 .IP \(bu 2
-\f[B]CM\-Right\f[R] : \f[I]desktop\-next\f[R]
+\f[B]CM\-1\f[R] : \f[I]desktop\-switch\-1\f[R]
 .IP \(bu 2
-\f[B]CM\-Left\f[R] : \f[I]desktop\-prev\f[R]
+\f[B]CM\-2\f[R] : \f[I]desktop\-switch\-2\f[R]
 .IP \(bu 2
-\f[B]SM\-Right\f[R] : \f[I]desktop\-rotate\-next\f[R]
+\f[B]CM\-3\f[R] : \f[I]desktop\-switch\-3\f[R]
 .IP \(bu 2
-\f[B]SM\-Left\f[R] : \f[I]desktop\-rotate\-prec\f[R]
+\f[B]CM\-4\f[R] : \f[I]desktop\-switch\-4\f[R]
 .IP \(bu 2
-\f[B]M\-Right\f[R] : \f[I]desktop\-swap\-next\f[R]
+\f[B]CM\-5\f[R] : \f[I]desktop\-switch\-5\f[R]
 .IP \(bu 2
-\f[B]M\-Left\f[R] : \f[I]desktop\-swap\-prec\f[R]
+\f[B]CM\-6\f[R] : \f[I]desktop\-switch\-6\f[R]
 .IP \(bu 2
-\f[B]M\-Tab\f[R] : \f[I]desktop\-window\-next\f[R]
+\f[B]CM\-7\f[R] : \f[I]desktop\-switch\-7\f[R]
 .IP \(bu 2
-\f[B]SM\-Tab\f[R] : \f[I]desktop\-window\-prec\f[R]
+\f[B]CM\-8\f[R] : \f[I]desktop\-switch\-8\f[R]
 .IP \(bu 2
-\f[B]M\-greater\f[R]: \f[I]desktop\-master\-incr\f[R]
+\f[B]CM\-9\f[R] : \f[I]desktop\-switch\-9\f[R]
 .IP \(bu 2
-\f[B]M\-less\f[R] : \f[I]desktop\-master\-decr\f[R]
+\f[B]CM\-0\f[R] : \f[I]desktop\-switch\-10\f[R]
+.IP \(bu 2
+\f[B]CM\-Right\f[R] : \f[I]desktop\-switch\-next\f[R]
+.IP \(bu 2
+\f[B]CM\-Left\f[R] : \f[I]desktop\-switch\-prev\f[R]
+.IP \(bu 2
+\f[B]M\-Tab\f[R] : \f[I]desktop\-window\-focus\-next\f[R]
+.IP \(bu 2
+\f[B]SM\-Tab\f[R] : \f[I]desktop\-window\-focus\-prec\f[R]
+.IP \(bu 2
+\f[B]M\-greater\f[R]: \f[I]desktop\-window\-master\-incr\f[R]
+.IP \(bu 2
+\f[B]M\-less\f[R] : \f[I]desktop\-window\-master\-decr\f[R]
+.IP \(bu 2
+\f[B]SM\-Right\f[R] : \f[I]desktop\-window\-rotate\-next\f[R]
+.IP \(bu 2
+\f[B]SM\-Left\f[R] : \f[I]desktop\-window\-rotate\-prec\f[R]
+.IP \(bu 2
+\f[B]M\-Right\f[R] : \f[I]desktop\-window\-swap\-next\f[R]
+.IP \(bu 2
+\f[B]M\-Left\f[R] : \f[I]desktop\-window\-swap\-prec\f[R]
 .IP \(bu 2
 \f[B]SM\-1\f[R] : \f[I]window\-move\-to\-desktop\-1\f[R]
 .IP \(bu 2
@@ -603,16 +609,6 @@ This sections list all key and mouse bindings defined by default.
 \f[B]SM\-9\f[R] : \f[I]window\-move\-to\-desktop\-9\f[R]
 .IP \(bu 2
 \f[B]SM\-0\f[R] : \f[I]window\-move\-to\-desktop\-10\f[R]
-.IP \(bu 2
-\f[B]SM\-f\f[R] : \f[I]window\-toggle\-fullscreen\f[R]
-.IP \(bu 2
-\f[B]SM\-s\f[R] : \f[I]window\-toggle\-sticky\f[R]
-.IP \(bu 2
-\f[B]SM\-t\f[R] : \f[I]window\-toggle\-tiled\f[R]
-.IP \(bu 2
-\f[B]SM\-i\f[R] : \f[I]window\-hide\f[R]
-.IP \(bu 2
-\f[B]SM\-x\f[R] : \f[I]window\-close\f[R]
 .IP \(bu 2
 \f[B]M\-h\f[R] : \f[I]window\-move\-left\f[R]
 .IP \(bu 2
@@ -637,6 +633,16 @@ This sections list all key and mouse bindings defined by default.
 \f[B]CM\-j\f[R] : \f[I]window\-snap\-up\f[R]
 .IP \(bu 2
 \f[B]CM\-k\f[R] : \f[I]window\-snap\-down\f[R]
+.IP \(bu 2
+\f[B]SM\-f\f[R] : \f[I]window\-toggle\-fullscreen\f[R]
+.IP \(bu 2
+\f[B]SM\-s\f[R] : \f[I]window\-toggle\-sticky\f[R]
+.IP \(bu 2
+\f[B]SM\-t\f[R] : \f[I]window\-toggle\-tiled\f[R]
+.IP \(bu 2
+\f[B]SM\-i\f[R] : \f[I]window\-hide\f[R]
+.IP \(bu 2
+\f[B]SM\-x\f[R] : \f[I]window\-close\f[R]
 .SS Mouse buttons bindings
 .IP \(bu 2
 \f[B]1\f[R] : \f[I]menu\-client\f[R]

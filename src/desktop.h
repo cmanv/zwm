@@ -33,16 +33,16 @@ class Desktop {
 	std::string		 m_name;
 	XScreen			*m_screen;
 	long		 	 m_index;
-	long			 m_mode_index;
 	long			 m_mode;
-	float			 m_split;
+	long			 m_mode_index;
+	float			 m_master_split;
 public:
-	Desktop(XScreen *, long, std::string&, long, float);
+	Desktop(std::string&, XScreen *, long, long, float);
 	std::string		&get_name() { return m_name; }
 	void			 rotate_windows(std::vector<XClient*>&, long);
 	void 			 cycle_windows(std::vector<XClient*>&, XClient *, long);
 	void 			 swap_windows(std::vector<XClient*>&, XClient *, long);
-	void			 master_split(std::vector<XClient*>&, long);
+	void			 master_resize(std::vector<XClient*>&, long);
 	void			 show(std::vector<XClient*>&);
 	void			 hide(std::vector<XClient*>&);
 	void			 close(std::vector<XClient*>&);

@@ -94,7 +94,7 @@ public:
 	void 				 rotate_desktop_mode(long);
 	void	 			 rotate_desktop_tiles(long);
 	void	 			 swap_desktop_tiles(long);
-	void 				 desktop_master(long);
+	void 				 desktop_master_resize(long);
 	void	 			 switch_to_desktop(int);
 	void	 			 update_desktop_names();
 	void				 run_menu_client();
