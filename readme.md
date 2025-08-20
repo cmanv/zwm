@@ -305,8 +305,8 @@ This sections list all key and mouse bindings defined by default.
 - **SM-b**	:	_desktop-mode-htiled_
 - **SM-n**	:	_desktop-mode-stacked_
 - **SM-m**	:	_desktop-mode-monocle_
-- **SM-Down**	:	_desktop-mode-next_
-- **SM-Up**	:	_desktop-mode-prev_
+- **SM-Up**	:	_desktop-mode-next_
+- **SM-Down**	:	_desktop-mode-prev_
 - **CM-1**	:	_desktop-switch-1_
 - **CM-2**	:	_desktop-switch-2_
 - **CM-3**	:	_desktop-switch-3_
@@ -320,13 +320,13 @@ This sections list all key and mouse bindings defined by default.
 - **CM-Right**	:	_desktop-switch-next_
 - **CM-Left**	:	_desktop-switch-prev_
 - **M-Tab**	:	_desktop-window-focus-next_
-- **SM-Tab**	:	_desktop-window-focus-prec_
-- **M-greater**:	_desktop-window-master-incr_
+- **SM-Tab**	:	_desktop-window-focus-prev_
+- **M-greater** :	_desktop-window-master-incr_
 - **M-less**	:	_desktop-window-master-decr_
 - **SM-Right**	:	_desktop-window-rotate-next_
-- **SM-Left**	:	_desktop-window-rotate-prec_
+- **SM-Left**	:	_desktop-window-rotate-prev_
 - **M-Right**	:	_desktop-window-swap-next_
-- **M-Left**	:	_desktop-window-swap-prec_
+- **M-Left**	:	_desktop-window-swap-prev_
 - **SM-1**	:	_window-move-to-desktop-1_
 - **SM-2**	:	_window-move-to-desktop-2_
 - **SM-3**	:	_window-move-to-desktop-3_

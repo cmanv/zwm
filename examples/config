@@ -116,13 +116,6 @@
 # To disable all key bindings, use 'unbind-key all''
 # ----------------------------------------------------------------
 #unbind-key all
-#bind-key SM-v		desktop-mode-stacked
-#bind-key SM-b		desktop-mode-vtiled
-#bind-key SM-n		desktop-mode-htiled
-#bind-key SM-m		desktop-mode-monocle
-#bind-key SM-Down	desktop-mode-next
-#bind-key SM-Up		desktop-mode-prev
-
 #bind-key CM-1		desktop-switch-1
 #bind-key CM-2		desktop-switch-2
 #bind-key CM-3		desktop-switch-3
@@ -135,6 +128,13 @@
 #bind-key CM-0		desktop-switch-10
 #bind-key CM-Right	desktop-switch-next
 #bind-key CM-Left	desktop-switch-prev
+
+#bind-key SM-v		desktop-mode-stacked
+#bind-key SM-b		desktop-mode-vtiled
+#bind-key SM-h		desktop-mode-htiled
+#bind-key SM-m		desktop-mode-monocle
+#bind-key SM-Up		desktop-mode-next
+#bind-key SM-Down	desktop-mode-prev
 
 #bind-key M-Tab		desktop-window-focus-next
 #bind-key SM-Tab	desktop-window-focus-prev
