@@ -107,8 +107,8 @@ XClient::XClient(Window w, XScreen *s, bool existing): m_window(w), m_screen(s)
 		else m_deskindex = get_net_wm_desktop();
 		if (m_deskindex == -1) m_deskindex = m_screen->get_active_desktop();
 	}
+	ewmh::set_net_wm_desktop(m_window, m_deskindex);
 	reparent_window();
-	m_screen->assign_client_to_desktop(this, m_deskindex, false);
 
 	// Resume processing of X requests
 	XSync(wm::display, False);
@@ -177,6 +177,13 @@ void XClient::reparent_window()
 					GrabModeAsync, GrabModeAsync, None, None);
 	}
 
+}
+
+void XClient::assign_to_desktop(long index)
+{
+	if (m_deskindex == index) return;
+	m_deskindex = index;
+	ewmh::set_net_wm_desktop(m_window, m_deskindex);
 }
 
 void XClient::draw_window_border()
@@ -856,10 +863,9 @@ void XClient::toggle_state(long flags)
 		break;
 	case State::Sticky:
 		if (has_state(State::Sticky))
-			m_screen->assign_client_to_desktop(this,
-				 m_screen->get_active_desktop(), true);
+			assign_to_desktop(m_screen->get_active_desktop());
 		else
-			m_screen->assign_client_to_desktop(this, -1, true);
+			assign_to_desktop(-1);
 		m_states ^= flags;
 		break;
 	case State::NoTile:

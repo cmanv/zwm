@@ -58,6 +58,7 @@ void Desktop::rotate_windows(std::vector<XClient*>&clientlist, long direction)
 		auto first = clientlist.end();
 		auto second = clientlist.end();
 		auto last = clientlist.end();
+
 		for (auto it = clientlist.begin(); it != clientlist.end(); it++) {
 			XClient *c = *it;
 			if (c->get_desktop_index() != m_index) continue;
@@ -154,27 +155,13 @@ std::vector<XClient*>::iterator Desktop::next_desktop_client(
 	auto current = std::find(clientlist.begin(), clientlist.end(), client);
 	if (current == clientlist.end()) return current;
 
-	auto next = clientlist.end();
-	for (auto it = current+1; it != clientlist.end(); it++) {
-		XClient *c = *it;
-		if ((c->get_desktop_index() == m_index)
-			&& (!c->has_state(State::SkipCycle))) {
-			next = it;
-			break;
-		}
-	}
-	if (next != clientlist.end()) return next;
+	auto isNext = [idx = m_index](XClient *c) {
+		return ((c->get_desktop_index() == idx)
+			&& (!c->has_state(State::SkipCycle))); };
 
-	for (auto it = clientlist.begin(); it != current; it++) {
-		XClient *c = *it;
-		if ((c->get_desktop_index() == m_index)
-			&& (!c->has_state(State::SkipCycle))) {
-			next = it;
-			break;
-		}
-	}
+	auto next = find_if(current+1, clientlist.end(), isNext);
 	if (next != clientlist.end()) return next;
-	return current;
+	return find_if(clientlist.begin(), current, isNext);
 }
 
 // Find previous client on the desktop
@@ -186,27 +173,13 @@ std::vector<XClient*>::reverse_iterator Desktop::prev_desktop_client(
 	auto current = std::find(clientlist.rbegin(), clientlist.rend(), client);
 	if (current == clientlist.rend()) return current;
 
-	auto prev = clientlist.rend();
-	for (auto it = current+1; it != clientlist.rend(); it++) {
-		XClient *c = *it;
-		if ((c->get_desktop_index() == m_index)
-			&& (!c->has_state(State::SkipCycle))) {
-			prev = it;
-			break;
-		}
-	}
-	if (prev != clientlist.rend()) return prev;
+	auto isPrev = [idx = m_index](XClient *c) {
+		return ((c->get_desktop_index() == idx)
+			&& (!c->has_state(State::SkipCycle))); };
 
-	for (auto it = clientlist.rbegin(); it != current; it++) {
-		XClient *c = *it;
-		if ((c->get_desktop_index() == m_index)
-			&& (!c->has_state(State::SkipCycle))) {
-			prev = it;
-			break;
-		}
-	}
+	auto prev = find_if(current+1, clientlist.rend(), isPrev);
 	if (prev != clientlist.rend()) return prev;
-	return current;
+	return find_if(clientlist.rbegin(), current, isPrev);
 }
 
 void Desktop::show(std::vector<XClient*> &clientlist)

@@ -98,6 +98,7 @@ public:
 	void			 set_removed() { m_removed = true; }
 	bool 			 ignore_unmap();
 	bool			 has_window(Window);
+	void			 assign_to_desktop(long);
 	void			 get_net_wm_name();
 	void			 update_net_wm_name();
 	void			 get_transient();

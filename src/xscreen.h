@@ -79,7 +79,6 @@ public:
 	void 				 set_net_desktop_names();
 	void 				 clear_statusbar_title();
 	void 				 update_statusbar_desktops();
-	void 				 assign_client_to_desktop(XClient *, long, bool);
 	void 				 show_desktop();
 	void 				 hide_desktop();
 	void 				 close_desktop();

@@ -290,20 +290,9 @@ void XScreen::move_client_to_desktop(XClient *client, long index)
 	long desktop_index = client->get_desktop_index();
 	if ((desktop_index == -1) || (desktop_index == index)) return;
 	client->hide_window();
-	assign_client_to_desktop(client, index, true);
+	client->assign_to_desktop(index);
 	m_desktoplist[m_desktop_active].show(m_clientlist);
 	update_statusbar_desktops();
-}
-
-void XScreen::assign_client_to_desktop(XClient *client, long index, bool client_assigned)
-{
-	if (client_assigned) {
-		long desktop_index = client->get_desktop_index();
-		if (desktop_index == index) return;
-	}
-
-	client->set_desktop_index(index);
-	ewmh::set_net_wm_desktop(client->get_window(), index);
 }
 
 void XScreen::show_desktop()
