@@ -28,16 +28,15 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include "timer.h"
-#include "socket.h"
-#include "config.h"
 #include "binding.h"
-#include "wmhints.h"
-#include "winmgr.h"
-#include "menu.h"
+#include "config.h"
 #include "desktop.h"
+#include "menu.h"
+#include "socket.h"
+#include "timer.h"
+#include "winmgr.h"
+#include "wmhints.h"
 #include "xclient.h"
-#include "xpointer.h"
 #include "xscreen.h"
 
 XScreen::XScreen(int id): m_screenid(id)
@@ -443,13 +442,6 @@ void XScreen::ensure_clients_are_visible()
 			client->move_window();
 		}
 	}
-}
-
-void XScreen::move_pointer(long direction)
-{
-	Position pos = xpointer::get_pos(m_rootwin);
-	pos.move(direction);
-	xpointer::set_pos(m_rootwin, pos);
 }
 
 void XScreen::cycle_windows(long direction)

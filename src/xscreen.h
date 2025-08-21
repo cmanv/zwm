@@ -86,7 +86,6 @@ public:
 	Geometry			 get_area(Position&, bool);
 	Viewport 			*find_viewport(Position&);
 	void	 			 ensure_clients_are_visible();
-	void	 			 move_pointer(long);
 	void	 			 cycle_windows(long);
 	void	 			 cycle_desktops(long);
 	void				 select_desktop_mode(long);
