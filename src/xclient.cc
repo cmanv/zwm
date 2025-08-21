@@ -866,7 +866,7 @@ void XClient::toggle_state(long flags)
 		m_states ^= flags;
 		break;
 	case State::Sticky:
-		if (!has_state(State::NoTile))
+		if (!has_state(State::NoTile) || has_state(State::FullScreen))
 			break;
 		if (has_state(State::Sticky))
 			assign_to_desktop(m_screen->get_active_desktop());
@@ -884,7 +884,7 @@ void XClient::toggle_state(long flags)
 		}
 		break;
 	case State::FullScreen:
-		if (has_state(State::NoTile))
+		if (!has_state(State::Sticky))
 			toggle_fullscreen();
 		break;
 	}
