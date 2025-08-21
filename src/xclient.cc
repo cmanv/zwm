@@ -46,9 +46,11 @@ XClient::XClient(Window w, XScreen *s, bool existing): m_window(w), m_screen(s)
 
 	if (conf::debug) {
 		std::cout << timer::gettime() << " [XClient::" << __func__
-			<< "] Create Client window 0x" << std::hex << m_window << std::endl;
+			<< "] Create Client window 0x" << std::hex << m_window
+			<< std::endl;
 	}
-	// For existing clients, reparent will send an unmap request which should be ignored.
+
+	// For existing clients, reparent sends an unmap request which should be ignored.
 	if (existing)
 		m_ignore_unmap = true;
 
@@ -101,13 +103,12 @@ XClient::XClient(Window w, XScreen *s, bool existing): m_window(w), m_screen(s)
 	m_states = ewmh::get_net_wm_states(m_window, m_states);
 
 	// Set the desktop index.
-	m_deskindex = -1;
-	if (!has_state(State::Sticky)) {
-		if (!existing) m_deskindex = get_configured_desktop();
-		else m_deskindex = get_net_wm_desktop();
-		if (m_deskindex == -1) m_deskindex = m_screen->get_active_desktop();
-	}
+	if (!existing) m_deskindex = get_configured_desktop();
+	else m_deskindex = get_net_wm_desktop();
+	if ((m_deskindex == -1) && !has_state(State::Sticky))
+		m_deskindex = m_screen->get_active_desktop();
 	ewmh::set_net_wm_desktop(m_window, m_deskindex);
+
 	reparent_window();
 
 	// Resume processing of X requests
@@ -119,7 +120,8 @@ XClient::~XClient()
 {
 	if (conf::debug) {
 		std::cout << timer::gettime() << " [XClient::" << __func__
-			<< "] Destroy Client window 0x" << std::hex << m_window << std::endl;
+			<< "] Destroy Client window 0x" << std::hex << m_window
+			<< std::endl;
 	}
 
 	// Disable processing of X requests
@@ -168,7 +170,7 @@ void XClient::reparent_window()
 	XSetWindowBorderWidth(wm::display, m_window, 0);
 	XReparentWindow(wm::display, m_window, m_parent, 0, 0);
 
-	// Grab mouse bindings in the parent windoe
+	// Grab mouse bindings in the parent window
 	for (Binding& mb : conf::mousebindings) {
 		if (mb.context != Context::Window) continue;
 		for (auto mod : wm::ignore_mods)
@@ -924,7 +926,8 @@ XClientProp::XClientProp(XScreen *screen, Window parent)
 	m_color = screen->get_color(Color::MenuItemText);
 	m_pixel = screen->get_pixel(Color::MenuBackground);
 
-	m_window = XCreateSimpleWindow(wm::display, parent, 0, 0, 1, 1, 0, m_pixel, m_pixel);
+	m_window = XCreateSimpleWindow(wm::display, parent, 0, 0, 1, 1, 0,
+					m_pixel, m_pixel);
 	m_xftdraw = XftDrawCreate(wm::display, m_window, screen->get_visual(),
 					screen->get_colormap());
 	XMapWindow(wm::display, m_window);
@@ -941,7 +944,8 @@ void XClientProp::draw(std::string &text, int x, int y)
 	XGlyphInfo	extents;
 	int 		len = text.size();
 
-	XftTextExtentsUtf8(wm::display, m_font, (const FcChar8*)text.c_str(), len, &extents);
+	XftTextExtentsUtf8(wm::display, m_font, (const FcChar8*)text.c_str(),
+				len, &extents);
 	XMoveResizeWindow(wm::display, m_window, x - extents.width/2, y,
 				extents.xOff, m_font->height);
 	XClearWindow(wm::display, m_window);
