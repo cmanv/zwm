@@ -289,8 +289,8 @@ or mouse binding.
 - **window-snap-left**: Snap the current window to the left edge of the screen. (_stacked_ windows only)
 - **window-snap-up**: Snap the current window to the top edge of the screen. (_stacked_ windows only)
 - **window-snap-right**: Snap the current window to the right edge of the screen. (_stacked_ windows only)
-- **window-toggle-fullscreen**: Toggle the fullscreen state of the current window.
-- **window-toggle-sticky**: Toggle the _sticky_ state of the current window.
+- **window-toggle-fullscreen**: Toggle the fullscreen state of the current window. (_stacked_ windows only)
+- **window-toggle-sticky**: Toggle the _sticky_ state of the current window. (_stacked_ windows only)
 - **window-toggle-tiled**: Toggle the _tiled_/_stacked_ state of the current window.
 
 # DEFAULT BINDINGS

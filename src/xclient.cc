@@ -888,8 +888,7 @@ void XClient::toggle_state(long flags)
 
 void XClient::toggle_fullscreen()
 {
-	if (has_state(State::Frozen) && !has_state(State::FullScreen|State::Tiled))
-		return;
+	if (has_state(State::Tiled)) return;
 
 	if (has_state(State::FullScreen))
 		remove_fullscreen();
