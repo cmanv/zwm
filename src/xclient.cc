@@ -864,6 +864,8 @@ void XClient::toggle_state(long flags)
 		m_states ^= flags;
 		break;
 	case State::Sticky:
+		if (has_state(State::Tiled))
+			break;
 		if (has_state(State::Sticky))
 			assign_to_desktop(m_screen->get_active_desktop());
 		else
