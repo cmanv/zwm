@@ -13,7 +13,7 @@ zwm — a simple stacking / tiling window manager for X11
 # DESCRIPTION
 
 **zwm** is an hybrid stacking/tiling window manager for X11. It supports a stacking
-mode and 3 tiling modes. It features a number of configurable window manager 
+mode and 3 tiling modes. It features a number of configurable window manager
 functions, workspaces and a configurable menu.
 It is also able to send and receive messages through sockets.
 
@@ -291,7 +291,7 @@ or mouse binding.
 - **window-snap-right**: Snap the current window to the right edge of the screen. (_stacked_ windows only)
 - **window-toggle-fullscreen**: Toggle the fullscreen state of the current window. (_stacked_ windows only)
 - **window-toggle-sticky**: Toggle the _sticky_ state of the current window. (_stacked_ windows only)
-- **window-toggle-tiled**: Toggle the _tiled_/_stacked_ state of the current window.
+- **window-toggle-tiled**: Toggle the _tiled_/_stacked_ state of the current window. Switching off the _stacked_ state also switch off the _sticky_ state.
 
 # DEFAULT BINDINGS
 This sections list all key and mouse bindings defined by default.

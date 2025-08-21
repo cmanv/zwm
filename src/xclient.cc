@@ -402,6 +402,8 @@ void XClient::apply_user_states()
 			match = false;
 		if (match) set_states(def.states);
 	}
+	if (has_state(State::Sticky))
+		set_states(State::NoTile);
 }
 
 // Returns the configured desktop for the client if it exists
@@ -864,7 +866,7 @@ void XClient::toggle_state(long flags)
 		m_states ^= flags;
 		break;
 	case State::Sticky:
-		if (has_state(State::Tiled))
+		if (!has_state(State::NoTile))
 			break;
 		if (has_state(State::Sticky))
 			assign_to_desktop(m_screen->get_active_desktop());
@@ -874,13 +876,16 @@ void XClient::toggle_state(long flags)
 		break;
 	case State::NoTile:
 		if (has_state(State::NoTile)) {
-			clear_states(State::NoTile);
+			if (has_state(State::Sticky))
+				assign_to_desktop(m_screen->get_active_desktop());
+			clear_states(State::NoTile|State::Sticky);
 		} else {
 			set_notile();
 		}
 		break;
 	case State::FullScreen:
-		toggle_fullscreen();
+		if (has_state(State::NoTile))
+			toggle_fullscreen();
 		break;
 	}
 	ewmh::set_net_wm_states(m_window, m_states);
@@ -888,8 +893,6 @@ void XClient::toggle_state(long flags)
 
 void XClient::toggle_fullscreen()
 {
-	if (has_state(State::Tiled)) return;
-
 	if (has_state(State::FullScreen))
 		remove_fullscreen();
 	else {
