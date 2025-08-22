@@ -269,7 +269,7 @@ void Menu::open_submenu()
 	auto it = std::find_if(conf::menulist.begin(),conf::menulist.end(), isSubMenu);
 	if (it == conf::menulist.end()) return;
 
-	// Following type of menus need to be populated dynamically
+	// The following types of menu have to be populated dynamically.
 	if ((*it).type == MenuType::Client)
 		m_screen->populate_client_menu(*it);
 	if ((*it).type == MenuType::Desktop)
