@@ -113,8 +113,8 @@
 
 # ----------------------------------------------------------------
 # Key bindings
-# To disable a key binding, use 'unbind-key <shortcut>'
-# To disable all key bindings, use 'unbind-key all''
+# To disable a key binding use: unbind-key 'modifiers-key'
+# To disable all key bindings use: unbind-key all
 # ----------------------------------------------------------------
 #unbind-key all
 #bind-key CM-1		desktop-switch-1
@@ -185,8 +185,10 @@
 
 # ----------------------------------------------------------------
 # Mouse bindings
-# To disable a mouse binding use 'unbind-mouse <button>'
+# To disable a mouse binding use: unbind-mouse 'modifiers-button'
+# To disable all mouse bindings use: unbind-mouse all
 # ----------------------------------------------------------------
+#unbind-mouse all
 #bind-mouse 1		menu-client
 #bind-mouse 2		menu-desktop
 #bind-mouse 3		menu-launcher

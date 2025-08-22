@@ -233,11 +233,12 @@ The bindings options are:
 - **unbind-key** _modifiers-key_
 
 > Unassigns a particular modifiers/key combination. The special form _unbind\_key all_ clears
-> all key bindings defined in the window manager.
+> all previously defined key bindings.
 
 - **unbind-mouse** _modifiers-button_
 
-> Unassigns a particular modifiers/button combination.
+> Unassigns a particular modifiers/button combination. The special form _unbind\_mouse all_ clears
+> all previously defined mouse bindings.
 
 # WINDOW MANAGER FUNCTIONS
 This sections list all window manager functions that can be accessed through a key

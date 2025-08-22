@@ -386,9 +386,13 @@ void conf::read_config()
 			continue;
 		}
 		if (!tokens[0].compare("unbind-mouse")) {
-			BindingDef bdef(tokens[1]);
-			Binding mb(bdef, EventType::Button);
-			remove_mousebinding(mb);
+			if (!tokens[1].compare("all")) {
+				mousebindings.clear();
+			} else {
+				BindingDef bdef(tokens[1]);
+				Binding mb(bdef, EventType::Button);
+				remove_mousebinding(mb);
+			}
 			continue;
 		}
 		if (tokens.size() < 3) continue;
@@ -490,7 +494,7 @@ void conf::get_name_class(std::string &s, std::string &rname, std::string &rclas
 void conf::add_keybinding(Binding &kb)
 {
 	auto isCombo = [kb](Binding b) { return ((kb.modmask == b.modmask)
-			&& (kb.keysym == b.keysym) && (kb.context == b.context)); };
+			&& (kb.keysym == b.keysym)); };
 	auto it = std::find_if(keybindings.begin(), keybindings.end(), isCombo);
 	if (it != keybindings.end()) keybindings.erase(it);
 	keybindings.push_back(kb);
@@ -499,7 +503,7 @@ void conf::add_keybinding(Binding &kb)
 void conf::remove_keybinding(Binding &kb)
 {
 	auto isCombo = [kb](Binding b) { return ((kb.modmask == b.modmask)
-			&& (kb.keysym == b.keysym) && (kb.context == b.context)); };
+			&& (kb.keysym == b.keysym)); };
 	auto it = std::find_if(keybindings.begin(), keybindings.end(), isCombo);
 	if (it != keybindings.end()) keybindings.erase(it);
 }
@@ -507,7 +511,7 @@ void conf::remove_keybinding(Binding &kb)
 void conf::add_mousebinding(Binding &mb)
 {
 	auto isCombo = [mb](Binding b) { return ((mb.modmask == b.modmask)
-			&& (mb.button == b.button) && (mb.context == b.context)); };
+			&& (mb.button == b.button)); };
 	auto it = std::find_if(mousebindings.begin(), mousebindings.end(), isCombo);
 	if (it != mousebindings.end()) mousebindings.erase(it);
 	mousebindings.push_back(mb);
@@ -516,7 +520,7 @@ void conf::add_mousebinding(Binding &mb)
 void conf::remove_mousebinding(Binding &mb)
 {
 	auto isCombo = [mb](Binding b) { return ((mb.modmask == b.modmask)
-			&& (mb.button == b.button) && (mb.context == b.context)); };
+			&& (mb.button == b.button)); };
 	auto it = std::find_if(mousebindings.begin(), mousebindings.end(), isCombo);
 	if (it != mousebindings.end()) mousebindings.erase(it);
 }
