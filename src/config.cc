@@ -128,9 +128,9 @@ namespace conf {
 	std::string	user_config = "";
 	std::string	wmname = "ZWM";
 	std::string 	menufont = "Mono:size=10";
-	std::string	menu_client = "X Clients";
-	std::string	menu_desktop = "Active desktops";
-	std::string	menu_launcher = "Launchers";
+	std::string	menu_client_label = "X Clients";
+	std::string	menu_desktop_label = "Active desktops";
+	std::string	menu_launcher_label = "Launchers";
 	std::string	command_socket = "";
 	std::string	message_socket = "";
 	std::string	terminal = "xterm";
@@ -246,6 +246,8 @@ void conf::init()
 		}
 	}
 	read_config();
+	menulist.push_back(MenuDef(menu_client_label, MenuType::Client));
+	menulist.push_back(MenuDef(menu_desktop_label, MenuType::Desktop));
 	return;
 }
 
@@ -313,15 +315,15 @@ void conf::read_config()
 			continue;
 		}
 		if (!tokens[0].compare("menu-client-label")) {
-			menu_client = tokens[1];
+			menu_client_label = tokens[1];
 			continue;
 		}
 		if (!tokens[0].compare("menu-desktop-label")) {
-			menu_desktop = tokens[1];
+			menu_desktop_label = tokens[1];
 			continue;
 		}
 		if (!tokens[0].compare("menu-launcher-label")) {
-			menu_launcher = tokens[1];
+			menu_launcher_label = tokens[1];
 			continue;
 		}
 		if (!tokens[0].compare("desktop-defaults")) {

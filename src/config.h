@@ -84,9 +84,9 @@ namespace conf {
 	extern std::vector<DefaultDesktop>	 defdesktoplist;
 	extern std::vector<DefaultStates>	 defstateslist;
 	extern std::string			 terminal;
-	extern std::string			 menu_client;
-	extern std::string			 menu_desktop;
-	extern std::string			 menu_launcher;
+	extern std::string			 menu_client_label;
+	extern std::string			 menu_desktop_label;
+	extern std::string			 menu_launcher_label;
 	void 	init();
 }
 #endif // _CONFIG_H_

@@ -526,9 +526,9 @@ void XScreen::switch_to_desktop(int index)
 	update_statusbar_desktops();
 }
 
-void XScreen::run_menu_launcher()
+void XScreen::run_launcher_menu()
 {
-	std::string menu = conf::menu_launcher;
+	std::string menu = conf::menu_launcher_label;
 	auto isLauncherMenu = [menu] (MenuDef mdef)
 			{ return (!mdef.label.compare(menu)); };
 	auto it = std::find_if(conf::menulist.begin(),conf::menulist.end(), isLauncherMenu);
@@ -538,9 +538,9 @@ void XScreen::run_menu_launcher()
 	appmenu.run();
 }
 
-void XScreen::run_menu_client()
+void XScreen::populate_client_menu(MenuDef &menudef)
 {
-	MenuDef menudef(conf::menu_client, MenuType::Client);
+	menudef.items.clear();
 	for (int i = -1; i < m_ndesktops; i++) {
 		for (XClient *client : m_clientlist) {
 			if (client->has_states(State::Ignored)) continue;
@@ -561,14 +561,19 @@ void XScreen::run_menu_client()
 			menudef.items.push_back(MenuItem(s, client));
 		}
 	}
-
-	Menu window_menu(this, menudef);
-	window_menu.run();
 }
 
-void XScreen::run_menu_desktop()
+void XScreen::run_client_menu()
 {
-	MenuDef menudef(conf::menu_desktop, MenuType::Desktop);
+	MenuDef menudef(conf::menu_client_label, MenuType::Client);
+	populate_client_menu(menudef);
+	Menu client_menu(this, menudef);
+	client_menu.run();
+}
+
+void XScreen::populate_desktop_menu(MenuDef &menudef)
+{
+	menudef.items.clear();
 	for (int i = 0; i < m_ndesktops; i++) {
 		if (desktop_empty(i)) continue;
 		std::stringstream ss;
@@ -576,6 +581,12 @@ void XScreen::run_menu_desktop()
 		std::string s(ss.str());
 		menudef.items.push_back(MenuItem(s,i));
 	}
+}
+
+void XScreen::run_desktop_menu()
+{
+	MenuDef menudef(conf::menu_desktop_label, MenuType::Desktop);
+	populate_desktop_menu(menudef);
 	Menu desktop_menu(this, menudef);
 	desktop_menu.run();
 }

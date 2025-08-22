@@ -84,7 +84,8 @@
 # ----------------------------------------------------------------
 #menu-start "Launchers"
 #menu-item  "Terminal"	exec xterm
-#menu-item  "Firefox"	exec firefox
+#menu-item  "Clients"	menu "X11 clients" 
+#menu-item  "Desktops"	menu "Active desktops" 
 #menu-item  "Quit"	menu "Quit"
 #menu-end
 

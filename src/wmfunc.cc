@@ -238,17 +238,17 @@ void wmfunc::desktop_swap_tiles(XScreen *screen, long direction)
 
 void wmfunc::menu_launcher(XScreen *screen)
 {
-	screen->run_menu_launcher();
+	screen->run_launcher_menu();
 }
 
 void wmfunc::menu_client(XScreen *screen)
 {
-	screen->run_menu_client();
+	screen->run_client_menu();
 }
 
 void wmfunc::menu_desktop(XScreen *screen)
 {
-	screen->run_menu_desktop();
+	screen->run_desktop_menu();
 }
 
 void wmfunc::set_wm_status(long status)

@@ -26,6 +26,7 @@
 #include <X11/Xlib.h>
 #include <string>
 #include <vector>
+#include "menu.h"
 #include "geometry.h"
 
 class Desktop;
@@ -95,9 +96,11 @@ public:
 	void 				 desktop_master_resize(long);
 	void	 			 switch_to_desktop(int);
 	void	 			 update_desktop_names();
-	void				 run_menu_client();
-	void				 run_menu_desktop();
-	void				 run_menu_launcher();
+	void				 populate_client_menu(MenuDef&);
+	void				 run_client_menu();
+	void				 populate_desktop_menu(MenuDef&);
+	void				 run_desktop_menu();
+	void				 run_launcher_menu();
 	static XClient			*find_active_client();
 	static XClient			*find_client(Window);
 	static XScreen			*find_screen(Window);

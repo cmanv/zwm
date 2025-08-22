@@ -165,13 +165,13 @@ int Menu::run()
 	if ((menu_state & MenuState::Release) && (m_entry != -1)) {
 		switch(m_data.type) {
 		case MenuType::Launcher:
-			run_launcher();
+			exec_launcher();
 			break;
 		case MenuType::Desktop:
 			switch_to_desktop();
 			break;
 		case MenuType::Client:
-			activate_client();
+			switch_to_client();
 			break;
 		}
 	}
@@ -268,6 +268,13 @@ void Menu::open_submenu()
 			{ return (!mdef.label.compare(menupath)); };
 	auto it = std::find_if(conf::menulist.begin(),conf::menulist.end(), isSubMenu);
 	if (it == conf::menulist.end()) return;
+
+	// Following type of menus need to be populated dynamically
+	if ((*it).type == MenuType::Client)
+		m_screen->populate_client_menu(*it);
+	if ((*it).type == MenuType::Desktop)
+		m_screen->populate_desktop_menu(*it);
+
 	m_child = new Menu(m_screen, *it, this);
 	m_child->draw();
 }
@@ -278,7 +285,7 @@ void Menu::close_submenu()
 	m_child = NULL;
 }
 
-void Menu::run_launcher()
+void Menu::exec_launcher()
 {
 	std::string function = m_data.items[m_entry].function;
 	std::string path = m_data.items[m_entry].path;
@@ -293,7 +300,7 @@ void Menu::run_launcher()
 	}
 }
 
-void Menu::activate_client()
+void Menu::switch_to_client()
 {
 	XClient *client = m_data.items[m_entry].client;
 	int index = client->get_desktop_index();
