@@ -261,6 +261,18 @@ void Desktop::select_mode(std::vector<XClient*> &clientlist, long index)
 	m_mode = conf::desktop_modes[index].mode;
 	m_cols = conf::desktop_modes[index].cols;
 	m_rows = conf::desktop_modes[index].rows;
+
+	// For Monocle, put the active window on top
+	if (m_mode == Mode::Monocle) {
+		XClient *client = m_screen->get_active_client();
+		if (client) {
+			auto it = std::find(clientlist.begin(), clientlist.end(), client);
+			if (it != clientlist.end())
+				std::rotate(clientlist.begin(), it, it+1);
+
+		}
+	}
+
 	show(clientlist);
 }
 
@@ -272,6 +284,19 @@ void Desktop::rotate_mode(std::vector<XClient*> &clientlist, long direction)
 	m_mode =  conf::desktop_modes[m_mode_index].mode;
 	m_cols =  conf::desktop_modes[m_mode_index].cols;
 	m_rows =  conf::desktop_modes[m_mode_index].rows;
+	show(clientlist);
+}
+
+void Desktop::master_resize(std::vector<XClient*> &clientlist, long increment)
+{
+	if (!(m_mode & Mode::MasterSlave)) return;
+	if (increment > 0) {
+		m_master_split += 0.01;
+		if (m_master_split > 0.9) m_master_split = 0.9;
+	} else {
+		m_master_split -= 0.01;
+		if (m_master_split < 0.1) m_master_split = 0.1;
+	}
 	show(clientlist);
 }
 
@@ -428,19 +453,6 @@ void Desktop::tile_vertical(std::vector<XClient*>&clientlist)
 			client->raise_window();
 		}
 	}
-}
-
-void Desktop::master_resize(std::vector<XClient*> &clientlist, long increment)
-{
-	if (!(m_mode & Mode::MasterSlave)) return;
-	if (increment > 0) {
-		m_master_split += 0.01;
-		if (m_master_split > 0.9) m_master_split = 0.9;
-	} else {
-		m_master_split -= 0.01;
-		if (m_master_split < 0.1) m_master_split = 0.1;
-	}
-	show(clientlist);
 }
 
 void Desktop::tile_maximized(std::vector<XClient*>&clientlist)

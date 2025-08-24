@@ -84,6 +84,7 @@ This section describes all options that can be set in the configuration file.
 > > * _HTiled_: Master / slaves with the slaves tiled horizontally on the bottom.
 > > * _RxC_: Windows are arranged in a grid of _R_ rows and _C_ columns.
 > > The number of rows and columns can be anywhere from 1 to 9.
+
 > * _proportion_ is the proportion of the screeen used by the master window. (HTiled/VTiled modes only)
 
 - **desktop-modes** _mode1_,_mode2,..
