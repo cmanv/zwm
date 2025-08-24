@@ -1,4 +1,9 @@
+2025-08-24
+	* Ajoute le mode grille.
+	* Version alpha16
+
 2025-08-19
+	* Supprime les liste de clients dans l'objet Desktop.
 	* Supprime les liste de clients dans l'objet Desktop.
 	* Supprime stickylist
 	* Ajout des fonctions desktop-swap-*

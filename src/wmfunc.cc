@@ -37,12 +37,17 @@ namespace wmfunc {
 std::vector<FuncDef> funcdefs = {
 	{ "desktop-close", 		desktop_close},
 	{ "desktop-hide", 		desktop_hide},
+	{ "desktop-mode-1", 		desktop_select_mode, 0},
+	{ "desktop-mode-2", 		desktop_select_mode, 1},
+	{ "desktop-mode-3", 		desktop_select_mode, 2},
+	{ "desktop-mode-4", 		desktop_select_mode, 3},
+	{ "desktop-mode-5", 		desktop_select_mode, 4},
+	{ "desktop-mode-6", 		desktop_select_mode, 5},
+	{ "desktop-mode-7", 		desktop_select_mode, 6},
+	{ "desktop-mode-8", 		desktop_select_mode, 7},
+	{ "desktop-mode-9", 		desktop_select_mode, 8},
 	{ "desktop-mode-next", 		desktop_rotate_mode, 1},
 	{ "desktop-mode-prev", 		desktop_rotate_mode, -1},
-	{ "desktop-mode-stacked", 	desktop_mode_stacked},
-	{ "desktop-mode-monocle", 	desktop_mode_monocle},
-	{ "desktop-mode-htiled", 	desktop_mode_htiled},
-	{ "desktop-mode-vtiled", 	desktop_mode_vtiled},
 	{ "desktop-switch-1", 		desktop_switch, 0},
 	{ "desktop-switch-2", 		desktop_switch, 1},
 	{ "desktop-switch-3", 		desktop_switch, 2},
@@ -191,24 +196,9 @@ void wmfunc::desktop_master_resize(XScreen *screen, long increment)
 	screen->desktop_master_resize(increment);
 }
 
-void wmfunc::desktop_mode_stacked(XScreen *screen, long)
+void wmfunc::desktop_select_mode(XScreen *screen, long index)
 {
-	screen->select_desktop_mode(Mode::Stacked);
-}
-
-void wmfunc::desktop_mode_monocle(XScreen *screen, long)
-{
-	screen->select_desktop_mode(Mode::Monocle);
-}
-
-void wmfunc::desktop_mode_htiled(XScreen *screen, long)
-{
-	screen->select_desktop_mode(Mode::HTiled);
-}
-
-void wmfunc::desktop_mode_vtiled(XScreen *screen, long)
-{
-	screen->select_desktop_mode(Mode::VTiled);
+	screen->select_desktop_mode(index);
 }
 
 void wmfunc::desktop_rotate_mode(XScreen *screen, long direction)

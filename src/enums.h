@@ -103,8 +103,10 @@ enum Mode {
 	Monocle		= 0x02,
 	HTiled		= 0x04,
 	VTiled		= 0x08,
-	TSplit		= VTiled|HTiled,
-	Tiling		= Monocle|HTiled|VTiled,
+	Grid		= 0x10,
+	Tiling		= Monocle|HTiled|VTiled|Grid,
+	MasterSlave	= VTiled|HTiled,
+	Swapable	= VTiled|HTiled|Grid,
 };
 
 enum Motif {

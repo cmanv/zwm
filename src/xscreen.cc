@@ -55,7 +55,8 @@ XScreen::XScreen(int id): m_screenid(id)
 
 	// Desktops
 	for (DesktopDef &def : conf::desktop_defs)
-		m_desktoplist.push_back(Desktop(def.name, this, def.index, def.mode, def.master_split));
+		m_desktoplist.push_back(Desktop(def.name, this, def.index, def.mode,
+					def.master_split, def.rows, def.cols));
 
 	m_ndesktops = m_desktoplist.size();
 
@@ -279,9 +280,9 @@ void XScreen::raise_client(XClient *client)
 	if (client->get_desktop_index() != m_desktop_active) return;
 	if (client->has_state(State::Tiled)) return; // Dont change the order in tiling mode.
 
-	auto it = std::find(m_clientlist.rbegin(), m_clientlist.rend(), client);
-	if (it != m_clientlist.rend())
-			std::rotate(m_clientlist.rbegin(), it, it+1);
+	auto it = std::find(m_clientlist.begin(), m_clientlist.end(), client);
+	if (it != m_clientlist.end())
+			std::rotate(m_clientlist.begin(), it, it+1);
 }
 
 void XScreen::move_client_to_desktop(XClient *client, long index)
@@ -309,9 +310,9 @@ void XScreen::close_desktop()
 	m_desktoplist[m_desktop_active].close(m_clientlist);
 }
 
-void XScreen::select_desktop_mode(long mode)
+void XScreen::select_desktop_mode(long index)
 {
-	m_desktoplist[m_desktop_active].select_mode(m_clientlist, mode);
+	m_desktoplist[m_desktop_active].select_mode(m_clientlist, index);
 }
 
 void XScreen::rotate_desktop_mode(long direction)

@@ -76,10 +76,7 @@ namespace wmfunc {
 	void desktop_hide(XScreen *, long);
 	void desktop_close(XScreen *, long);
 	void desktop_master_resize(XScreen *, long);
-	void desktop_mode_stacked(XScreen *, long);
-	void desktop_mode_monocle(XScreen *, long);
-	void desktop_mode_htiled(XScreen *, long);
-	void desktop_mode_vtiled(XScreen *, long);
+	void desktop_select_mode(XScreen *, long);
 	void desktop_rotate_mode(XScreen *, long);
 	void desktop_rotate_tiles(XScreen *, long);
 	void desktop_swap_tiles(XScreen *, long);

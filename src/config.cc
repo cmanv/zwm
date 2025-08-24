@@ -50,10 +50,10 @@ namespace conf {
 	};
 
 	std::vector<DesktopMode> desktop_modes = {
-		{ 0,	Mode::Stacked,	"S" },
-		{ 1,	Mode::Monocle,	"M" },
-		{ 2,	Mode::VTiled,	"V" },
-		{ 3,	Mode::HTiled,	"H" },
+		{ "Stacked", Mode::Stacked, "S", 0, 0 },
+		{ "Monocle", Mode::Monocle, "M", 0, 0 },
+		{ "VTiled",  Mode::VTiled, "V", 0, 0 },
+		{ "HTiled",  Mode::HTiled, "H", 0, 0 },
 	};
 
 	std::vector<BindingDef>	keybinding_defs = {
@@ -69,12 +69,12 @@ namespace conf {
 		{ "CM-0",	"desktop-switch-10" },
 		{ "CM-Right",	"desktop-switch-next" },
 		{ "CM-Left",	"desktop-switch-prev" },
-		{ "CM-v",	"desktop-mode-vtiled" },
-		{ "CM-b",	"desktop-mode-htiled" },
-		{ "CM-n",	"desktop-mode-stacked" },
-		{ "CM-m",	"desktop-mode-monocle" },
-		{ "CM-Down",	"desktop-mode-next" },
-		{ "CM-Up",	"desktop-mode-prev" },
+		{ "M-1",	"desktop-mode-1" },
+		{ "M-2",	"desktop-mode-2" },
+		{ "M-3",	"desktop-mode-3" },
+		{ "M-4",	"desktop-mode-4" },
+		{ "M-Up",	"desktop-mode-next" },
+		{ "M-Down",	"desktop-mode-prev" },
 		{ "M-Tab",	"desktop-window-focus-next" },
 		{ "SM-Tab",	"desktop-window-focus-prev" },
 		{ "M-greater",	"desktop-window-master-incr" },
@@ -162,6 +162,7 @@ namespace conf {
 	bool get_line(std::ifstream &, std::string &);
 	int  get_tokens(std::string &, std::vector<std::string> &);
 	int  split_string(std::string &, std::vector<std::string> &, char);
+	void parse_grid_mode(std::string &, long &, long &);
 	void get_name_class(std::string&, std::string&, std::string&);
 	void add_keybinding(Binding&);
 	void remove_keybinding(Binding &);
@@ -333,6 +334,8 @@ void conf::read_config()
 			desktop_defs[index].name = tokens[2];
 			desktop_defs[index].mode = Mode::Stacked;
 			desktop_defs[index].master_split = 0.5;
+			desktop_defs[index].rows = 0;
+			desktop_defs[index].cols = 0;
 			if (tokens.size() < 4) continue;
 			if (!tokens[3].compare("Monocle"))
 					desktop_defs[index].mode = Mode::Monocle;
@@ -340,6 +343,15 @@ void conf::read_config()
 					desktop_defs[index].mode = Mode::HTiled;
 			if (!tokens[3].compare("VTiled"))
 					desktop_defs[index].mode = Mode::VTiled;
+			else {
+				long rows, cols;
+				parse_grid_mode(tokens[3], rows, cols);
+				if ((rows < 1) || (rows > 9)) continue;
+				if ((cols < 1) || (cols > 9)) continue;
+				desktop_defs[index].mode = Mode::Grid;
+				desktop_defs[index].rows = rows;
+				desktop_defs[index].cols = cols;
+			}
 			if (tokens.size() < 5) continue;
 
 			float split = std::strtof(tokens[4].c_str(), NULL);
@@ -531,16 +543,41 @@ void conf::add_desktop_modes(std::vector<std::string> &modes)
 	desktop_modes.clear();
 	for (std::string &mode : modes) {
 		if (!mode.compare("Stacked"))
-			desktop_modes.push_back(DesktopMode(index++, Mode::Stacked, "S"));
+			desktop_modes.push_back(
+				DesktopMode("Stacked", Mode::Stacked, "S", 0, 0));
 		else if (!mode.compare("Monocle"))
-			desktop_modes.push_back(DesktopMode(index++, Mode::Monocle, "M"));
+			desktop_modes.push_back(
+				DesktopMode("Monocle", Mode::Monocle, "M", 0, 0));
 		else if (!mode.compare("VTiled"))
-			desktop_modes.push_back(DesktopMode(index++, Mode::VTiled, "V"));
+			desktop_modes.push_back(
+				DesktopMode("VTiled", Mode::VTiled, "V", 0, 0));
 		else if (!mode.compare("HTiled"))
-			desktop_modes.push_back(DesktopMode(index++, Mode::HTiled, "H"));
+			desktop_modes.push_back(
+				DesktopMode("HTiled", Mode::HTiled, "H", 0, 0));
+		else {
+			long rows, cols;
+			parse_grid_mode(mode, rows, cols);
+			if ((rows < 1) || (rows > 9)) continue;
+			if ((cols < 1) || (cols > 9)) continue;
+			desktop_modes.push_back(
+				DesktopMode(mode, Mode::Grid, "G", rows, cols));
+		}
 	}
 	if (desktop_modes.empty())
-		desktop_modes.push_back(DesktopMode(0, Mode::Stacked, "S"));
+		desktop_modes.push_back(
+				DesktopMode("Stacked", Mode::Stacked, "S", 0 , 0));
+}
+
+// Parse grid mode rows x columns
+void conf::parse_grid_mode(std::string &mode, long &rows, long &cols)
+{
+	rows = 0;
+	cols = 0;
+	std::vector<std::string> values;
+	split_string(mode, values, 'x');
+	if (values.size() != 2) return;
+	rows = std::strtol(values[0].c_str(), NULL, 10);
+	cols = std::strtol(values[1].c_str(), NULL, 10);
 }
 
 void conf::add_window_states(std::string &rname, std::string &rclass,

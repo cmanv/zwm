@@ -33,6 +33,8 @@ struct DesktopDef {
 	std::string 	name;
 	long		mode;
 	float		master_split;
+	long		rows;
+	long		cols;
 };
 
 struct DefaultDesktop {
@@ -44,11 +46,13 @@ struct DefaultDesktop {
 };
 
 struct DesktopMode {
-	long		index;
+	std::string	name;
 	long		mode;
 	std::string	letter;
-	DesktopMode(long i, long m, std::string l)
-		:index(i), mode(m), letter(l) {}
+	long		rows;
+	long		cols;
+	DesktopMode(std::string n, long m, std::string l, long r, long c)
+		:name(n), mode(m), letter(l), rows(r), cols(c) {}
 };
 
 struct DefaultStates {

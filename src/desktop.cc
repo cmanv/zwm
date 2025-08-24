@@ -34,19 +34,23 @@
 #include "xscreen.h"
 #include "desktop.h"
 
-Desktop::Desktop(std::string &name, XScreen *screen, long index, long mode, float split)
+Desktop::Desktop(std::string &name, XScreen *screen, long index, long mode,
+			float split, long rows, long cols)
 {
 	m_name = name;
 	m_screen = screen;
 	m_index = index;
 	m_mode = mode;
-	for (DesktopMode &dm : conf::desktop_modes) {
-		if (dm.mode == m_mode) {
-			m_mode_index = dm.index;
+	m_master_split = split;
+	m_rows = rows;
+	m_cols = cols;
+	m_mode_index = 0;
+	for (int i = 0; i < conf::desktop_modes.size(); i++) {
+		if (!m_name.compare(conf::desktop_modes[i].name)) {
+			m_mode_index = i;
 			break;
 		}
 	}
-	m_master_split = split;
 }
 
 void Desktop::rotate_windows(std::vector<XClient*>&clientlist, long direction)
@@ -119,7 +123,7 @@ void Desktop::cycle_windows(std::vector<XClient*>&clientlist, XClient *client, l
 
 void Desktop::swap_windows(std::vector<XClient*>&clientlist, XClient *client, long direction)
 {
-	if (!(m_mode & Mode::TSplit)) return;
+	if (!(m_mode & Mode::Swapable)) return;
 	if (clientlist.size() < 2) return;
 	if (client->get_desktop_index() != m_index) return;
 
@@ -196,6 +200,9 @@ void Desktop::show(std::vector<XClient*> &clientlist)
 	case Mode::HTiled:
 		tile_horizontal(clientlist);
 		break;
+	case Mode::Grid:
+		tile_grid(clientlist);
+		break;
 	default:
 		stacked_desktop(clientlist);
 		break;
@@ -246,16 +253,14 @@ void Desktop::restack_windows(std::vector<XClient*>&clientlist)
 	XRestackWindows(wm::display, (Window *)winlist.data(), winlist.size());
 }
 
-void Desktop::select_mode(std::vector<XClient*> &clientlist, long mode)
+void Desktop::select_mode(std::vector<XClient*> &clientlist, long index)
 {
-	for (DesktopMode &dm : conf::desktop_modes) {
-		if (dm.mode == mode) {
-			m_mode_index = dm.index;
-			m_mode = dm.mode;
-			show(clientlist);
-			break;
-		}
-	}
+	if ((index < 0) || (index >= conf::desktop_modes.size())) return;
+	m_mode_index = index;
+	m_mode = conf::desktop_modes[index].mode;
+	m_cols = conf::desktop_modes[index].cols;
+	m_rows = conf::desktop_modes[index].rows;
+	show(clientlist);
 }
 
 void Desktop::rotate_mode(std::vector<XClient*> &clientlist, long direction)
@@ -264,6 +269,8 @@ void Desktop::rotate_mode(std::vector<XClient*> &clientlist, long direction)
 	if (m_mode_index == conf::desktop_modes.size()) m_mode_index = 0;
 	else if (m_mode_index < 0) m_mode_index = conf::desktop_modes.size() - 1;
 	m_mode =  conf::desktop_modes[m_mode_index].mode;
+	m_cols =  conf::desktop_modes[m_mode_index].cols;
+	m_rows =  conf::desktop_modes[m_mode_index].rows;
 	show(clientlist);
 }
 
@@ -274,6 +281,49 @@ void Desktop::stacked_desktop(std::vector<XClient*>&clientlist)
 		client->clear_states(State::Tiled|State::Frozen|State::Hidden);
 		client->set_stacked_geom();
 		client->show_window();
+	}
+}
+
+void Desktop::tile_grid(std::vector<XClient*>&clientlist)
+{
+	Position p = xpointer::get_pos(m_screen->get_window());
+	Geometry area = m_screen->get_area(p, true);
+	int border = conf::tiled_border;
+	int width = area.w / m_cols;
+	int height = area.h / m_rows;
+	int w = width - 2 * border;
+	int h = height - 2 * border;
+	int row = 0;
+	int col = 0;
+
+	for (XClient *client : clientlist) {
+		if (client->get_desktop_index() != m_index) continue;
+		if (client->has_state(State::NoTile)) continue;
+		if (row < m_rows) {
+			int x = area.x + col * width;
+			int y = area.y + row * height;
+			client->set_states(State::Tiled|State::Frozen);
+			Geometry geom(x, y, w, h);
+			client->set_tiled_geom(geom);
+			client->show_window();
+		} else {
+			client->set_states(State::Hidden);
+			client->hide_window();
+		}
+
+		col++;
+		if (col == m_cols) {
+			col = 0;
+			row ++;
+		}
+	}
+
+	for (XClient *client : clientlist) {
+		if (client->get_desktop_index() != m_index) continue;
+		if (client->has_state(State::NoTile)) {
+			client->show_window();
+			client->raise_window();
+		}
 	}
 }
 
@@ -381,7 +431,7 @@ void Desktop::tile_vertical(std::vector<XClient*>&clientlist)
 
 void Desktop::master_resize(std::vector<XClient*> &clientlist, long increment)
 {
-	if (!(m_mode & Mode::TSplit)) return;
+	if (!(m_mode & Mode::MasterSlave)) return;
 	if (increment > 0) {
 		m_master_split += 0.01;
 		if (m_master_split > 0.9) m_master_split = 0.9;
@@ -398,8 +448,8 @@ void Desktop::tile_maximized(std::vector<XClient*>&clientlist)
 	Geometry area = m_screen->get_area(p, true);
 	int border = conf::tiled_border;
 
-	Geometry maximized(area.x, area.y, area.w - 2 * border, area.h - 2 * border);
 	bool master = true;
+	Geometry maximized(area.x, area.y, area.w - 2 * border, area.h - 2 * border);
 	for (XClient *client : clientlist) {
 		if (client->get_desktop_index() != m_index) continue;
 		if (client->has_state(State::NoTile)) continue;

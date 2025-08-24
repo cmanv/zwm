@@ -1,4 +1,4 @@
-% ZWM(1) zwm version alpha15 | zwm user's manual
+% ZWM(1) zwm version alpha16 | zwm user's manual
 % cmanv
 % August 2025
 
@@ -82,6 +82,8 @@ This section describes all options that can be set in the configuration file.
 > > * _Monocle_: Only one window (maximized) is visible at a time.
 > > * _VTiled_: Master / slaves with the slaves tiled vertically on the right.
 > > * _HTiled_: Master / slaves with the slaves tiled horizontally on the bottom.
+> > * _RxC_: Windows are arranged in a grid of _R_ rows and _C_ columns.
+> > The number of rows and columns can be anywhere from 1 to 9.
 
 - **desktop-modes** _mode1_,_mode2,..
 
@@ -246,10 +248,8 @@ or mouse binding.
 
 - **desktop-close**: Close all windows on the desktop.
 - **desktop-hide**: Hide all windows on the desktop.
-- **desktop-mode-htiled**: Switch the desktop to HTiled mode.
-- **desktop-mode-monocle**: Switch the desktop to Monocle mode.
-- **desktop-mode-stacked**: Switch the desktop to Stacked mode.
-- **desktop-mode-vtiled**: Switch the desktop to VTiled mode.
+- **desktop-mode-{_number_}**: Switch to mode _number_ (1-9).
+The _number_ refers_ to the order of appearance of the mode in **_desktop_modes_**.
 - **desktop-mode-next**: Switch the desktop to the next tiling mode in the order defined by _desktop-modes_.
 - **desktop-mode-prev**: Switch the desktop to the previous tiling mode in ther order defined by _desktop-modes_.
 - **desktop-switch-{_number_}**: Go to desktop _number_.
@@ -302,12 +302,12 @@ This sections list all key and mouse bindings defined by default.
 - **C-Return**	:	_terminal_
 - **CM-r**	:	_restart_
 - **CM-q**	:	_quit_
-- **SM-v**	:	_desktop-mode-vtiled_
-- **SM-b**	:	_desktop-mode-htiled_
-- **SM-n**	:	_desktop-mode-stacked_
-- **SM-m**	:	_desktop-mode-monocle_
-- **SM-Up**	:	_desktop-mode-next_
-- **SM-Down**	:	_desktop-mode-prev_
+- **M-1**	:	_desktop-mode-1_
+- **M-2**	:	_desktop-mode-2_
+- **M-3**	:	_desktop-mode-3_
+- **M-4**	:	_desktop-mode-4_
+- **M-Up**	:	_desktop-mode-next_
+- **M-Down**	:	_desktop-mode-prev_
 - **CM-1**	:	_desktop-switch-1_
 - **CM-2**	:	_desktop-switch-2_
 - **CM-3**	:	_desktop-switch-3_

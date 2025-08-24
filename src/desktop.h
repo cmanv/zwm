@@ -36,8 +36,10 @@ class Desktop {
 	long			 m_mode;
 	long			 m_mode_index;
 	float			 m_master_split;
+	long			 m_cols;
+	long			 m_rows;
 public:
-	Desktop(std::string&, XScreen *, long, long, float);
+	Desktop(std::string&, XScreen *, long, long, float, long, long);
 	std::string		&get_name() { return m_name; }
 	void			 rotate_windows(std::vector<XClient*>&, long);
 	void 			 cycle_windows(std::vector<XClient*>&, XClient *, long);
@@ -51,6 +53,7 @@ public:
 	void			 update_statusbar_mode();
 private:
 	void			 restack_windows(std::vector<XClient*>&);
+	void 			 tile_grid(std::vector<XClient*>&);
 	void 			 tile_horizontal(std::vector<XClient*>&);
 	void 			 tile_vertical(std::vector<XClient*>&);
 	void 			 tile_maximized(std::vector<XClient*>&);

@@ -16,7 +16,7 @@
 # ----------------------------------------------------------------
 # List of active desktop modes
 # ----------------------------------------------------------------
-#desktop-modes		Stacked,Monocle,VTiled,HTiled
+#desktop-modes		Stacked,Monocle,VTiled,2x2
 
 # ----------------------------------------------------------------
 # Specify the name of the desktops and their default mode.
@@ -24,7 +24,7 @@
 # ----------------------------------------------------------------
 #desktop-defaults 1	One	 		Stacked
 #desktop-defaults 2	Two	 		VTiled
-#desktop-defaults 3	Three	 		HTiled
+#desktop-defaults 3	Three	 		2x2
 #desktop-defaults 3	Four 			Monocle
 
 # ----------------------------------------------------------------
@@ -84,8 +84,8 @@
 # ----------------------------------------------------------------
 #menu-start "Launchers"
 #menu-item  "Terminal"	exec xterm
-#menu-item  "Clients"	menu "X11 clients" 
-#menu-item  "Desktops"	menu "Active desktops" 
+#menu-item  "Clients"	menu "X11 clients"
+#menu-item  "Desktops"	menu "Active desktops"
 #menu-item  "Quit"	menu "Quit"
 #menu-end
 
@@ -130,12 +130,12 @@
 #bind-key CM-Right	desktop-switch-next
 #bind-key CM-Left	desktop-switch-prev
 
-#bind-key SM-v		desktop-mode-stacked
-#bind-key SM-b		desktop-mode-vtiled
-#bind-key SM-h		desktop-mode-htiled
-#bind-key SM-m		desktop-mode-monocle
-#bind-key SM-Up		desktop-mode-next
-#bind-key SM-Down	desktop-mode-prev
+#bind-key M-1		desktop-mode-1
+#bind-key M-2		desktop-mode-2
+#bind-key M-3		desktop-mode-3
+#bind-key M-4		desktop-mode-4
+#bind-key M-Up		desktop-mode-next
+#bind-key M-Down	desktop-mode-prev
 
 #bind-key M-Tab		desktop-window-focus-next
 #bind-key SM-Tab	desktop-window-focus-prev
