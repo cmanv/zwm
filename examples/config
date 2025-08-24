@@ -14,18 +14,19 @@
 #debug-level		0
 
 # ----------------------------------------------------------------
-# List of active desktop modes
+# List of active desktop modes. First mode is default.
 # ----------------------------------------------------------------
 #desktop-modes		Stacked,Monocle,VTiled,2x2
 
 # ----------------------------------------------------------------
-# Specify the name of the desktops and their default mode.
-# Default mode is 'Stacked'.
+# Specify default options for the desktops.
+# Format:
+# desktop-defaults <index> <name> <mode> <master proportion>
 # ----------------------------------------------------------------
-#desktop-defaults 1	One	 		Stacked
-#desktop-defaults 2	Two	 		VTiled
-#desktop-defaults 3	Three	 		2x2
-#desktop-defaults 3	Four 			Monocle
+#desktop-defaults 1	One	Stacked
+#desktop-defaults 2	Two	VTiled 	0.5
+#desktop-defaults 3	Three	2x2
+#desktop-defaults 3	Four 	Monocle
 
 # ----------------------------------------------------------------
 # Border width of windows

@@ -37,16 +37,16 @@
 
 namespace conf {
 	std::vector<DesktopDef> desktop_defs = {
-		{ 0, "one", Mode::Stacked, 0.5 },
-		{ 1, "two", Mode::Stacked, 0.5 },
-		{ 2, "three", Mode::Stacked, 0.5 },
-		{ 3, "four", Mode::Stacked, 0.5 },
-		{ 4, "five", Mode::Stacked, 0.5 },
-		{ 5, "six", Mode::Stacked, 0.5 },
-		{ 6, "seven", Mode::Stacked, 0.5 },
-		{ 7, "eigth", Mode::Stacked, 0.5 },
-		{ 8, "nine", Mode::Stacked, 0.5 },
-		{ 9, "ten", Mode::Stacked, 0.5 },
+		{ "one", "default", 0.5 },
+		{ "two", "default", 0.5 },
+		{ "three", "default", 0.5 },
+		{ "four", "default", 0.5 },
+		{ "five", "default", 0.5 },
+		{ "six", "default", 0.5 },
+		{ "seven", "default", 0.5 },
+		{ "eigth", "default", 0.5 },
+		{ "nine", "default", 0.5 },
+		{ "ten", "default", 0.5 },
 	};
 
 	std::vector<DesktopMode> desktop_modes = {
@@ -332,25 +332,18 @@ void conf::read_config()
 			int index = std::strtol(tokens[1].c_str(), NULL, 10) - 1;
 			if ((index < 0) || (index >= ndesktops)) continue;
 			desktop_defs[index].name = tokens[2];
-			desktop_defs[index].mode = Mode::Stacked;
-			desktop_defs[index].master_split = 0.5;
-			desktop_defs[index].rows = 0;
-			desktop_defs[index].cols = 0;
 			if (tokens.size() < 4) continue;
-			if (!tokens[3].compare("Monocle"))
-					desktop_defs[index].mode = Mode::Monocle;
-			if (!tokens[3].compare("HTiled"))
-					desktop_defs[index].mode = Mode::HTiled;
-			if (!tokens[3].compare("VTiled"))
-					desktop_defs[index].mode = Mode::VTiled;
+			if ((!tokens[3].compare("Stacked"))
+				|| (!tokens[3].compare("Monocle"))
+				|| (!tokens[3].compare("HTiled"))
+				|| (!tokens[3].compare("VTiled")))
+					desktop_defs[index].mode = tokens[3];
 			else {
 				long rows, cols;
 				parse_grid_mode(tokens[3], rows, cols);
-				if ((rows < 1) || (rows > 9)) continue;
-				if ((cols < 1) || (cols > 9)) continue;
-				desktop_defs[index].mode = Mode::Grid;
-				desktop_defs[index].rows = rows;
-				desktop_defs[index].cols = cols;
+				if ((rows >= 1) && (rows <= 9)
+					&& (cols >= 1) && (cols <= 9))
+					desktop_defs[index].mode = tokens[3];
 			}
 			if (tokens.size() < 5) continue;
 

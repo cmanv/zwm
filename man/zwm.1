@@ -86,7 +86,8 @@ Increasing its value increases verbosity.
 (default: 0)
 .RE
 .IP \(bu 2
-\f[B]desktop\-defaults\f[R] \f[I]number name mode\f[R]
+\f[B]desktop\-defaults\f[R] \f[I]number\f[R] \f[I]name\f[R]
+\f[I]mode\f[R] \f[I]proportion\f[R]
 .RS
 .PP
 Define the default name and tiling mode of the desktop_.
@@ -104,7 +105,6 @@ Define the default name and tiling mode of the desktop_.
 .IP \(bu 2
 \f[I]Stacked\f[R]: Windows are stacked and can be moved/resized by the
 user.
-(default)
 .IP \(bu 2
 \f[I]Monocle\f[R]: Only one window (maximized) is visible at a time.
 .IP \(bu 2
@@ -117,6 +117,10 @@ the bottom.
 \f[I]RxC\f[R]: Windows are arranged in a grid of \f[I]R\f[R] rows and
 \f[I]C\f[R] columns.
 The number of rows and columns can be anywhere from 1 to 9.
+.IP \(bu 2
+\f[I]proportion\f[R] is the proportion of the screeen used by the master
+window.
+(HTiled/VTiled modes only)
 .RE
 .RE
 .IP \(bu 2
@@ -389,7 +393,7 @@ through a key or mouse binding.
 .IP \(bu 2
 \f[B]desktop\-mode\-{\f[BI]number\f[B]}\f[R]: Switch to mode
 \f[I]number\f[R] (1\-9).
-The \f[I]number\f[R] refers_ to the order of appearance of the mode in
+The \f[I]number\f[R] refers to the order of appearance of the mode in
 **\f[I]desktop\f[R]modes_**.
 .IP \(bu 2
 \f[B]desktop\-mode\-next\f[R]: Switch the desktop to the next tiling

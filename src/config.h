@@ -29,12 +29,9 @@
 #include "menu.h"
 
 struct DesktopDef {
-	long		index;
 	std::string 	name;
-	long		mode;
+	std::string	mode;
 	float		master_split;
-	long		rows;
-	long		cols;
 };
 
 struct DefaultDesktop {

@@ -70,7 +70,7 @@ This section describes all options that can be set in the configuration file.
 > A non zero value causes the window manager to print debug information
 > on the standard output. Increasing its value increases verbosity. (default: 0)
 
-- **desktop-defaults** _number name mode_
+- **desktop-defaults** _number_ _name_ _mode_ _proportion_
 
 > Define the default name and tiling mode of the desktop_.
 
@@ -78,12 +78,13 @@ This section describes all options that can be set in the configuration file.
 > * _name_ is a string to identify the desktop.
 > * _mode_ can be any of:
 
-> > * _Stacked_: Windows are stacked and can be moved/resized by the user. (default)
+> > * _Stacked_: Windows are stacked and can be moved/resized by the user.
 > > * _Monocle_: Only one window (maximized) is visible at a time.
 > > * _VTiled_: Master / slaves with the slaves tiled vertically on the right.
 > > * _HTiled_: Master / slaves with the slaves tiled horizontally on the bottom.
 > > * _RxC_: Windows are arranged in a grid of _R_ rows and _C_ columns.
 > > The number of rows and columns can be anywhere from 1 to 9.
+> * _proportion_ is the proportion of the screeen used by the master window. (HTiled/VTiled modes only)
 
 - **desktop-modes** _mode1_,_mode2,..
 
@@ -249,7 +250,7 @@ or mouse binding.
 - **desktop-close**: Close all windows on the desktop.
 - **desktop-hide**: Hide all windows on the desktop.
 - **desktop-mode-{_number_}**: Switch to mode _number_ (1-9).
-The _number_ refers_ to the order of appearance of the mode in **_desktop_modes_**.
+The _number_ refers to the order of appearance of the mode in **_desktop_modes_**.
 - **desktop-mode-next**: Switch the desktop to the next tiling mode in the order defined by _desktop-modes_.
 - **desktop-mode-prev**: Switch the desktop to the previous tiling mode in ther order defined by _desktop-modes_.
 - **desktop-switch-{_number_}**: Go to desktop _number_.

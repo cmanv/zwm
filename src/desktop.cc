@@ -34,23 +34,24 @@
 #include "xscreen.h"
 #include "desktop.h"
 
-Desktop::Desktop(std::string &name, XScreen *screen, long index, long mode,
-			float split, long rows, long cols)
+Desktop::Desktop(std::string &name, XScreen *screen, long index,
+			std::string &mode_name, float split)
 {
 	m_name = name;
 	m_screen = screen;
 	m_index = index;
-	m_mode = mode;
 	m_master_split = split;
-	m_rows = rows;
-	m_cols = cols;
 	m_mode_index = 0;
 	for (int i = 0; i < conf::desktop_modes.size(); i++) {
-		if (!m_name.compare(conf::desktop_modes[i].name)) {
+		if (!mode_name.compare(conf::desktop_modes[i].name)) {
 			m_mode_index = i;
 			break;
 		}
 	}
+
+	m_mode = conf::desktop_modes[m_mode_index].mode;
+	m_rows = conf::desktop_modes[m_mode_index].rows;
+	m_cols = conf::desktop_modes[m_mode_index].cols;
 }
 
 void Desktop::rotate_windows(std::vector<XClient*>&clientlist, long direction)

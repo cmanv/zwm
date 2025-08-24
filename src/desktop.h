@@ -39,7 +39,7 @@ class Desktop {
 	long			 m_cols;
 	long			 m_rows;
 public:
-	Desktop(std::string&, XScreen *, long, long, float, long, long);
+	Desktop(std::string&, XScreen *, long, std::string&, float);
 	std::string		&get_name() { return m_name; }
 	void			 rotate_windows(std::vector<XClient*>&, long);
 	void 			 cycle_windows(std::vector<XClient*>&, XClient *, long);

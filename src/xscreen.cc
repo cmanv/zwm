@@ -54,9 +54,10 @@ XScreen::XScreen(int id): m_screenid(id)
 	m_bordergap = conf::bordergap;
 
 	// Desktops
+	int index = 0;
 	for (DesktopDef &def : conf::desktop_defs)
-		m_desktoplist.push_back(Desktop(def.name, this, def.index, def.mode,
-					def.master_split, def.rows, def.cols));
+		m_desktoplist.push_back(Desktop(def.name, this, index++, def.mode,
+					def.master_split));
 
 	m_ndesktops = m_desktoplist.size();
 
