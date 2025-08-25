@@ -50,7 +50,7 @@ public:
 	void			 close(std::vector<XClient*>&);
 	void			 select_mode(std::vector<XClient*>&, long);
 	void			 rotate_mode(std::vector<XClient*>&, long);
-	void			 update_statusbar_mode();
+	void			 statusbar_update_mode();
 private:
 	void			 restack_windows(std::vector<XClient*>&);
 	void 			 tile_grid(std::vector<XClient*>&);

@@ -214,10 +214,10 @@ void Desktop::show(std::vector<XClient*> &clientlist)
 			client->show_window();
 	}
 
-	update_statusbar_mode();
+	statusbar_update_mode();
 }
 
-void Desktop::update_statusbar_mode()
+void Desktop::statusbar_update_mode()
 {
 	if (!socket_out::defined()) return;
 	std::string message = "desktop_mode="
@@ -231,7 +231,7 @@ void Desktop::hide(std::vector<XClient*> &clientlist)
 		if (client->get_desktop_index() == m_index)
 			client->hide_window();
 	}
-	m_screen->clear_statusbar_title();
+	m_screen->statusbar_clear_title();
 }
 
 void Desktop::close(std::vector<XClient*> &clientlist)
@@ -240,7 +240,7 @@ void Desktop::close(std::vector<XClient*> &clientlist)
 		if (client->get_desktop_index() == m_index)
 			client->close_window();
 	}
-	m_screen->clear_statusbar_title();
+	m_screen->statusbar_clear_title();
 }
 
 void Desktop::restack_windows(std::vector<XClient*>&clientlist)
@@ -384,7 +384,7 @@ void Desktop::tile_horizontal(std::vector<XClient*>&clientlist)
 		if (master) {
 			client->set_states(State::HMaximized);
 			client->set_tiled_geom(geom_master);
-			client->update_statusbar_title();
+			client->statusbar_update_title();
 			master = false;
 		} else {
 			client->clear_states(State::HMaximized);
@@ -408,7 +408,7 @@ void Desktop::tile_vertical(std::vector<XClient*>&clientlist)
 {
 	int x, y, w, h;
 
-	Position p = xpointer::get_pos(m_screen->get_window());
+Position p = xpointer::get_pos(m_screen->get_window());
 	Geometry area = m_screen->get_area(p, true);
 	int border = conf::tiled_border;
 
@@ -435,7 +435,7 @@ void Desktop::tile_vertical(std::vector<XClient*>&clientlist)
 		if (master) {
 			client->set_states(State::VMaximized);
 			client->set_tiled_geom(geom_master);
-			client->update_statusbar_title();
+			client->statusbar_update_title();
 			master = false;
 		} else {
 			client->clear_states(State::VMaximized);
@@ -471,7 +471,7 @@ void Desktop::tile_maximized(std::vector<XClient*>&clientlist)
 			client->clear_states(State::Hidden);
 			client->set_tiled_geom(maximized);
 			client->show_window();
-			client->update_statusbar_title();
+			client->statusbar_update_title();
 			master = false;
 		} else {
 			client->set_states(State::Hidden);

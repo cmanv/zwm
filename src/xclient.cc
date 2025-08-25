@@ -232,10 +232,10 @@ void XClient::get_net_wm_name()
 void XClient::update_net_wm_name()
 {
 	get_net_wm_name();
-	update_statusbar_title();
+	statusbar_update_title();
 }
 
-void XClient::update_statusbar_title()
+void XClient::statusbar_update_title()
 {
 	if (!socket_out::defined()) return;
 	std::string message = "window_active=" + m_name;
@@ -480,7 +480,7 @@ void XClient::set_window_active()
 	draw_window_border();
 	m_screen->raise_client(this);
 	ewmh::set_net_active_window(m_rootwin, m_window);
-	update_statusbar_title();
+	statusbar_update_title();
 }
 
 void XClient::show_window()

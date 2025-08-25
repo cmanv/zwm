@@ -399,7 +399,11 @@ This is the list of messages that can be sent by the window manager:
 
 > Sent when there is no longer an active window.on the desktop.
 
-- _desktop\_mode="desktop mode letter"_
+- _desktop\_name="desktop name"_
+
+> Sent when the active desktop has changed.
+
+- _desktop\_mode="desktop mode"_
 
 > Sent when the desktop mode has changed.
 

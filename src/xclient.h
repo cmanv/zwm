@@ -127,7 +127,7 @@ public:
 	void			 set_stacked_geom();
 	void			 set_tiled_geom(Geometry &);
 	void 			 set_notile();
-	void			 update_statusbar_title();
+	void			 statusbar_update_title();
 	void 			 change_states(int, Atom, Atom);
 	void			 toggle_state(long);
 private:
