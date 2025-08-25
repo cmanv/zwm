@@ -50,10 +50,10 @@ namespace conf {
 	};
 
 	std::vector<DesktopMode> desktop_modes = {
-		{ "Stacked", Mode::Stacked, "S", 0, 0 },
-		{ "Monocle", Mode::Monocle, "M", 0, 0 },
-		{ "VTiled",  Mode::VTiled, "V", 0, 0 },
-		{ "HTiled",  Mode::HTiled, "H", 0, 0 },
+		{ "Stacked", Mode::Stacked, 0, 0 },
+		{ "Monocle", Mode::Monocle, 0, 0 },
+		{ "VTiled",  Mode::VTiled, 0, 0 },
+		{ "HTiled",  Mode::HTiled, 0, 0 },
 	};
 
 	std::vector<BindingDef>	keybinding_defs = {
@@ -537,28 +537,28 @@ void conf::add_desktop_modes(std::vector<std::string> &modes)
 	for (std::string &mode : modes) {
 		if (!mode.compare("Stacked"))
 			desktop_modes.push_back(
-				DesktopMode("Stacked", Mode::Stacked, "S", 0, 0));
+				DesktopMode("Stacked", Mode::Stacked, 0, 0));
 		else if (!mode.compare("Monocle"))
 			desktop_modes.push_back(
-				DesktopMode("Monocle", Mode::Monocle, "M", 0, 0));
+				DesktopMode("Monocle", Mode::Monocle, 0, 0));
 		else if (!mode.compare("VTiled"))
 			desktop_modes.push_back(
-				DesktopMode("VTiled", Mode::VTiled, "V", 0, 0));
+				DesktopMode("VTiled", Mode::VTiled, 0, 0));
 		else if (!mode.compare("HTiled"))
 			desktop_modes.push_back(
-				DesktopMode("HTiled", Mode::HTiled, "H", 0, 0));
+				DesktopMode("HTiled", Mode::HTiled, 0, 0));
 		else {
 			long rows, cols;
 			parse_grid_mode(mode, rows, cols);
 			if ((rows < 1) || (rows > 9)) continue;
 			if ((cols < 1) || (cols > 9)) continue;
 			desktop_modes.push_back(
-				DesktopMode(mode, Mode::Grid, "G", rows, cols));
+				DesktopMode(mode, Mode::Grid, rows, cols));
 		}
 	}
 	if (desktop_modes.empty())
 		desktop_modes.push_back(
-				DesktopMode("Stacked", Mode::Stacked, "S", 0 , 0));
+				DesktopMode("Stacked", Mode::Stacked, 0, 0));
 }
 
 // Parse grid mode rows x columns

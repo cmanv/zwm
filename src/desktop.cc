@@ -221,7 +221,7 @@ void Desktop::statusbar_update_mode()
 {
 	if (!socket_out::defined()) return;
 	std::string message = "desktop_mode="
-				+ conf::desktop_modes[m_mode_index].letter;
+				+ conf::desktop_modes[m_mode_index].name;
 	socket_out::send(message);
 }
 

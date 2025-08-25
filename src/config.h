@@ -45,11 +45,10 @@ struct DefaultDesktop {
 struct DesktopMode {
 	std::string	name;
 	long		mode;
-	std::string	letter;
 	long		rows;
 	long		cols;
-	DesktopMode(std::string n, long m, std::string l, long r, long c)
-		:name(n), mode(m), letter(l), rows(r), cols(c) {}
+	DesktopMode(std::string n, long m, long r, long c)
+		:name(n), mode(m), rows(r), cols(c) {}
 };
 
 struct DefaultStates {
