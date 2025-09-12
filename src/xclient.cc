@@ -926,12 +926,12 @@ void XClient::remove_fullscreen()
 
 XClientProp::XClientProp(XScreen *screen, Window parent)
 {
+	unsigned long pixel;
 	m_font = screen->get_menu_font();
 	m_color = screen->get_color(Color::MenuItemText);
-	m_pixel = screen->get_pixel(Color::MenuBackground);
-
+	pixel = screen->get_pixel(Color::MenuBackground);
 	m_window = XCreateSimpleWindow(wm::display, parent, 0, 0, 1, 1, 0,
-					m_pixel, m_pixel);
+					pixel, pixel);
 	m_xftdraw = XftDrawCreate(wm::display, m_window, screen->get_visual(),
 					screen->get_colormap());
 	XMapWindow(wm::display, m_window);

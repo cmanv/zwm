@@ -86,16 +86,31 @@ XScreen::XScreen(int id): m_screenid(id)
 		m_menufont = XftFontOpenName(wm::display, m_screenid, "Mono:size=10");
 	}
 
-	// colors
-	for (std::string& def : conf::colordefs) {
+	// Light theme colors
+	for (std::string& def : conf::lightcolordefs) {
 		XftColor xc;
 		if (!XftColorAllocName(wm::display, m_visual, m_colormap, def.c_str(), &xc)) {
 			std::cerr << timer::gettime() << " [XScreen::" << __func__
 					<< "] Cant allocate color for name '" << def << "'\n";
 			XftColorAllocName(wm::display, m_visual, m_colormap, "gray50", &xc);
 		}
-		m_xftcolors.push_back(xc);
+		m_lighttheme.push_back(xc);
 	}
+
+	// Dark theme colors
+	for (std::string& def : conf::darkcolordefs) {
+		XftColor xc;
+		if (!XftColorAllocName(wm::display, m_visual, m_colormap, def.c_str(), &xc)) {
+			std::cerr << timer::gettime() << " [XScreen::" << __func__
+					<< "] Cant allocate color for name '" << def << "'\n";
+			XftColorAllocName(wm::display, m_visual, m_colormap, "gray50", &xc);
+		}
+		m_darktheme.push_back(xc);
+	}
+
+	m_theme = Theme::Light;
+	if (!conf::default_theme.compare("dark"))
+		m_theme = Theme::Dark;
 
 	grab_keybindings();
 	update_geometry();
@@ -105,12 +120,10 @@ XScreen::XScreen(int id): m_screenid(id)
 	attr.event_mask = SubstructureRedirectMask | SubstructureNotifyMask |
 	    EnterWindowMask | PropertyChangeMask | ButtonPressMask;
 	XChangeWindowAttributes(wm::display, m_rootwin, (CWEventMask | CWCursor), &attr);
-
 	if (wm::xrandr)
 		XRRSelectInput(wm::display, m_rootwin, RRScreenChangeNotifyMask);
 
 	add_existing_clients();
-
 }
 
 XScreen::~XScreen()
@@ -123,7 +136,12 @@ XScreen::~XScreen()
 	for (XClient *client : m_clientlist)
 		delete client;
 
-	for (XftColor &color : m_xftcolors)
+	for (XftColor &color : m_lighttheme)
+		XftColorFree(wm::display, DefaultVisual(wm::display, m_screenid),
+		    DefaultColormap(wm::display, m_screenid),
+		    &color);
+
+	for (XftColor &color : m_darktheme)
 		XftColorFree(wm::display, DefaultVisual(wm::display, m_screenid),
 		    DefaultColormap(wm::display, m_screenid),
 		    &color);
@@ -151,6 +169,26 @@ void XScreen::grab_keybindings()
 			XGrabKey(wm::display, kc, (kb.modmask | mod), m_rootwin,
 					True, GrabModeAsync, GrabModeAsync);
 	}
+}
+
+XftColor *XScreen::get_color(Color c)
+{
+	if (m_theme == Theme::Dark)
+		return &m_darktheme[c];
+	return &m_lighttheme[c];
+}
+
+unsigned long XScreen::get_pixel(Color c)
+{
+	if (m_theme == Theme::Dark)
+		return m_darktheme[c].pixel;
+	return m_lighttheme[c].pixel;
+}
+
+void XScreen::set_theme(long theme)
+{
+	m_theme = theme;
+	show_desktop();
 }
 
 XClient *XScreen::get_active_client()

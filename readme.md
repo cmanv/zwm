@@ -1,6 +1,6 @@
 % ZWM(1) zwm version alpha16 | zwm user's manual
 % cmanv
-% August 2025
+% September 2025
 
 # NAME
 
@@ -8,7 +8,7 @@ zwm — a simple stacking / tiling window manager for X11
 
 # SYNOPSIS
 
-**zwm** \[-D display\] \[-c configfile\] \[-m socket\] \[-hdpv\]
+**zwm** \[-D display\] \[-c configfile\] \[-m socket\] \[-t theme\] \[-hdpv\]
 
 # DESCRIPTION
 
@@ -33,6 +33,10 @@ It is also able to send and receive messages through sockets.
 overrides any value defined in the configuration file. If this is unset no messages
 are sent.
 
+**-t** _theme_
+
+> Use _theme_ (dark/light) at startup. _light_ is the default.
+
 **-h**
 
 > Print brief usage information.
@@ -56,9 +60,12 @@ This section describes all options that can be set in the configuration file.
 
 ## GENERAL WINDOW MANAGER OPTIONS
 
-* **color** _element color_
+* **color** _element color1 color2_
 
-> Sets the color of the UI elements. Possible elements are:
+> Sets the color of the UI elements. _color1_ applies in light mode
+> and _color2_ applies in dark mode.
+
+> The elements can be:
 
 > _menu-background_, _menu-border_, _menu-highlight_,
 > _menu-item-text_, _menu-item-text-selected_, _menu-title_,
@@ -254,6 +261,8 @@ or mouse binding.
 The _number_ refers to the order of appearance of the mode in **_desktop_modes_**.
 - **desktop-mode-next**: Switch the desktop to the next tiling mode in the order defined by _desktop-modes_.
 - **desktop-mode-prev**: Switch the desktop to the previous tiling mode in ther order defined by _desktop-modes_.
+- **desktop-set-dark-theme**: Switch the window manager colors to the dark theme.
+- **desktop-set-light-theme**: Switch the window manager colors to the light theme.
 - **desktop-switch-{_number_}**: Go to desktop _number_.
 - **desktop-switch-last**: Move back to the last used desktop.
 - **desktop-switch-next**: Go to the next active desktop. Last desktop wraps to first.

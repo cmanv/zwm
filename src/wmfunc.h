@@ -82,6 +82,7 @@ namespace wmfunc {
 	void desktop_swap_tiles(XScreen *, long);
 	void desktop_cycle(XScreen *, long);
 	void desktop_window_cycle(XScreen *, long);
+	void desktop_set_theme(XScreen *, long);
 	void menu_launcher(XScreen *);
 	void menu_client(XScreen *);
 	void menu_desktop(XScreen *);

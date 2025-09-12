@@ -7,7 +7,7 @@ find_package(Freetype REQUIRED)
 include(GNUInstallDirs)
 
 set(APP_NAME "zwm")
-set(APP_VERSION "alpha16")
+set(APP_VERSION "alpha17")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 17)
 message (STATUS "*** Building ${APP_NAME} ${APP_VERSION} ***")

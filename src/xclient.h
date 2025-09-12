@@ -46,7 +46,6 @@ class XClientProp {
 	XftDraw		*m_xftdraw;
 	XftFont		*m_font;
 	XftColor	*m_color;
-	unsigned long	 m_pixel;
 public:
 	XClientProp(XScreen *, Window);
 	~XClientProp();

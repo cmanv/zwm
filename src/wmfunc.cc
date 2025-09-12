@@ -37,6 +37,8 @@ namespace wmfunc {
 std::vector<FuncDef> funcdefs = {
 	{ "desktop-close", 		desktop_close},
 	{ "desktop-hide", 		desktop_hide},
+	{ "desktop-set-light-theme",	desktop_set_theme, Theme::Light},
+	{ "desktop-set-dark-theme",	desktop_set_theme, Theme::Dark},
 	{ "desktop-mode-1", 		desktop_select_mode, 0},
 	{ "desktop-mode-2", 		desktop_select_mode, 1},
 	{ "desktop-mode-3", 		desktop_select_mode, 2},
@@ -224,6 +226,11 @@ void wmfunc::desktop_rotate_tiles(XScreen *screen, long direction)
 void wmfunc::desktop_swap_tiles(XScreen *screen, long direction)
 {
 	screen->swap_desktop_tiles(direction);
+}
+
+void wmfunc::desktop_set_theme(XScreen *screen, long theme)
+{
+	screen->set_theme(theme);
 }
 
 void wmfunc::menu_launcher(XScreen *screen)

@@ -47,7 +47,9 @@ class XScreen {
 	long				 m_desktop_last;
 	Visual				*m_visual;
 	Colormap			 m_colormap;
-	std::vector<XftColor>		 m_xftcolors;
+	long				 m_theme;
+	std::vector<XftColor>		 m_darktheme;
+	std::vector<XftColor>		 m_lighttheme;
 	XftFont				*m_menufont;
 public:
 	XScreen(int);
@@ -61,12 +63,13 @@ public:
 	std::vector<XClient*> 		&get_clients() { return m_clientlist; }
 	std::vector<Desktop> 		&get_desktops() { return m_desktoplist; }
 	XftFont				*get_menu_font() { return m_menufont; }
-	XftColor			*get_color(Color c) { return &m_xftcolors[c]; }
-	unsigned long			 get_pixel(Color c) const { return m_xftcolors[c].pixel; }
 	long	 		 	 get_num_desktops() const { return m_ndesktops; }
 	Geometry	 		 get_view() const { return m_view; }
 	bool			 	 is_cycling() const { return m_cycling; }
 	void				 stop_cycling() { m_cycling = false; };
+	XftColor			*get_color(Color);
+	unsigned long			 get_pixel(Color);
+	void				 set_theme(long);
 	bool			 	 desktop_empty(long);
 	bool			 	 desktop_urgent(long);
 	void				 grab_keybindings();

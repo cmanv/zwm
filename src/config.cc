@@ -125,9 +125,10 @@ namespace conf {
 		{ "M-5",	"window-raise" },
 	};
 
+	std::string	default_theme = "light";
 	std::string	user_config = "";
 	std::string	wmname = "ZWM";
-	std::string 	menufont = "Mono:size=10";
+	std::string 	menufont = "Mono:size=12";
 	std::string	menu_client_label = "X Clients";
 	std::string	menu_desktop_label = "Active desktops";
 	std::string	menu_launcher_label = "Launchers";
@@ -138,7 +139,8 @@ namespace conf {
 	std::string	shutdownscript = "";
 	std::string 	install_prefix(INSTALL_PREFIX);
 
-	std::vector<std::string> colordefs;
+	std::vector<std::string> lightcolordefs;
+	std::vector<std::string> darkcolordefs;
 
 	int			debug = 0;
 	const int		ndesktops = desktop_defs.size();
@@ -186,17 +188,29 @@ void conf::init()
 		if (mb.valid) mousebindings.push_back(mb);
 	}
 
-	colordefs.resize(Color::NumColors);
-	colordefs[Color::WindowBorderActive] 	= "tan";
-	colordefs[Color::WindowBorderInactive] 	= "grey40";
-	colordefs[Color::WindowBorderUrgent] 	= "red";
-	colordefs[Color::MenuBackground] 	= "grey20";
-	colordefs[Color::MenuBorder] 		= "SkyBlue4";
-	colordefs[Color::MenuHighlight] 	= "SteelBlue4";
-	colordefs[Color::MenuItemText] 		= "grey88";
-	colordefs[Color::MenuItemTextSelected] 	= "WhiteSmoke";
-	colordefs[Color::MenuTitle] 		= "WhiteSmoke";
-	colordefs[Color::MenuTitleBackground] 	= "SkyBlue4";
+	lightcolordefs.resize(Color::NumColors);
+	lightcolordefs[Color::WindowBorderActive] 	= "tan";
+	lightcolordefs[Color::WindowBorderInactive] 	= "grey40";
+	lightcolordefs[Color::WindowBorderUrgent] 	= "red";
+	lightcolordefs[Color::MenuBackground] 		= "gray90";
+	lightcolordefs[Color::MenuBorder] 		= "black";
+	lightcolordefs[Color::MenuHighlight] 		= "grey78";
+	lightcolordefs[Color::MenuItemText] 		= "black";
+	lightcolordefs[Color::MenuItemTextSelected] 	= "black";
+	lightcolordefs[Color::MenuTitle] 		= "black";
+	lightcolordefs[Color::MenuTitleBackground] 	= "grey80";
+
+	darkcolordefs.resize(Color::NumColors);
+	darkcolordefs[Color::WindowBorderActive] 	= "tan";
+	darkcolordefs[Color::WindowBorderInactive] 	= "grey40";
+	darkcolordefs[Color::WindowBorderUrgent] 	= "red";
+	darkcolordefs[Color::MenuBackground] 		= "grey20";
+	darkcolordefs[Color::MenuBorder] 		= "SkyBlue4";
+	darkcolordefs[Color::MenuHighlight] 		= "SteelBlue4";
+	darkcolordefs[Color::MenuItemText] 		= "grey88";
+	darkcolordefs[Color::MenuItemTextSelected] 	= "WhiteSmoke";
+	darkcolordefs[Color::MenuTitle] 		= "WhiteSmoke";
+	darkcolordefs[Color::MenuTitleBackground] 	= "SkyBlue4";
 
 	if (!std::getenv("HOME")) {
 		std::cerr << "HOME is not defined in the environment!\n";
@@ -354,26 +368,47 @@ void conf::read_config()
 		}
 		if (!tokens[0].compare("color")) {
 			if (tokens.size() < 3) continue;
-			if (!tokens[1].compare("window-border-active"))
-				colordefs[Color::WindowBorderActive] = tokens[2];
-			else if (!tokens[1].compare("window-border-inactive"))
-				colordefs[Color::WindowBorderInactive] = tokens[2];
-			else if (!tokens[1].compare("window-border-urgent"))
-				colordefs[Color::WindowBorderUrgent] = tokens[2];
-			else if (!tokens[1].compare("menu-background"))
-				colordefs[Color::MenuBackground] = tokens[2];
-			else if (!tokens[1].compare("menu-border"))
-				colordefs[Color::MenuBorder] = tokens[2];
-			else if (!tokens[1].compare("menu-item-text"))
-				colordefs[Color::MenuItemText] = tokens[2];
-			else if (!tokens[1].compare("menu-item-text-selected"))
-				colordefs[Color::MenuItemTextSelected] = tokens[2];
-			else if (!tokens[1].compare("menu-highlight"))
-				colordefs[Color::MenuHighlight] = tokens[2];
-			else if (!tokens[1].compare("menu-title"))
-				colordefs[Color::MenuTitle] = tokens[2];
-			else if (!tokens[1].compare("menu-title-background"))
-				colordefs[Color::MenuTitleBackground] = tokens[2];
+			if (!tokens[1].compare("window-border-active")) {
+				lightcolordefs[Color::WindowBorderActive] = tokens[2];
+				if (tokens.size() > 3)
+					darkcolordefs[Color::WindowBorderActive] = tokens[3];
+			} else if (!tokens[1].compare("window-border-inactive")) {
+				lightcolordefs[Color::WindowBorderInactive] = tokens[2];
+				if (tokens.size() > 3)
+					darkcolordefs[Color::WindowBorderInactive] = tokens[2];
+			} else if (!tokens[1].compare("window-border-urgent")) {
+				lightcolordefs[Color::MenuBackground] = tokens[2];
+				if (tokens.size() > 3)
+					darkcolordefs[Color::MenuBackground] = tokens[3];
+			} else if (!tokens[1].compare("menu-background")) {
+				lightcolordefs[Color::WindowBorderUrgent] = tokens[2];
+				if (tokens.size() > 3)
+					darkcolordefs[Color::WindowBorderUrgent] = tokens[3];
+			} else if (!tokens[1].compare("menu-border")) {
+				lightcolordefs[Color::MenuBorder] = tokens[2];
+				if (tokens.size() > 3)
+					darkcolordefs[Color::MenuBorder] = tokens[3];
+			} else if (!tokens[1].compare("menu-item-text")) {
+				lightcolordefs[Color::MenuItemText] = tokens[2];
+				if (tokens.size() > 3)
+					darkcolordefs[Color::MenuItemText] = tokens[3];
+			} else if (!tokens[1].compare("menu-item-text-selected")) {
+				lightcolordefs[Color::MenuItemTextSelected] = tokens[2];
+				if (tokens.size() > 3)
+					darkcolordefs[Color::MenuItemTextSelected] = tokens[3];
+			} else if (!tokens[1].compare("menu-highlight")) {
+				lightcolordefs[Color::MenuHighlight] = tokens[2];
+				if (tokens.size() > 3)
+					darkcolordefs[Color::MenuHighlight] = tokens[3];
+			} else if (!tokens[1].compare("menu-title")) {
+				lightcolordefs[Color::MenuTitle] = tokens[2];
+				if (tokens.size() > 3)
+					darkcolordefs[Color::MenuTitle] = tokens[3];
+			} else if (!tokens[1].compare("menu-title-background")) {
+				lightcolordefs[Color::MenuTitleBackground] = tokens[2];
+				if (tokens.size() > 3)
+					darkcolordefs[Color::MenuTitleBackground] = tokens[3];
+			}
 			continue;
 		}
 		if (!tokens[0].compare("menu-start")) {
