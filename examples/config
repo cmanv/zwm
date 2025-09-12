@@ -99,18 +99,18 @@
 #menu-end
 
 # ----------------------------------------------------------------
-# Colors
+# Colors: first value for light theme, second value for dark theme
 # ----------------------------------------------------------------
-#color window-border-active		tan
-#color window-border-inactive		grey40
-#color window-border-urgent		red
-#color menu-background			grey20
-#color menu-border			SkyBlue4
-#color menu-highlight			SteelBlue4
-#color menu-item-text		 	grey88
-#color menu-item-text-selected		WhiteSmoke
-#color menu-title			WhiteSmoke
-#color menu-title-background		SkyBlue4
+#color window-border-active	tan	tan	
+#color window-border-inactive	grey40	grey40
+#color window-border-urgent	red	red
+#color menu-background		gray90	grey20
+#color menu-border		black	SkyBlue4
+#color menu-highlight		grey	SteelBlue4
+#color menu-item-text	 	black	grey88
+#color menu-item-text-selected	black	WhiteSmoke
+#color menu-title		black	WhiteSmoke
+#color menu-title-background	grey80	SkyBlue4
 
 # ----------------------------------------------------------------
 # Key bindings
