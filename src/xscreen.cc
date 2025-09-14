@@ -492,11 +492,28 @@ void XScreen::ensure_clients_are_visible()
 void XScreen::cycle_windows(long direction)
 {
 	XClient *client = get_active_client();
-	if (!client) return;
+	if (!client) {
+		auto isNext = [idx = m_desktop_active](XClient *c) {
+			return ((c->get_desktop_index() == idx)
+				&& (!c->has_state(State::SkipCycle))); };
+		if (direction > 0) {
+			auto next = find_if(m_clientlist.begin(), m_clientlist.end(),
+						isNext);
+			if (next != m_clientlist.end()) client = *next;
+		} else {
+			auto next = find_if(m_clientlist.rbegin(), m_clientlist.rend(),
+						isNext);
+			if (next != m_clientlist.rend()) client = *next;
+		}
+		if (client) client->warp_pointer();
+		return;
+	}
 
-	XGrabKeyboard(wm::display, m_rootwin, True, GrabModeAsync, GrabModeAsync,
-			CurrentTime);
-	m_cycling = true;  // Reset when mod key is released.
+	if (!m_cycling) {
+		m_cycling = true;  // Reset when mod key is released.
+		XGrabKeyboard(wm::display, m_rootwin, True, GrabModeAsync,
+				GrabModeAsync, CurrentTime);
+	}
 	m_desktoplist[m_desktop_active].cycle_windows(m_clientlist, client, direction);
 }
 
@@ -534,9 +551,11 @@ void XScreen::swap_desktop_tiles(long direction)
 	XClient *client = get_active_client();
 	if (!client) return;
 
-	XGrabKeyboard(wm::display, m_rootwin, True, GrabModeAsync, GrabModeAsync,
-			CurrentTime);
-	m_cycling = true;  // Reset when mod key is released.
+	if (!m_cycling) {
+		m_cycling = true;  // Reset when mod key is released.
+		XGrabKeyboard(wm::display, m_rootwin, True, GrabModeAsync,
+				GrabModeAsync, CurrentTime);
+	}
 	m_desktoplist[m_desktop_active].swap_windows(m_clientlist, client, direction);
 }
 

@@ -152,13 +152,13 @@ static void XEvents::key_release(XEvent *ee)
 	KeySym keysym = XkbKeycodeToKeysym(wm::display, e->keycode, 0, 0);
 	for (auto modkey : modkeys) {
 		if (keysym == modkey) {
-			XClient *client = screen->get_active_client();
-			if (client && screen->is_cycling()) {
+			if (screen->is_cycling()) {
 				screen->stop_cycling();
-				if (!client->has_state(State::Tiled))
+				XUngrabKeyboard(wm::display, CurrentTime);
+				XClient *client = screen->get_active_client();
+				if (client && !client->has_state(State::Tiled))
 					screen->raise_client(client);
 			}
-			XUngrabKeyboard(wm::display, CurrentTime);
 			break;
 		}
 	}
