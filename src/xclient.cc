@@ -478,7 +478,8 @@ void XClient::set_window_active()
 	set_states(State::Active);
 	clear_states(State::Urgent);
 	draw_window_border();
-	m_screen->raise_client(this);
+	if (!has_state(State::Tiled))
+		m_screen->raise_client(this);
 	ewmh::set_net_active_window(m_rootwin, m_window);
 	statusbar_update_title();
 }
@@ -516,7 +517,8 @@ void XClient::close_window()
 
 void XClient::raise_window()
 {
-	m_screen->raise_client(this);
+	if (!has_state(State::Tiled))
+		m_screen->raise_client(this);
 	XRaiseWindow(wm::display, m_parent);
 }
 

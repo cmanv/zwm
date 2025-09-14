@@ -303,16 +303,23 @@ void Menu::exec_launcher()
 void Menu::switch_to_client()
 {
 	XClient *client = m_data.items[m_entry].client;
+	if (client->has_state(State::Hidden))
+		client->clear_states(State::Hidden);
+
+	if (client->has_state(State::Tiled))
+		m_screen->raise_client(client);
+	else
+		client->raise_window();
+
 	int index = client->get_desktop_index();
 	int active_desktop = m_screen->get_active_desktop();
 	if ((index != -1) && (index != active_desktop))
 		m_screen->switch_to_desktop(index);
- 	if (client->has_state(State::Hidden))
-		client->show_window();
- 	if (!(client->has_states(State::Ignored))) {
-		client->raise_window();
-		client->warp_pointer();
+	else {
+		m_screen->show_desktop();
 	}
+
+	client->warp_pointer();
 }
 
 void Menu::switch_to_desktop()

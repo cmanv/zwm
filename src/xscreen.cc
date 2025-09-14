@@ -316,9 +316,6 @@ void XScreen::remove_client(XClient *client)
 void XScreen::raise_client(XClient *client)
 {
 	if (m_cycling) return; 	// Dont change order of clients while cycling
-	if (client->get_desktop_index() != m_desktop_active) return;
-	if (client->has_state(State::Tiled)) return; // Dont change the order in tiling mode.
-
 	auto it = std::find(m_clientlist.begin(), m_clientlist.end(), client);
 	if (it != m_clientlist.end())
 			std::rotate(m_clientlist.begin(), it, it+1);
