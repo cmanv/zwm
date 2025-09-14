@@ -156,8 +156,7 @@ static void XEvents::key_release(XEvent *ee)
 				screen->stop_cycling();
 				XUngrabKeyboard(wm::display, CurrentTime);
 				XClient *client = screen->get_active_client();
-				if (client && !client->has_state(State::Tiled))
-					screen->raise_client(client);
+				if (client) client->raise_window();
 			}
 			break;
 		}

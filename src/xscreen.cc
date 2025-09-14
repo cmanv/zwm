@@ -550,12 +550,6 @@ void XScreen::swap_desktop_tiles(long direction)
 {
 	XClient *client = get_active_client();
 	if (!client) return;
-
-	if (!m_cycling) {
-		m_cycling = true;  // Reset when mod key is released.
-		XGrabKeyboard(wm::display, m_rootwin, True, GrabModeAsync,
-				GrabModeAsync, CurrentTime);
-	}
 	m_desktoplist[m_desktop_active].swap_windows(m_clientlist, client, direction);
 }
 
