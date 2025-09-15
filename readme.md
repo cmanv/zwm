@@ -257,6 +257,9 @@ or mouse binding.
 
 - **desktop-close**: Close all windows on the desktop.
 - **desktop-hide**: Hide all windows on the desktop.
+- **desktop-client-menu**: Show the list of X11 clients. (keyboard driven).
+- **desktop-desktop-menu**: Show the list of active desktops. (keyboard driven).
+- **desktop-launcher-menu**: Show the launcher menu. (keyboard driven).
 - **desktop-mode-{_number_}**: Switch to mode _number_ (1-9).
 The _number_ refers to the order of appearance of the mode in **_desktop_modes_**.
 - **desktop-mode-next**: Switch the desktop to the next tiling mode in the order defined by _desktop-modes_.
@@ -276,9 +279,9 @@ The _number_ refers to the order of appearance of the mode in **_desktop_modes_*
 - **desktop-window-swap-next**: Swap the position of the active window and the next window. (HTiled, VTiled)
 - **desktop-window-swap-prev**: Swap the position of the active window and the previous window. (HTiled, VTiled)
 - **exec**  _path_: Execute a program defined by _path_.
-- **menu-client**: Shows the list of X clients.
-- **menu-desktop**: Show the list of active desktops.
-- **menu-launcher**: Show the launcher menu as defined by the user.
+- **menu-client**: Shows the list of X clients (pointer driver).
+- **menu-desktop**: Show the list of active desktops (pointer driven).
+- **menu-launcher**: Show the launcher menu. (pointer driven).
 - **quit**: Terminate the window manager.
 - **restart**: Restart the window manager.
 - **terminal**: Open the default terminal.

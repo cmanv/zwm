@@ -175,6 +175,11 @@ enum Direction {
 	SouthEast	= South|East,
 };
 
+enum EventType {
+	Key,
+	Button
+};
+
 enum class Coordinates {
 	Root,
 	Window,
@@ -185,11 +190,6 @@ enum class Context {
 	FuncCall,
 	Root,
 	Window,
-};
-
-enum class EventType {
-	Key,
-	Button
 };
 
 enum class MenuType {

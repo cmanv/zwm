@@ -100,10 +100,10 @@ public:
 	void 				 desktop_master_resize(long);
 	void	 			 switch_to_desktop(int);
 	void				 populate_client_menu(MenuDef&);
-	void				 run_client_menu();
+	void				 run_client_menu(long);
 	void				 populate_desktop_menu(MenuDef&);
-	void				 run_desktop_menu();
-	void				 run_launcher_menu();
+	void				 run_desktop_menu(long);
+	void				 run_launcher_menu(long);
 	static XClient			*find_active_client();
 	static XClient			*find_client(Window);
 	static XScreen			*find_screen(Window);

@@ -22,10 +22,12 @@
 
 #include <X11/Xft/Xft.h>
 #include <X11/Xlib.h>
+#include <iostream>
 #include <string>
 #include <vector>
 #include "enums.h"
 #include "process.h"
+#include "timer.h"
 #include "winmgr.h"
 #include "xclient.h"
 #include "xscreen.h"
@@ -38,15 +40,17 @@ enum MenuState {
 	Done	= 0x02,
 };
 
-const long Menu::ButtonMask		= ButtonPressMask|ButtonReleaseMask|ButtonMotionMask;
-const long Menu::MenuMask 		= Menu::ButtonMask|PointerMotionMask|ExposureMask;
-const long Menu::MenuGrabMask		= Menu::ButtonMask|PointerMotionMask|StructureNotifyMask;
+const long Menu::ButtonMask	= ButtonPressMask|ButtonReleaseMask|ButtonMotionMask;
+const long Menu::KeyMask 	= KeyPressMask|ExposureMask;
+const long Menu::MenuMask 	= Menu::ButtonMask|PointerMotionMask|ExposureMask;
+const long Menu::ButtonGrabMask	= Menu::ButtonMask|PointerMotionMask|StructureNotifyMask;
 
 Menu::Menu(XScreen *s, MenuDef &md, Menu *p): m_data(md)
 {
 	m_screen = s;
 	m_parent = p;
 	m_child = NULL;
+	m_entry = -1;
 	m_nitems = m_data.items.size();
 	m_rootwin = m_screen->get_window();
 	m_font = m_screen->get_menu_font();
@@ -65,30 +69,32 @@ Menu::Menu(XScreen *s, MenuDef &md, Menu *p): m_data(md)
 	Geometry area = m_screen->get_area(pos, 1);
 	m_geom.w = get_menu_width();
 	m_geom.h = (m_nitems + 1) * m_height_entry;
+
 	if (m_parent) {
 		int ypos = m_height_entry * (m_parent->get_current_entry() + 1);
-		m_geom.set_menu_placement(m_parent->get_geom(), area, ypos, m_border);
+		m_geom.set_menu_placement(m_parent->get_geom(), area,
+						 ypos, m_border);
 	} else {
 		Position pos = xpointer::get_pos(m_rootwin);
 		m_geom.set_menu_placement(pos, area, m_border);
 	}
 
-	m_window =  XCreateSimpleWindow(wm::display, m_rootwin, m_geom.x, m_geom.y, m_geom.w,
-			m_geom.h, m_border, m_bordercolor->pixel, m_bgcolor->pixel);
+	m_window =  XCreateSimpleWindow(wm::display, m_rootwin, m_geom.x, m_geom.y,
+			m_geom.w, m_geom.h, m_border, m_bordercolor->pixel,
+			m_bgcolor->pixel);
 
 	m_xftdraw = XftDrawCreate(wm::display, m_window, m_screen->get_visual(),
 				m_screen->get_colormap());
 
-	XSelectInput(wm::display, m_window, MenuMask);
 	XMapWindow(wm::display, m_window);
 }
 
 Menu::~Menu()
 {
+	if (m_child) delete m_child;
 	XUnmapWindow(wm::display, m_window);
 	XftDrawDestroy(m_xftdraw);
 	XDestroyWindow(wm::display, m_window);
-	if (m_child) delete m_child;
 }
 
 
@@ -114,23 +120,22 @@ int Menu::run()
 {
 	XEvent	 e;
 	Geometry g;
-	Position pos;
 	int menu_state = 0;
 	bool is_running = true;
 
 	if (!grab_pointer()) return -1;
+	XSelectInput(wm::display, m_window, MenuMask);
 
-	int focusrevert;
-	Window focuswin;
-	XGetInputFocus(wm::display, &focuswin, &focusrevert);
-	XSetInputFocus(wm::display, m_window, RevertToPointerRoot, CurrentTime);
+	Position pos = xpointer::get_pos(m_window);
+	m_entry = get_entry_at(pos);
 	draw();
 
-	m_entry = -1;
 	while (is_running) {
 		XWindowEvent(wm::display, m_window, MenuMask, &e);
 		switch (e.type) {
 		case Expose:
+			pos = xpointer::get_pos(m_window);
+			m_entry = get_entry_at(pos);
 			draw();
 			break;
 		case MotionNotify:
@@ -158,8 +163,6 @@ int Menu::run()
 		if (menu_state & MenuState::Done)
 			is_running = false;
 	}
-
-	XSetInputFocus(wm::display, focuswin, focusrevert, CurrentTime);
 	XUngrabPointer(wm::display, CurrentTime);
 
 	if ((menu_state & MenuState::Release) && (m_entry != -1)) {
@@ -174,6 +177,87 @@ int Menu::run()
 			switch_to_client();
 			break;
 		}
+		menu_state = MenuState::Done;
+	}
+
+	return menu_state;
+}
+
+int Menu::run_key()
+{
+	XEvent	 e;
+	if (conf::debug) {
+		std::cout << timer::gettime() << "[Menu::" << __func__ << "]";
+	}
+
+	XSelectInput(wm::display, m_window, KeyMask);
+	XGrabKeyboard(wm::display, m_window, True, GrabModeAsync,
+			GrabModeAsync, CurrentTime);
+	m_entry = 0;
+	draw();
+
+	int menu_state = 0;
+	bool is_running = true;
+	while (is_running) {
+		XWindowEvent(wm::display, m_window, KeyMask, &e);
+		switch (e.type) {
+		case Expose:
+			draw();
+			break;
+		case KeyPress:
+			switch (e.xkey.keycode) {
+			case 111: // Up
+				m_entry--;
+				if (m_entry == -1)
+					m_entry = m_nitems - 1;
+				close_submenu();
+				draw();
+				break;
+			case 116: // Down
+				m_entry++;
+				if (m_entry == m_nitems)
+					m_entry = 0;
+				close_submenu();
+				draw();
+				break;
+			case 113: // Left
+			case 114: // Right
+				if (m_child) {
+					menu_state = m_child->run_key();
+					close_submenu();
+					XGrabKeyboard(wm::display, m_window, True,
+						GrabModeAsync, GrabModeAsync,
+						CurrentTime);
+				}
+				break;
+			case 9:	 // Escape
+				is_running = false;
+				break;
+			case 36: // return 
+				menu_state = MenuState::Done|MenuState::Release;
+				break;
+			}
+			break;
+		}
+
+		if (menu_state & MenuState::Done)
+			is_running = false;
+	}
+	XUngrabKeyboard(wm::display, CurrentTime);
+
+	if ((menu_state & MenuState::Release) && (m_entry != -1)) {
+		switch(m_data.type) {
+		case MenuType::Launcher:
+			exec_launcher();
+			break;
+		case MenuType::Desktop:
+			switch_to_desktop();
+			break;
+		case MenuType::Client:
+			switch_to_client();
+			break;
+		}
+		menu_state = MenuState::Done;
 	}
 
 	return menu_state;
@@ -189,8 +273,6 @@ void Menu::draw()
 	XftDrawStringUtf8(m_xftdraw, m_titlecolor, m_font, 3, m_font->ascent,
 	    		(const FcChar8*)m_data.label.c_str(), m_data.label.size());
 
-	Position pos = xpointer::get_pos(m_window);
-	m_entry = get_entry_at(pos);
 	for (int i = 0; i< m_nitems; i++)
 		draw_entry(i);
 
@@ -252,7 +334,7 @@ int Menu::get_entry_at(Position p)
 
 int Menu::grab_pointer()
 {
-	if (XGrabPointer(wm::display, m_window, False, MenuGrabMask, GrabModeAsync,
+	if (XGrabPointer(wm::display, m_window, False, ButtonGrabMask, GrabModeAsync,
 		GrabModeAsync, None, wm::cursors[Pointer::ShapeNormal], CurrentTime)
 		!= GrabSuccess) {
 		return 0;

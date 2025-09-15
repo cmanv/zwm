@@ -67,6 +67,6 @@ struct Binding {
 	std::string		path;
 	bool			valid;
 	static std::vector<ModKeyDef> modkey_defs;
-	Binding(BindingDef&, EventType);
+	Binding(BindingDef&, long);
 };
 #endif // BINDING_H_

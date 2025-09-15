@@ -37,8 +37,9 @@ namespace wmfunc {
 std::vector<FuncDef> funcdefs = {
 	{ "desktop-close", 		desktop_close},
 	{ "desktop-hide", 		desktop_hide},
-	{ "desktop-set-light-theme",	desktop_set_theme, Theme::Light},
-	{ "desktop-set-dark-theme",	desktop_set_theme, Theme::Dark},
+	{ "desktop-client-menu", 	desktop_client_menu, EventType::Key},
+	{ "desktop-launcher-menu", 	desktop_launcher_menu, EventType::Key},
+	{ "desktop-list-menu", 		desktop_list_menu, EventType::Key},
 	{ "desktop-mode-1", 		desktop_select_mode, 0},
 	{ "desktop-mode-2", 		desktop_select_mode, 1},
 	{ "desktop-mode-3", 		desktop_select_mode, 2},
@@ -50,6 +51,8 @@ std::vector<FuncDef> funcdefs = {
 	{ "desktop-mode-9", 		desktop_select_mode, 8},
 	{ "desktop-mode-next", 		desktop_rotate_mode, 1},
 	{ "desktop-mode-prev", 		desktop_rotate_mode, -1},
+	{ "desktop-set-light-theme",	desktop_set_theme, Theme::Light},
+	{ "desktop-set-dark-theme",	desktop_set_theme, Theme::Dark},
 	{ "desktop-switch-1", 		desktop_switch, 0},
 	{ "desktop-switch-2", 		desktop_switch, 1},
 	{ "desktop-switch-3", 		desktop_switch, 2},
@@ -104,9 +107,9 @@ std::vector<FuncDef> funcdefs = {
 	{ "window-toggle-sticky", 	window_state, State::Sticky},
 	{ "window-toggle-tiled", 	window_state, State::NoTile},
 
-	{ "menu-client", 		menu_client, Context::Root},
-	{ "menu-desktop", 		menu_desktop, Context::Root},
-	{ "menu-launcher", 		menu_launcher, Context::Root},
+	{ "menu-client", 		desktop_client_menu, EventType::Button},
+	{ "menu-desktop", 		desktop_list_menu, EventType::Button},
+	{ "menu-laucher", 		desktop_launcher_menu, EventType::Button},
 
 	{ "terminal", 			exec_term},
 	{ "restart", 			set_wm_status, IsRestarting},
@@ -233,19 +236,19 @@ void wmfunc::desktop_set_theme(XScreen *screen, long theme)
 	screen->set_theme(theme);
 }
 
-void wmfunc::menu_launcher(XScreen *screen)
+void wmfunc::desktop_launcher_menu(XScreen *screen, long type)
 {
-	screen->run_launcher_menu();
+	screen->run_launcher_menu(type);
 }
 
-void wmfunc::menu_client(XScreen *screen)
+void wmfunc::desktop_client_menu(XScreen *screen, long type)
 {
-	screen->run_client_menu();
+	screen->run_client_menu(type);
 }
 
-void wmfunc::menu_desktop(XScreen *screen)
+void wmfunc::desktop_list_menu(XScreen *screen, long type)
 {
-	screen->run_desktop_menu();
+	screen->run_desktop_menu(type);
 }
 
 void wmfunc::set_wm_status(long status)

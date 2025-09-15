@@ -38,7 +38,7 @@ std::vector<ModKeyDef> Binding::modkey_defs = {
 	{ '5',  Mod5Mask }
 };
 
-Binding::Binding( BindingDef& binddef, EventType eventtype)
+Binding::Binding( BindingDef& binddef, long eventtype)
 {
 	valid = false;
 	modmask = 0;

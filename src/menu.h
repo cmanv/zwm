@@ -87,6 +87,7 @@ public:
 	~Menu();
 	Geometry 		&get_geom() { return m_geom; }
 	int 			 get_current_entry() const { return m_entry; }
+	int 			 run_key();
 	int 			 run();
 	void 			 draw();
 private:
@@ -101,7 +102,8 @@ private:
 	void 			 switch_to_client();
 	void			 switch_to_desktop();
 	static const long 	 ButtonMask;
+	static const long 	 KeyMask;
 	static const long 	 MenuMask;
-	static const long 	 MenuGrabMask;
+	static const long 	 ButtonGrabMask;
 };
 #endif /* _MENU_H_ */

@@ -148,6 +148,7 @@ void Geometry::set_menu_placement(Position p, Geometry &area, int border)
 
 void Geometry::set_menu_placement(Geometry &parent, Geometry &area, int ypos, int border)
 {
+	int placement = 1;
 	x = parent.x + parent.w - 2 * border;
 	y = parent.y + ypos;
 	if (x + w > area.x + area.w)
