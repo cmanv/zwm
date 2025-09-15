@@ -279,9 +279,9 @@ The _number_ refers to the order of appearance of the mode in **_desktop_modes_*
 - **desktop-window-swap-next**: Swap the position of the active window and the next window. (HTiled, VTiled)
 - **desktop-window-swap-prev**: Swap the position of the active window and the previous window. (HTiled, VTiled)
 - **exec**  _path_: Execute a program defined by _path_.
-- **menu-client**: Shows the list of X clients (pointer driver).
-- **menu-desktop**: Show the list of active desktops (pointer driven).
-- **menu-launcher**: Show the launcher menu. (pointer driven).
+- **client-menu**: Shows the list of X clients (pointer driver).
+- **desktop-menu**: Show the list of active desktops (pointer driven).
+- **launcher-menu**: Show the launcher menu. (pointer driven).
 - **quit**: Terminate the window manager.
 - **restart**: Restart the window manager.
 - **terminal**: Open the default terminal.
@@ -372,9 +372,9 @@ This sections list all key and mouse bindings defined by default.
 
 ## Mouse buttons bindings
 
-- **1**	:	_menu-client_
-- **2**	:	_menu-desktop_
-- **3**	:	_menu-launcher_
+- **1**	:	_client-menu_
+- **2**	:	_desktop-menu_
+- **3**	:	_launcher-menu_
 - **M+1**:	_window-move_
 - **M+3**:	_window-resize_
 - **M+4**:	_window-lower_

@@ -107,9 +107,9 @@ std::vector<FuncDef> funcdefs = {
 	{ "window-toggle-sticky", 	window_state, State::Sticky},
 	{ "window-toggle-tiled", 	window_state, State::NoTile},
 
-	{ "menu-client", 		desktop_client_menu, EventType::Button},
-	{ "menu-desktop", 		desktop_list_menu, EventType::Button},
-	{ "menu-laucher", 		desktop_launcher_menu, EventType::Button},
+	{ "client-menu", 		desktop_client_menu, EventType::Button},
+	{ "desktop-menu", 		desktop_list_menu, EventType::Button},
+	{ "launcher-menu",		desktop_launcher_menu, EventType::Button},
 
 	{ "terminal", 			exec_term},
 	{ "restart", 			set_wm_status, IsRestarting},

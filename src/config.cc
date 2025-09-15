@@ -193,12 +193,12 @@ void conf::init()
 	lightcolordefs[Color::WindowBorderInactive] 	= "grey40";
 	lightcolordefs[Color::WindowBorderUrgent] 	= "red";
 	lightcolordefs[Color::MenuBackground] 		= "gray90";
-	lightcolordefs[Color::MenuBorder] 		= "black";
-	lightcolordefs[Color::MenuHighlight] 		= "grey78";
+	lightcolordefs[Color::MenuBorder] 		= "SlateGray3";
+	lightcolordefs[Color::MenuHighlight] 		= "SlateGray2";
 	lightcolordefs[Color::MenuItemText] 		= "black";
 	lightcolordefs[Color::MenuItemTextSelected] 	= "black";
 	lightcolordefs[Color::MenuTitle] 		= "black";
-	lightcolordefs[Color::MenuTitleBackground] 	= "grey80";
+	lightcolordefs[Color::MenuTitleBackground] 	= "SlateGray3";
 
 	darkcolordefs.resize(Color::NumColors);
 	darkcolordefs[Color::WindowBorderActive] 	= "tan";

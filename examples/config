@@ -101,16 +101,16 @@
 # ----------------------------------------------------------------
 # Colors: first value for light theme, second value for dark theme
 # ----------------------------------------------------------------
-#color window-border-active	tan	tan	
-#color window-border-inactive	grey40	grey40
-#color window-border-urgent	red	red
-#color menu-background		gray90	grey20
-#color menu-border		black	SkyBlue4
-#color menu-highlight		grey	SteelBlue4
-#color menu-item-text	 	black	grey88
-#color menu-item-text-selected	black	WhiteSmoke
-#color menu-title		black	WhiteSmoke
-#color menu-title-background	grey80	SkyBlue4
+#color window-border-active	tan		tan
+#color window-border-inactive	grey40		grey40
+#color window-border-urgent	red		red
+#color menu-background		gray90		grey20
+#color menu-border		SlateGray3	SkyBlue4
+#color menu-highlight		SlateGray2	SteelBlue4
+#color menu-item-text	 	black		grey88
+#color menu-item-text-selected	black		WhiteSmoke
+#color menu-title		black		WhiteSmoke
+#color menu-title-background	SlateGray3	SkyBlue4
 
 # ----------------------------------------------------------------
 # Key bindings
