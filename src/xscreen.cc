@@ -609,14 +609,14 @@ void XScreen::populate_client_menu(MenuDef &menudef)
 			long index = client->get_desktop_index();
 			if (index != i) continue;
 			char ws = '+';
-			if (client->has_state(State::Active)) ws = '#';
-			if (client->has_state(State::Hidden)) ws = '.';
+			if (client->has_state(State::Active)) ws = '*';
+			if (client->has_state(State::Hidden)) ws = '_';
 			if (client->has_state(State::Urgent)) ws = '!';
 			std::stringstream ss;
 			if (index < 0)
-				ss << "[s]" << ws  << ' ' << client->get_name();
+				ss << "[s] " << ws  << ' ' << client->get_name();
 			else
-				ss << "[" << index+1 << "]" << ws << ' '
+				ss << "[" << index+1 << "] " << ws << ' '
 					<< client->get_name();
 
 			std::string s(ss.str().substr(0,127));
