@@ -144,7 +144,7 @@ namespace conf {
 
 	int			debug = 0;
 	const int		ndesktops = desktop_defs.size();
-	int			menu_border = 1;
+	int			menu_border = 2;
 	int			tiled_border = 2;
 	int			stacked_border = 5;
 	int			moveamount = 10;
@@ -614,11 +614,11 @@ void conf::add_window_states(std::string &rname, std::string &rclass,
 	long statemask = 0;
 	for (std::string &state : states) {
 		if (!state.compare("docked")) statemask |= State::Docked;
+		if (!state.compare("float")) statemask |= State::NoTile;
 		if (!state.compare("frozen")) statemask |= State::Frozen;
 		if (!state.compare("ignored")) statemask |= State::Ignored;
 		if (!state.compare("noborder")) statemask |= State::NoBorder;
 		if (!state.compare("noresize")) statemask |= State::NoResize;
-		if (!state.compare("notile")) statemask |= State::NoTile;
 		if (!state.compare("sticky")) statemask |= State::Sticky;
 	}
 

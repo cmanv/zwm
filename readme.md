@@ -168,6 +168,8 @@ based on its _instance_/_class_ properties.
 
 > - _docked_: Equivalent to _frozen_,_sticky_,_ignore_,_noborder_. Any client with the property _\_NET\_WM\_WINDOW\_TYPE\_DOCK_ will have this state set.
 
+> - _float_: The window is not tiled.
+
 > - _frozen_: The window is locked at its current position.
 
 > - _ignored_: Do not add the window to the task list or the window list.
@@ -175,8 +177,6 @@ based on its _instance_/_class_ properties.
 > - _noborder_: The window has no border (_stacked_ windows only).
 
 > - _noresize_: The window cannot be resized (_stacked_ windows only).
-
-> - _notile_: The window is never tiled.
 
 > - _sticky_: The window appears on all desktops.
 
