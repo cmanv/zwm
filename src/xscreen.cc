@@ -391,7 +391,7 @@ void XScreen::statusbar_clear_title()
 void XScreen::statusbar_update_desktop_name()
 {
 	if (!socket_out::defined()) return;
-	std::string message = "desktop_name="
+	std::string message = "ws_name="
 		+ m_desktoplist[m_desktop_active].get_name();
 	socket_out::send(message);
 }
@@ -400,18 +400,19 @@ void XScreen::statusbar_update_desktop_list()
 {
 	if (!socket_out::defined()) return;
 	std::stringstream ss;
+	char separator = '|';
 	for (int i = 0; i < m_ndesktops; i++) {
-		char prefix = ' ';
 		if (i == m_desktop_active)
-			prefix = '+';
+			ss << '+' << i+1 << separator;
 		else if (desktop_empty(i))
 			continue;
 		else if (desktop_urgent(i))
-			prefix = '!';
-		ss << prefix << i+1 << ' ';
+			ss << '!' << i+1 << separator;
+		else
+			ss << i+1 << separator;
 	}
 	std::string s(ss.str());
-	std::string message = "desktop_list=" + s;
+	std::string message = "ws_list=" + s;
 	socket_out::send(message);
 }
 
