@@ -431,17 +431,14 @@ long XClient::get_configured_desktop()
 // Process event to Configure the size of the client window
 void XClient::configure_window(XConfigureRequestEvent *e)
 {
-	if (has_states(State::Docked)) {
-		if (e->value_mask & CWX) m_geom.x = e->x;
-		if (e->value_mask & CWY) m_geom.y = e->y;
-	} else if (has_state(State::Frozen)) return;
-
+	if (has_state(State::Tiled)) return;
+	if (e->value_mask & CWX) m_geom.x = e->x;
+	if (e->value_mask & CWY) m_geom.y = e->y;
 	if (e->value_mask & CWWidth) m_geom.w = e->width;
 	if (e->value_mask & CWHeight) m_geom.h = e->height;
-
+	resize_window();
 	if (has_states(State::Docked))
 		m_screen->set_bordergap(m_geom);
-	resize_window();
 }
 
 void XClient::send_configure_event()
