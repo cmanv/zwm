@@ -149,7 +149,6 @@ namespace conf {
 	int			stacked_border = 5;
 	int			moveamount = 10;
 	int			snapdist = 9;
-	BorderGap		bordergap = { 1, 1, 1, 1 };
 
 	std::vector<Binding>		keybindings;
 	std::vector<Binding>		mousebindings;
@@ -285,14 +284,6 @@ void conf::read_config()
 
 		if (!tokens[0].compare("debug-level")) {
 			debug = std::strtol(tokens[1].c_str(), NULL, 10);
-			continue;
-		}
-		if (!tokens[0].compare("screen-border-gap")) {
-			if (tokens.size() < 5) continue;
-			bordergap.top = std::strtol(tokens[1].c_str(), NULL, 10);
-			bordergap.bottom = std::strtol(tokens[2].c_str(), NULL, 10);
-			bordergap.left = std::strtol(tokens[3].c_str(), NULL, 10);
-			bordergap.right = std::strtol(tokens[4].c_str(), NULL, 10);
 			continue;
 		}
 		if (!tokens[0].compare("desktop-modes")) {

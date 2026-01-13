@@ -69,6 +69,8 @@ public:
 	void				 stop_cycling() { m_cycling = false; };
 	XftColor			*get_color(Color);
 	unsigned long			 get_pixel(Color);
+	void				 set_bordergap(Geometry &);
+	void				 unset_bordergap();
 	void				 set_theme(long);
 	bool			 	 desktop_empty(long);
 	bool			 	 desktop_urgent(long);

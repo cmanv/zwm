@@ -51,7 +51,7 @@ XScreen::XScreen(int id): m_screenid(id)
 	m_visual = DefaultVisual(wm::display, m_screenid);
 	m_cycling = false;
 
-	m_bordergap = conf::bordergap;
+	m_bordergap = {0, 0, 1, 1};
 
 	// Desktops
 	int index = 0;
@@ -297,9 +297,9 @@ void XScreen::remove_client(XClient *client)
 
 	auto it = std::find(m_clientlist.begin(), m_clientlist.end(), client);
 	if (it != m_clientlist.end()) {
+		m_clientlist.erase(it);
 		client->set_removed();
 		delete client;
-		m_clientlist.erase(it);
 	}
 
 	update_net_client_lists();
@@ -452,6 +452,27 @@ void XScreen::update_geometry()
 	ewmh::set_net_desktop_geometry(m_rootwin, m_view);
 	ewmh::set_net_desktop_viewport(m_rootwin);
 	ewmh::set_net_workarea(m_rootwin, m_ndesktops, m_work);
+}
+
+void XScreen::set_bordergap(Geometry &g)
+{
+	if (g.y == 0) {
+		m_bordergap.top = g.h;
+		m_bordergap.bottom = 0;
+	} else {
+		m_bordergap.top = 0;
+		m_bordergap.bottom = g.h;
+	}
+	update_geometry();
+	m_desktoplist[m_desktop_active].show(m_clientlist);
+}
+
+void XScreen::unset_bordergap()
+{
+	m_bordergap.top = 0;
+	m_bordergap.bottom = 0;
+	update_geometry();
+	m_desktoplist[m_desktop_active].show(m_clientlist);
 }
 
 Geometry XScreen::get_area(Position &p, bool gap)

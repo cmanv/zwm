@@ -74,7 +74,6 @@ namespace conf {
 	extern int				 menu_border;
 	extern int				 moveamount;
 	extern int				 snapdist;
-	extern BorderGap			 bordergap;
 	extern const int			 ndesktops;
 	extern std::vector<DesktopDef> 	 	 desktop_defs;
 	extern std::vector<DesktopMode> 	 desktop_modes;

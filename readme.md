@@ -124,11 +124,6 @@ This section describes all options that can be set in the configuration file.
 > Sets the label of the launcher menu. (default is "Launchers").
 > To define the launcher menu, see the _MENU DEFINITIONS_ section.
 
-- **screen-border-gap** _top bottom left right_
-
-> Reserves space at the edges of the screen. This space will not
-> be used for tiling windows by the window manager. (default: 1 1 1 1)
-
 - **shutdown-script** _path_
 
 > Defines a script that is to be run when the window manager terminates.
