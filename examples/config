@@ -35,11 +35,6 @@
 #window-stacked-border	7
 
 # ----------------------------------------------------------------
-# Screen border gap = (top, bottom, left, right)
-# ----------------------------------------------------------------
-#screen-border-gap	1 1 1 1
-
-# ----------------------------------------------------------------
 # Path to message socket (unset by default)
 # ----------------------------------------------------------------
 #message-socket		/path/to/statusbar.socket
