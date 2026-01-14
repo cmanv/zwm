@@ -153,6 +153,11 @@ XClient::~XClient()
 
 void XClient::reparent_window()
 {
+	if (conf::debug) {
+		std::cout << timer::gettime() << " [XClient::" << __func__
+			<< "] Reparent Client window 0x" << std::hex << m_window
+			<< std::endl;
+	}
 	XSetWindowAttributes wattr;
 	wattr.border_pixel = m_screen->get_pixel(Color::WindowBorderInactive);
 	wattr.override_redirect = True;

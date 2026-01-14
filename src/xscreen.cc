@@ -150,6 +150,9 @@ XScreen::~XScreen()
 
 void XScreen::grab_keybindings()
 {
+	if (conf::debug) {
+		std::cout << timer::gettime() << " [XScreen:" << __func__ << "]\n";
+	}
 	XUngrabKey(wm::display, AnyKey, AnyModifier, m_rootwin);
 	for (Binding& kb : conf::keybindings) {
 		KeyCode kc = XKeysymToKeycode(wm::display, kb.keysym);
@@ -254,7 +257,9 @@ void XScreen::add_client(Window window)
 	update_net_client_lists();
 
 	int index = client->get_desktop_index();
-	if (index == m_desktop_active) {
+	if (index == -1) {
+		m_desktoplist[m_desktop_active].show(m_clientlist);
+	} else if (index == m_desktop_active) {
 		m_desktoplist[index].show(m_clientlist);
 	 	if (!(client->has_states(State::Ignored))) {
 			client->warp_pointer();
@@ -321,6 +326,9 @@ void XScreen::raise_client(XClient *client)
 
 void XScreen::move_client_to_desktop(XClient *client, long index)
 {
+	if (conf::debug) {
+		std::cout << timer::gettime() << " [XScreen:" << __func__ << "]\n";
+	}
 	long desktop_index = client->get_desktop_index();
 	if ((desktop_index == -1) || (desktop_index == index)) return;
 	client->hide_window();
@@ -346,16 +354,25 @@ void XScreen::close_desktop()
 
 void XScreen::select_desktop_mode(long index)
 {
+	if (conf::debug) {
+		std::cout << timer::gettime() << " [XScreen:" << __func__ << "]\n";
+	}
 	m_desktoplist[m_desktop_active].select_mode(m_clientlist, index);
 }
 
 void XScreen::rotate_desktop_mode(long direction)
 {
+	if (conf::debug) {
+		std::cout << timer::gettime() << " [XScreen:" << __func__ << "]\n";
+	}
 	m_desktoplist[m_desktop_active].rotate_mode(m_clientlist, direction);
 }
 
 void XScreen::update_net_client_lists()
 {
+	if (conf::debug) {
+		std::cout << timer::gettime() << " [XScreen:" << __func__ << "]\n";
+	}
 	// _NET_CLIENT_LIST is ordered from oldest to newest
 	std::vector<Window> netclientlist;
 	for (auto it = m_clientlist.rbegin(); it != m_clientlist.rend(); it++)
@@ -371,6 +388,9 @@ void XScreen::update_net_client_lists()
 
 void XScreen::set_net_desktop_names()
 {
+	if (conf::debug) {
+		std::cout << timer::gettime() << " [XScreen:" << __func__ << "]\n";
+	}
 	std::vector<std::string> names;
 
 	for (Desktop &d : m_desktoplist)
@@ -416,6 +436,9 @@ void XScreen::statusbar_update_desktop_list()
 
 void XScreen::update_geometry()
 {
+	if (conf::debug) {
+		std::cout << timer::gettime() << " [XScreen:" << __func__ << "]\n";
+	}
 	int width = DisplayWidth(wm::display, m_screenid);
 	int height = DisplayHeight(wm::display, m_screenid);
 	m_view = Geometry(0, 0, width, height);
@@ -507,6 +530,9 @@ void XScreen::ensure_clients_are_visible()
 
 void XScreen::cycle_windows(long direction)
 {
+	if (conf::debug) {
+		std::cout << timer::gettime() << " [XScreen:" << __func__ << "]\n";
+	}
 	XClient *client = get_active_client();
 	if (!client) {
 		auto isNext = [idx = m_desktop_active](XClient *c) {
@@ -535,6 +561,9 @@ void XScreen::cycle_windows(long direction)
 
 void XScreen::cycle_desktops(long direction)
 {
+	if (conf::debug) {
+		std::cout << timer::gettime() << " [XScreen:" << __func__ << "]\n";
+	}
 	int nextdesktop = m_desktop_active;
 	int showdesktop = -1;
 
@@ -559,11 +588,17 @@ void XScreen::cycle_desktops(long direction)
 
 void XScreen::rotate_desktop_tiles(long direction)
 {
+	if (conf::debug) {
+		std::cout << timer::gettime() << " [XScreen:" << __func__ << "]\n";
+	}
 	m_desktoplist[m_desktop_active].rotate_windows(m_clientlist, direction);
 }
 
 void XScreen::swap_desktop_tiles(long direction)
 {
+	if (conf::debug) {
+		std::cout << timer::gettime() << " [XScreen:" << __func__ << "]\n";
+	}
 	XClient *client = get_active_client();
 	if (!client) return;
 	m_desktoplist[m_desktop_active].swap_windows(m_clientlist, client, direction);
@@ -571,6 +606,9 @@ void XScreen::swap_desktop_tiles(long direction)
 
 void XScreen::desktop_master_resize(long increment)
 {
+	if (conf::debug) {
+		std::cout << timer::gettime() << " [XScreen:" << __func__ << "]\n";
+	}
 	m_desktoplist[m_desktop_active].master_resize(m_clientlist, increment);
 }
 
@@ -592,6 +630,9 @@ bool XScreen::desktop_urgent(long index)
 
 void XScreen::switch_to_desktop(int index)
 {
+	if (conf::debug) {
+		std::cout << timer::gettime() << " [XScreen:" << __func__ << "]\n";
+	}
 	m_desktoplist[m_desktop_active].hide(m_clientlist);
 	m_desktoplist[index].show(m_clientlist);
 	m_desktop_last = m_desktop_active;
@@ -603,6 +644,9 @@ void XScreen::switch_to_desktop(int index)
 
 void XScreen::run_launcher_menu(long type)
 {
+	if (conf::debug) {
+		std::cout << timer::gettime() << " [XScreen:" << __func__ << "]\n";
+	}
 	std::string menu = conf::menu_launcher_label;
 	auto isLauncherMenu = [menu] (MenuDef mdef)
 			{ return (!mdef.label.compare(menu)); };
@@ -643,6 +687,9 @@ void XScreen::populate_client_menu(MenuDef &menudef)
 
 void XScreen::run_client_menu(long type)
 {
+	if (conf::debug) {
+		std::cout << timer::gettime() << " [XScreen:" << __func__ << "]\n";
+	}
 	MenuDef menudef(conf::menu_client_label, MenuType::Client);
 	populate_client_menu(menudef);
 	Menu client_menu(this, menudef);
@@ -666,6 +713,9 @@ void XScreen::populate_desktop_menu(MenuDef &menudef)
 
 void XScreen::run_desktop_menu(long type)
 {
+	if (conf::debug) {
+		std::cout << timer::gettime() << " [XScreen:" << __func__ << "]\n";
+	}
 	MenuDef menudef(conf::menu_desktop_label, MenuType::Desktop);
 	populate_desktop_menu(menudef);
 	Menu desktop_menu(this, menudef);
