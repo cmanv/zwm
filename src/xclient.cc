@@ -110,8 +110,6 @@ XClient::XClient(Window w, XScreen *s, bool existing): m_window(w), m_screen(s)
 	ewmh::set_net_wm_desktop(m_window, m_deskindex);
 
 	reparent_window();
-	if (has_states(State::Docked))
-		m_screen->set_bordergap(m_geom);
 
 	// Resume processing of X requests
 	XSync(wm::display, False);
@@ -147,9 +145,6 @@ XClient::~XClient()
 	XSetWindowBorderWidth(wm::display, m_window, m_border_orig);
 	XRemoveFromSaveSet(wm::display, m_window);
 	XDestroyWindow(wm::display, m_parent);
-
-	if (has_states(State::Docked))
-		m_screen->unset_bordergap();
 
 	// Resume processing of X requests
 	XUngrabServer(wm::display);
@@ -437,8 +432,11 @@ void XClient::configure_window(XConfigureRequestEvent *e)
 	if (e->value_mask & CWWidth) m_geom.w = e->width;
 	if (e->value_mask & CWHeight) m_geom.h = e->height;
 	resize_window();
-	if (has_states(State::Docked))
-		m_screen->set_bordergap(m_geom);
+
+	if (has_states(State::Docked)) {
+		m_screen->update_geometry();
+		m_screen->show_desktop();
+	}
 }
 
 void XClient::send_configure_event()

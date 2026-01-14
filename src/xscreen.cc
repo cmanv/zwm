@@ -51,8 +51,6 @@ XScreen::XScreen(int id): m_screenid(id)
 	m_visual = DefaultVisual(wm::display, m_screenid);
 	m_cycling = false;
 
-	m_bordergap = {0, 0, 1, 1};
-
 	// Desktops
 	int index = 0;
 	for (DesktopDef &def : conf::desktop_defs)
@@ -113,7 +111,6 @@ XScreen::XScreen(int id): m_screenid(id)
 		m_theme = Theme::Dark;
 
 	grab_keybindings();
-	update_geometry();
 
 	XSetWindowAttributes	 attr;
 	attr.cursor = wm::cursors[Pointer::ShapeNormal];
@@ -215,6 +212,7 @@ void XScreen::add_existing_clients()
 		XFree(wins);
 	}
 
+	update_geometry();
 	update_net_client_lists();
 
 	for (int i = 0; i < m_ndesktops; i++) {
@@ -250,13 +248,10 @@ void XScreen::add_client(Window window)
 	}
 	m_clientlist.insert(m_clientlist.begin(), new XClient(window, this, false));
 
-	update_net_client_lists();
-
 	XClient *client = m_clientlist.front();
-	if (client->has_state(State::Sticky)) {
-		client->show_window();
-		return;
-	}
+	if (client->has_state(State::Docked))
+		update_geometry();
+	update_net_client_lists();
 
 	int index = client->get_desktop_index();
 	if (index == m_desktop_active) {
@@ -301,6 +296,9 @@ void XScreen::remove_client(XClient *client)
 		client->set_removed();
 		delete client;
 	}
+
+	if ((states & State::Docked) == State::Docked)
+		update_geometry();
 
 	update_net_client_lists();
 	if (states & State::Active) {
@@ -418,8 +416,25 @@ void XScreen::statusbar_update_desktop_list()
 
 void XScreen::update_geometry()
 {
-	m_view = Geometry(0, 0, DisplayWidth(wm::display, m_screenid),
-				DisplayHeight(wm::display, m_screenid));
+	int width = DisplayWidth(wm::display, m_screenid);
+	int height = DisplayHeight(wm::display, m_screenid);
+	m_view = Geometry(0, 0, width, height);
+
+	m_bordergap = {1, 1, 1, 1};
+	for (XClient *client : m_clientlist) {
+		if (!client->has_states(State::Docked)) continue;
+		Geometry &geom = client->get_geometry();
+		if ((geom.y == 0) && (geom.h <= geom.w)) {
+			if (m_bordergap.top < geom.h) m_bordergap.top = geom.h;
+		} else if ((geom.x == 0) && (geom.h > geom.w)) {
+			if (m_bordergap.left < geom.w) m_bordergap.left = geom.w;
+		} else if ((geom.y + geom.h >= height) && (geom.h < geom.w)) {
+			if (m_bordergap.bottom < geom.h) m_bordergap.bottom = geom.h;
+		} else if ((geom.x + geom.w >= width) && (geom.h >= geom.w)) {
+			if (m_bordergap.right < geom.w) m_bordergap.right = geom.h;
+		}
+	}
+
 	m_work = m_view;
 	m_work.apply_border_gap(m_bordergap);
 
@@ -452,27 +467,6 @@ void XScreen::update_geometry()
 	ewmh::set_net_desktop_geometry(m_rootwin, m_view);
 	ewmh::set_net_desktop_viewport(m_rootwin);
 	ewmh::set_net_workarea(m_rootwin, m_ndesktops, m_work);
-}
-
-void XScreen::set_bordergap(Geometry &g)
-{
-	if (g.y == 0) {
-		m_bordergap.top = g.h;
-		m_bordergap.bottom = 0;
-	} else {
-		m_bordergap.top = 0;
-		m_bordergap.bottom = g.h;
-	}
-	update_geometry();
-	m_desktoplist[m_desktop_active].show(m_clientlist);
-}
-
-void XScreen::unset_bordergap()
-{
-	m_bordergap.top = 0;
-	m_bordergap.bottom = 0;
-	update_geometry();
-	m_desktoplist[m_desktop_active].show(m_clientlist);
 }
 
 Geometry XScreen::get_area(Position &p, bool gap)
