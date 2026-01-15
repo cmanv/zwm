@@ -96,9 +96,9 @@
 # ----------------------------------------------------------------
 # Colors: first value for light theme, second value for dark theme
 # ----------------------------------------------------------------
-#color window-border-active	tan		tan
-#color window-border-inactive	grey40		grey40
-#color window-border-urgent	red		red
+#color window-border-active	tan		ForestGreen
+#color window-border-inactive	SlateGrey4	DarkGreySlate
+#color window-border-urgent	orange		DarOrange
 #color menu-background		gray90		grey20
 #color menu-border		SlateGray3	SkyBlue4
 #color menu-highlight		SlateGray2	SteelBlue4

@@ -189,8 +189,8 @@ void conf::init()
 
 	lightcolordefs.resize(Color::NumColors);
 	lightcolordefs[Color::WindowBorderActive] 	= "tan";
-	lightcolordefs[Color::WindowBorderInactive] 	= "grey40";
-	lightcolordefs[Color::WindowBorderUrgent] 	= "red";
+	lightcolordefs[Color::WindowBorderInactive] 	= "SlateGray4";
+	lightcolordefs[Color::WindowBorderUrgent] 	= "orange";
 	lightcolordefs[Color::MenuBackground] 		= "gray90";
 	lightcolordefs[Color::MenuBorder] 		= "SlateGray3";
 	lightcolordefs[Color::MenuHighlight] 		= "SlateGray2";
@@ -200,9 +200,9 @@ void conf::init()
 	lightcolordefs[Color::MenuTitleBackground] 	= "SlateGray3";
 
 	darkcolordefs.resize(Color::NumColors);
-	darkcolordefs[Color::WindowBorderActive] 	= "tan";
-	darkcolordefs[Color::WindowBorderInactive] 	= "grey40";
-	darkcolordefs[Color::WindowBorderUrgent] 	= "red";
+	darkcolordefs[Color::WindowBorderActive] 	= "ForestGreen";
+	darkcolordefs[Color::WindowBorderInactive] 	= "DarkGreySlate";
+	darkcolordefs[Color::WindowBorderUrgent] 	= "DarkOrange";
 	darkcolordefs[Color::MenuBackground] 		= "grey20";
 	darkcolordefs[Color::MenuBorder] 		= "SkyBlue4";
 	darkcolordefs[Color::MenuHighlight] 		= "SteelBlue4";
@@ -366,7 +366,7 @@ void conf::read_config()
 			} else if (!tokens[1].compare("window-border-inactive")) {
 				lightcolordefs[Color::WindowBorderInactive] = tokens[2];
 				if (tokens.size() > 3)
-					darkcolordefs[Color::WindowBorderInactive] = tokens[2];
+					darkcolordefs[Color::WindowBorderInactive] = tokens[3];
 			} else if (!tokens[1].compare("window-border-urgent")) {
 				lightcolordefs[Color::MenuBackground] = tokens[2];
 				if (tokens.size() > 3)
