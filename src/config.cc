@@ -125,7 +125,7 @@ namespace conf {
 		{ "M-5",	"window-raise" },
 	};
 
-	std::string	default_theme = "light";
+	std::string	default_theme = "";
 	std::string	user_config = "";
 	std::string	wmname = "ZWM";
 	std::string 	menufont = "Mono:size=12";
@@ -262,6 +262,20 @@ void conf::init()
 	read_config();
 	menulist.push_back(MenuDef(menu_client_label, MenuType::Client));
 	menulist.push_back(MenuDef(menu_desktop_label, MenuType::Desktop));
+
+	if (!default_theme.empty()) return;
+	default_theme = "light";
+	if (std::getenv("THEME_STATE_FILE")) {
+		std::string line;
+		std::ifstream theme_file(std::getenv("THEME_STATE_FILE"));
+		if (theme_file.is_open()) {
+			if (std::getline(theme_file, line)) {
+				if (!line.compare("dark")) default_theme = "dark";
+			}
+			theme_file.close();
+		}
+	}
+
 	return;
 }
 
@@ -463,6 +477,7 @@ void conf::read_config()
 			continue;
 		}
 	}
+	config_file.close();
 }
 
 bool conf::get_line(std::ifstream &configfile, std::string &line)
