@@ -32,7 +32,7 @@
 # Border width of windows
 # ----------------------------------------------------------------
 #window-tiled-border	2
-#window-stacked-border	7
+#window-stacked-border	4
 
 # ----------------------------------------------------------------
 # Path to message socket (unset by default)
