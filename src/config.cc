@@ -146,7 +146,7 @@ namespace conf {
 	const int		ndesktops = desktop_defs.size();
 	int			menu_border = 2;
 	int			tiled_border = 2;
-	int			stacked_border = 5;
+	int			stacked_border = 4;
 	int			moveamount = 10;
 	int			snapdist = 9;
 
