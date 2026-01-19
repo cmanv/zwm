@@ -199,6 +199,9 @@ static void XEvents::button_press(XEvent *ee)
 	case Context::Window:
 		(*mb->fclient)(client, mb->param);
 		break;
+	case Context::Launcher:
+		(*mb->flaunch)(mb->path);
+		break;
 	default: ;
 	}
 }

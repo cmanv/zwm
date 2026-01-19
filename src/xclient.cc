@@ -237,10 +237,10 @@ void XClient::get_net_wm_name()
 void XClient::update_net_wm_name()
 {
 	get_net_wm_name();
-	statusbar_update_title();
+	panel_update_title();
 }
 
-void XClient::statusbar_update_title()
+void XClient::panel_update_title()
 {
 	if (!socket_out::defined()) return;
 	std::string message = "window_active=" + m_name;
@@ -489,7 +489,7 @@ void XClient::set_window_active()
 	if (!has_state(State::Tiled))
 		m_screen->raise_client(this);
 	ewmh::set_net_active_window(m_rootwin, m_window);
-	statusbar_update_title();
+	panel_update_title();
 }
 
 void XClient::show_window()

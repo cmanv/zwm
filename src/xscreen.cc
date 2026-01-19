@@ -225,8 +225,8 @@ void XScreen::add_existing_clients()
 			m_desktoplist[i].hide(m_clientlist);
 	}
 
-	statusbar_update_desktop_name();
-	statusbar_update_desktop_list();
+	panel_update_desktop_name();
+	panel_update_desktop_list();
 
 	// Obtain window where the pointer is positioned
 	XQueryPointer(wm::display, m_rootwin, &rwin, &cwin,
@@ -272,7 +272,7 @@ void XScreen::add_client(Window window)
 			client->raise_window();
 		}
 	}
-	statusbar_update_desktop_list();
+	panel_update_desktop_list();
 }
 
 bool XScreen::can_manage(Window w, bool query)
@@ -309,11 +309,11 @@ void XScreen::remove_client(XClient *client)
 	if (states & State::Active) {
 		XSetInputFocus(wm::display, PointerRoot, RevertToPointerRoot, CurrentTime);
 		ewmh::set_net_active_window(m_rootwin, None);
-		statusbar_clear_title();
+		panel_clear_title();
 	}
 
 	m_desktoplist[m_desktop_active].show(m_clientlist);
-	statusbar_update_desktop_list();
+	panel_update_desktop_list();
 }
 
 void XScreen::raise_client(XClient *client)
@@ -334,7 +334,7 @@ void XScreen::move_client_to_desktop(XClient *client, long index)
 	client->hide_window();
 	client->assign_to_desktop(index);
 	m_desktoplist[m_desktop_active].show(m_clientlist);
-	statusbar_update_desktop_list();
+	panel_update_desktop_list();
 }
 
 void XScreen::show_desktop()
@@ -399,14 +399,14 @@ void XScreen::set_net_desktop_names()
 	ewmh::set_net_desktop_names(m_rootwin, names);
 }
 
-void XScreen::statusbar_clear_title()
+void XScreen::panel_clear_title()
 {
 	if (!socket_out::defined()) return;
 	std::string message = "no_window_active";
 	socket_out::send(message);
 }
 
-void XScreen::statusbar_update_desktop_name()
+void XScreen::panel_update_desktop_name()
 {
 	if (!socket_out::defined()) return;
 	std::string message = "ws_name="
@@ -414,7 +414,7 @@ void XScreen::statusbar_update_desktop_name()
 	socket_out::send(message);
 }
 
-void XScreen::statusbar_update_desktop_list()
+void XScreen::panel_update_desktop_list()
 {
 	if (!socket_out::defined()) return;
 	std::stringstream ss;
@@ -638,8 +638,8 @@ void XScreen::switch_to_desktop(int index)
 	m_desktop_last = m_desktop_active;
 	m_desktop_active = index;
 	ewmh::set_net_current_desktop(m_rootwin, m_desktop_active);
-	statusbar_update_desktop_name();
-	statusbar_update_desktop_list();
+	panel_update_desktop_name();
+	panel_update_desktop_list();
 }
 
 void XScreen::run_launcher_menu(long type)

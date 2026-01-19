@@ -173,9 +173,9 @@ static void wm::process_message()
 
 	// Look if the wm function is defined and execute if found
 	for (wmfunc::FuncDef &funcdef : wmfunc::funcdefs) {
-		// Only desktop functions will be performed
-		if (funcdef.context != Context::Root) continue;
-		if (!wmfunction.compare(funcdef.namefunc)) {
+		// Only screen functions will be performed
+		if ((funcdef.context == Context::Root) &&
+			!wmfunction.compare(funcdef.namefunc)) {
 			(*funcdef.fscreen)(screen, funcdef.param);
 			XFlush(display);
 			break;

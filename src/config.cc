@@ -454,7 +454,12 @@ void conf::read_config()
 			continue;
 		}
 		if (!tokens[0].compare("bind-mouse")) {
-			BindingDef bdef(tokens[1], tokens[2]);
+			BindingDef bdef;
+			if (!tokens[2].compare("exec")) {
+				if (tokens.size() < 4) continue;
+				bdef = BindingDef(tokens[1], tokens[2], tokens[3]);
+			} else
+				bdef = BindingDef(tokens[1], tokens[2]);
 			Binding mb(bdef, EventType::Button);
 			if (mb.valid)
 				add_mousebinding(mb);

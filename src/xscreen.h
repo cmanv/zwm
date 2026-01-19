@@ -81,9 +81,10 @@ public:
 	void 				 move_client_to_desktop(XClient *, long);
 	void 				 raise_client(XClient *);
 	void 				 set_net_desktop_names();
-	void 				 statusbar_clear_title();
-	void 				 statusbar_update_desktop_list();
-	void 				 statusbar_update_desktop_name();
+	void 				 panel_clear_title();
+	void 				 panel_update_desktop_list();
+	void 				 panel_update_desktop_name();
+	void				 menu_send_list_client();
 	void 				 show_desktop();
 	void 				 hide_desktop();
 	void 				 close_desktop();
