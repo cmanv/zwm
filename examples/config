@@ -97,15 +97,15 @@
 # Colors: first value for light theme, second value for dark theme
 # ----------------------------------------------------------------
 #color window-border-active	tan		ForestGreen
-#color window-border-inactive	SlateGrey4	DarkGreySlate
+#color window-border-inactive	SlateGrey4	DarkSlateGrey
 #color window-border-urgent	orange		DarOrange
-#color menu-background		gray90		grey20
-#color menu-border		SlateGray3	SkyBlue4
+#color menu-background		seashell	DarkSlateGrey
+#color menu-border		SlateGray3	gray20
 #color menu-highlight		SlateGray2	SteelBlue4
-#color menu-item-text	 	black		grey88
-#color menu-item-text-selected	black		WhiteSmoke
-#color menu-title		black		WhiteSmoke
-#color menu-title-background	SlateGray3	SkyBlue4
+#color menu-item-text	 	black		seashell
+#color menu-item-text-selected	black		ivory
+#color menu-title		black		ivory
+#color menu-title-background	SlateGray3	DarkOrange4
 
 # ----------------------------------------------------------------
 # Key bindings

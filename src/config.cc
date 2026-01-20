@@ -204,12 +204,12 @@ void conf::init()
 	darkcolordefs[Color::WindowBorderInactive] 	= "DarkSlateGrey";
 	darkcolordefs[Color::WindowBorderUrgent] 	= "DarkOrange";
 	darkcolordefs[Color::MenuBackground] 		= "DarkSlategrey";
-	darkcolordefs[Color::MenuBorder] 		= "SkyBlue4";
+	darkcolordefs[Color::MenuBorder] 		= "gray20";
 	darkcolordefs[Color::MenuHighlight] 		= "SteelBlue4";
-	darkcolordefs[Color::MenuItemText] 		= "grey88";
-	darkcolordefs[Color::MenuItemTextSelected] 	= "WhiteSmoke";
-	darkcolordefs[Color::MenuTitle] 		= "WhiteSmoke";
-	darkcolordefs[Color::MenuTitleBackground] 	= "SkyBlue4";
+	darkcolordefs[Color::MenuItemText] 		= "seashell";
+	darkcolordefs[Color::MenuItemTextSelected] 	= "ivory";
+	darkcolordefs[Color::MenuTitle] 		= "ivory";
+	darkcolordefs[Color::MenuTitleBackground] 	= "DarkOrange4";
 
 	if (!std::getenv("HOME")) {
 		std::cerr << "HOME is not defined in the environment!\n";
