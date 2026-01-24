@@ -23,7 +23,6 @@
 #ifndef _XCLIENT_H_
 #define _XCLIENT_H_
 #include <X11/Xlib.h>
-#include <X11/Xft/Xft.h>
 #include <string>
 #include <vector>
 #include "enums.h"
@@ -38,18 +37,6 @@ struct MotifHints {
 	unsigned long	decorations;
 	long		inputMode;
 	unsigned long	status;
-};
-
-// XClientProp shows the position or size when moving or resizing a window. 
-class XClientProp {
-	Window		 m_window;
-	XftDraw		*m_xftdraw;
-	XftFont		*m_font;
-	XftColor	*m_color;
-public:
-	XClientProp(XScreen *, Window);
-	~XClientProp();
-	void 		draw(std::string &, int, int);
 };
 
 class XClient {

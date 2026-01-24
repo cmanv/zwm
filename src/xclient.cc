@@ -33,6 +33,7 @@
 #include "wmcore.h"
 #include "xpointer.h"
 #include "xscreen.h"
+#include "xwinprop.h"
 #include "xclient.h"
 
 const long XClient::MouseMask	= ButtonReleaseMask|PointerMotionMask;
@@ -574,9 +575,9 @@ void XClient::move_window_with_pointer()
 		GrabModeAsync, GrabModeAsync, None, wm::cursors[Pointer::ShapeMove],
 		 CurrentTime) != GrabSuccess) return;
 
-	XClientProp client_prop(m_screen, m_parent);
+	XWinProp win_prop(m_screen, m_parent);
 	std::string label = std::to_string(m_geom.x) + " . " + std::to_string(m_geom.y);
-	client_prop.draw(label, m_geom.w/2, m_geom.h/2);
+	win_prop.draw(label, m_geom.w/2, m_geom.h/2);
 
 	bool buttonpress = true;
 	while (buttonpress) {
@@ -598,7 +599,7 @@ void XClient::move_window_with_pointer()
 
 			label = std::to_string(m_geom.x) + " . "
 						+ std::to_string(m_geom.y);
-			client_prop.draw(label, m_geom.w/2, m_geom.h/2);
+			win_prop.draw(label, m_geom.w/2, m_geom.h/2);
 
 			break;
 		case ButtonRelease:
@@ -684,11 +685,11 @@ void XClient::resize_window_with_pointer()
 	if (XGrabPointer(wm::display, m_parent, False, MouseMask, GrabModeAsync,
 		GrabModeAsync, None, cursor, CurrentTime) != GrabSuccess) return;
 
-	XClientProp client_prop(m_screen, m_parent);
+	XWinProp win_prop(m_screen, m_parent);
 	int width = (m_geom.w - m_hints.basew) / m_hints.incw;
 	int height = (m_geom.h - m_hints.baseh) / m_hints.inch;
 	std::string label = std::to_string(width) + " x " + std::to_string(height);
-	client_prop.draw(label, m_geom.w/2, m_geom.h/2);
+	win_prop.draw(label, m_geom.w/2, m_geom.h/2);
 
 	XEvent	ev;
 	Time	ltime = 0;
@@ -751,7 +752,7 @@ void XClient::resize_window_with_pointer()
 			width = (m_geom.w - m_hints.basew) / m_hints.incw;
 			height = (m_geom.h - m_hints.baseh) / m_hints.inch;
 			label = std::to_string(width) + " x " + std::to_string(height);
-			client_prop.draw(label, m_geom.w/2, m_geom.h/2);
+			win_prop.draw(label, m_geom.w/2, m_geom.h/2);
 			break;
 		case ButtonRelease:
 			buttonpress = false;
@@ -932,37 +933,4 @@ void XClient::remove_fullscreen()
 		clear_states(State::Frozen);
 	}
 	clear_states(State::FullScreen);
-}
-
-XClientProp::XClientProp(XScreen *screen, Window parent)
-{
-	unsigned long pixel;
-	m_font = screen->get_menu_font();
-	m_color = screen->get_color(Color::MenuItemText);
-	pixel = screen->get_pixel(Color::MenuBackground);
-	m_window = XCreateSimpleWindow(wm::display, parent, 0, 0, 1, 1, 0,
-					pixel, pixel);
-	m_xftdraw = XftDrawCreate(wm::display, m_window, screen->get_visual(),
-					screen->get_colormap());
-	XMapWindow(wm::display, m_window);
-}
-
-XClientProp::~XClientProp()
-{
-	XftDrawDestroy(m_xftdraw);
-	XDestroyWindow(wm::display, m_window);
-}
-
-void XClientProp::draw(std::string &text, int x, int y)
-{
-	XGlyphInfo	extents;
-	int 		len = text.size();
-
-	XftTextExtentsUtf8(wm::display, m_font, (const FcChar8*)text.c_str(),
-				len, &extents);
-	XMoveResizeWindow(wm::display, m_window, x - extents.width/2, y,
-				extents.xOff, m_font->height);
-	XClearWindow(wm::display, m_window);
-	XftDrawStringUtf8(m_xftdraw, m_color, m_font, 0, m_font->ascent + 1,
-				(const FcChar8*)text.c_str(), len);
 }
