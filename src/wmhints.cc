@@ -25,7 +25,7 @@
 #include <string>
 #include <vector>
 #include "config.h"
-#include "winmgr.h"
+#include "wmcore.h"
 #include "wmhints.h"
 
 namespace wmh {

@@ -29,7 +29,7 @@
 #include <string>
 #include "version.h"
 #include "config.h"
-#include "winmgr.h"
+#include "wmcore.h"
 
 static std::string appname(APP_NAME);
 static std::string version(APP_VERSION);

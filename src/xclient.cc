@@ -30,7 +30,7 @@
 #include "binding.h"
 #include "config.h"
 #include "wmhints.h"
-#include "winmgr.h"
+#include "wmcore.h"
 #include "xpointer.h"
 #include "xscreen.h"
 #include "xclient.h"

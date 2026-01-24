@@ -34,7 +34,7 @@
 #include "menu.h"
 #include "socket.h"
 #include "timer.h"
-#include "winmgr.h"
+#include "wmcore.h"
 #include "wmhints.h"
 #include "xclient.h"
 #include "xscreen.h"

@@ -26,11 +26,11 @@
 #include <vector>
 #include "process.h"
 #include "config.h"
-#include "winmgr.h"
 #include "menu.h"
 #include "desktop.h"
 #include "xclient.h"
 #include "xscreen.h"
+#include "wmcore.h"
 #include "wmfunc.h"
 
 namespace wmfunc {

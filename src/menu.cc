@@ -28,7 +28,7 @@
 #include "enums.h"
 #include "process.h"
 #include "timer.h"
-#include "winmgr.h"
+#include "wmcore.h"
 #include "xclient.h"
 #include "xscreen.h"
 #include "xpointer.h"

@@ -39,7 +39,7 @@
 #include "xevents.h"
 #include "wmfunc.h"
 #include "wmhints.h"
-#include "winmgr.h"
+#include "wmcore.h"
 
 namespace wm {
 	Display				*display;

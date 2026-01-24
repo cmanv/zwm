@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "winmgr.h"
+#include "wmcore.h"
 #include "xpointer.h"
 
 Position xpointer::get_pos(Window window)

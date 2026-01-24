@@ -28,7 +28,7 @@
 #include "timer.h"
 #include "socket.h"
 #include "config.h"
-#include "winmgr.h"
+#include "wmcore.h"
 #include "xclient.h"
 #include "xpointer.h"
 #include "xscreen.h"

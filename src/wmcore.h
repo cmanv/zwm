@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef _WINMGR_H_
-#define _WINMGR_H_
+#ifndef _WMCORE_H_
+#define _WMCORE_H_
 #include <signal.h>
 #include <X11/cursorfont.h>
 #include <X11/Xlib.h>
@@ -44,4 +44,4 @@ namespace wm {
 	void		 set_param_restart(int, char**);
 	void		 set_param_restart(std::string &);
 }
-#endif // _WINMGR_H_
+#endif // _WMCORE_H_

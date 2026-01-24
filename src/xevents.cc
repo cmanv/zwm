@@ -29,7 +29,7 @@
 #include "config.h"
 #include "binding.h"
 #include "wmhints.h"
-#include "winmgr.h"
+#include "wmcore.h"
 #include "xclient.h"
 #include "xscreen.h"
 #include "xevents.h"

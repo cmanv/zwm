@@ -26,7 +26,7 @@
 #include <vector>
 #include "timer.h"
 #include "config.h"
-#include "winmgr.h"
+#include "wmcore.h"
 #include "wmfunc.h"
 #include "binding.h"
 
