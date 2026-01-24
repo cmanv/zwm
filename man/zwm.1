@@ -8,7 +8,7 @@ zwm \(em a simple stacking / tiling window manager for X11
 [\-hdpv]
 .SH DESCRIPTION
 \f[B]zwm\f[R] is an hybrid stacking/tiling window manager for X11.
-It supports a stacking mode and 3 tiling modes.
+It supports a stacking layout and tiling layouts.
 It features a number of configurable window manager functions,
 workspaces and a configurable menu.
 It is also able to send and receive messages through sockets.
@@ -100,10 +100,10 @@ Increasing its value increases verbosity.
 .RE
 .IP \(bu 2
 \f[B]desktop\-defaults\f[R] \f[I]number\f[R] \f[I]name\f[R]
-\f[I]mode\f[R] \f[I]proportion\f[R]
+\f[I]layout\f[R] \f[I]proportion\f[R]
 .RS
 .PP
-Define the default name and tiling mode of the desktop_.
+Define the default name and tiling layout of the desktop_.
 .RE
 .RS
 .IP \(bu 2
@@ -111,7 +111,7 @@ Define the default name and tiling mode of the desktop_.
 .IP \(bu 2
 \f[I]name\f[R] is a string to identify the desktop.
 .IP \(bu 2
-\f[I]mode\f[R] can be any of:
+\f[I]layout\f[R] can be any of:
 .RE
 .RS
 .RS
@@ -136,15 +136,15 @@ The number of rows and columns can be anywhere from 1 to 9.
 .IP \(bu 2
 \f[I]proportion\f[R] is the proportion of the screeen used by the master
 window.
-(HTiled/VTiled modes only)
+(HTiled/VTiled layouts only)
 .RE
 .IP \(bu 2
-\f[B]desktop\-modes\f[R] \f[I]mode1\f[R],_mode2,..
+\f[B]desktop\-layouts\f[R] \f[I]layout1\f[R],_layout2,..
 .RS
 .PP
-Define a comma separated list of active desktop modes.
-The order is used to rotate mode with the functions
-\f[I]desktop\-mode\-next\f[R] and \f[I]desktop\-mode\-prev\f[R].
+Define a comma separated list of active desktop layouts.
+The order is used to rotate layouts with the functions
+\f[I]desktop\-layout\-next\f[R] and \f[I]desktop\-layout\-prev\f[R].
 .RE
 .RS
 .PP
@@ -407,16 +407,16 @@ through a key or mouse binding.
 \f[B]desktop\-launcher\-menu\f[R]: Show the launcher menu.
 (keyboard driven).
 .IP \(bu 2
-\f[B]desktop\-mode\-{\f[BI]number\f[B]}\f[R]: Switch to mode
+\f[B]desktop\-layout\-{\f[BI]number\f[B]}\f[R]: Switch to layout
 \f[I]number\f[R] (1\-9).
-The \f[I]number\f[R] refers to the order of appearance of the mode in
-**\f[I]desktop\f[R]modes_**.
+The \f[I]number\f[R] refers to the order of appearance of the layout in
+**\f[I]desktop\f[R]layouts_**.
 .IP \(bu 2
-\f[B]desktop\-mode\-next\f[R]: Switch the desktop to the next tiling
-mode in the order defined by \f[I]desktop\-modes\f[R].
+\f[B]desktop\-layout\-next\f[R]: Switch the desktop to the next layout
+in the order defined by \f[I]desktop\-layouts\f[R].
 .IP \(bu 2
-\f[B]desktop\-mode\-prev\f[R]: Switch the desktop to the previous tiling
-mode in ther order defined by \f[I]desktop\-modes\f[R].
+\f[B]desktop\-layout\-prev\f[R]: Switch the desktop to the previous
+layout in ther order defined by \f[I]desktop\-layouts\f[R].
 .IP \(bu 2
 \f[B]desktop\-set\-dark\-theme\f[R]: Switch the window manager colors to
 the dark theme.
@@ -437,11 +437,11 @@ First desktop wraps to last.
 .IP \(bu 2
 \f[B]desktop\-window\-focus\-next\f[R]: Move the focus to the next
 window.
-(All modes except Monocle)
+(All layouts except Monocle)
 .IP \(bu 2
 \f[B]desktop\-window\-focus\-prev\f[R]: Move the focus to the previous
 window.
-(All modes except Monocle)
+(All layouts except Monocle)
 .IP \(bu 2
 \f[B]desktop\-window\-master\-decr\f[R]: Decrease the proportion of the
 screen occupied by the master window.
@@ -453,11 +453,11 @@ screen occupied by the master window.
 .IP \(bu 2
 \f[B]desktop\-window\-rotate\-next\f[R]: Rotate the position of the
 windows counterclockwise while keeping the focus at the same position.
-(All tiled modes)
+(All tiled layouts)
 .IP \(bu 2
 \f[B]desktop\-window\-rotate\-prev\f[R]: Rotate the position of the
 windows clockwise while keeping the focus at the same position.
-(All tiled modes)
+(All tiled layouts)
 .IP \(bu 2
 \f[B]desktop\-window\-swap\-next\f[R]: Swap the position of the active
 window and the next window.
@@ -572,17 +572,17 @@ This sections list all key and mouse bindings defined by default.
 .IP \(bu 2
 \f[B]CM\-q\f[R] : \f[I]quit\f[R]
 .IP \(bu 2
-\f[B]M\-1\f[R] : \f[I]desktop\-mode\-1\f[R]
+\f[B]M\-1\f[R] : \f[I]desktop\-layout\-1\f[R]
 .IP \(bu 2
-\f[B]M\-2\f[R] : \f[I]desktop\-mode\-2\f[R]
+\f[B]M\-2\f[R] : \f[I]desktop\-layout\-2\f[R]
 .IP \(bu 2
-\f[B]M\-3\f[R] : \f[I]desktop\-mode\-3\f[R]
+\f[B]M\-3\f[R] : \f[I]desktop\-layout\-3\f[R]
 .IP \(bu 2
-\f[B]M\-4\f[R] : \f[I]desktop\-mode\-4\f[R]
+\f[B]M\-4\f[R] : \f[I]desktop\-layout\-4\f[R]
 .IP \(bu 2
-\f[B]M\-Up\f[R] : \f[I]desktop\-mode\-next\f[R]
+\f[B]M\-Up\f[R] : \f[I]desktop\-layout\-next\f[R]
 .IP \(bu 2
-\f[B]M\-Down\f[R] : \f[I]desktop\-mode\-prev\f[R]
+\f[B]M\-Down\f[R] : \f[I]desktop\-layout\-prev\f[R]
 .IP \(bu 2
 \f[B]CM\-1\f[R] : \f[I]desktop\-switch\-1\f[R]
 .IP \(bu 2
@@ -728,19 +728,19 @@ Sent when there is a change of active window title.
 Sent when there is no longer an active window.on the desktop.
 .RE
 .IP \(bu 2
-\f[I]desktop_name=\(dqdesktop name\(dq\f[R]
+\f[I]deskname=\(dqdesktop name\(dq\f[R]
 .RS
 .PP
 Sent when the active desktop has changed.
 .RE
 .IP \(bu 2
-\f[I]desktop_mode=\(dqdesktop mode\(dq\f[R]
+\f[I]desklayout=\(dqdesktop layout\(dq\f[R]
 .RS
 .PP
-Sent when the desktop mode has changed.
+Sent when the desktop layout has changed.
 .RE
 .IP \(bu 2
-\f[I]desktop_list=\(dqspace separated list of desktops numbers\(dq\f[R]
+\f[I]desklist=\(dqspace separated list of desktops numbers\(dq\f[R]
 .RS
 .PP
 Sent where there is a change in the list of active desktops.

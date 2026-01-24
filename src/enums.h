@@ -98,7 +98,7 @@ enum State {
 	Docked		= Sticky|Frozen|Ignored|NoBorder,
 };
 
-enum Mode {
+enum Layout {
 	Stacked		= 0x01,
 	Monocle		= 0x02,
 	HTiled		= 0x04,

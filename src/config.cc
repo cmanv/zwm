@@ -49,11 +49,11 @@ namespace conf {
 		{ "ten", "default", 0.5 },
 	};
 
-	std::vector<DesktopMode> desktop_modes = {
-		{ "Stacked", Mode::Stacked, 0, 0 },
-		{ "Monocle", Mode::Monocle, 0, 0 },
-		{ "VTiled",  Mode::VTiled, 0, 0 },
-		{ "HTiled",  Mode::HTiled, 0, 0 },
+	std::vector<DesktopLayout> desktop_layouts = {
+		{ "Stacked", Layout::Stacked, 0, 0 },
+		{ "Monocle", Layout::Monocle, 0, 0 },
+		{ "VTiled",  Layout::VTiled, 0, 0 },
+		{ "HTiled",  Layout::HTiled, 0, 0 },
 	};
 
 	std::vector<BindingDef>	keybinding_defs = {
@@ -69,12 +69,12 @@ namespace conf {
 		{ "CM-0",	"desktop-switch-10" },
 		{ "CM-Right",	"desktop-switch-next" },
 		{ "CM-Left",	"desktop-switch-prev" },
-		{ "M-1",	"desktop-mode-1" },
-		{ "M-2",	"desktop-mode-2" },
-		{ "M-3",	"desktop-mode-3" },
-		{ "M-4",	"desktop-mode-4" },
-		{ "M-Up",	"desktop-mode-next" },
-		{ "M-Down",	"desktop-mode-prev" },
+		{ "M-1",	"desktop-layout-1" },
+		{ "M-2",	"desktop-layout-2" },
+		{ "M-3",	"desktop-layout-3" },
+		{ "M-4",	"desktop-layout-4" },
+		{ "M-Up",	"desktop-layout-next" },
+		{ "M-Down",	"desktop-layout-prev" },
 		{ "M-Tab",	"desktop-window-focus-next" },
 		{ "SM-Tab",	"desktop-window-focus-prev" },
 		{ "M-greater",	"desktop-window-master-incr" },
@@ -163,13 +163,13 @@ namespace conf {
 	bool get_line(std::ifstream &, std::string &);
 	int  get_tokens(std::string &, std::vector<std::string> &);
 	int  split_string(std::string &, std::vector<std::string> &, char);
-	void parse_grid_mode(std::string &, long &, long &);
+	void parse_grid_layout(std::string &, long &, long &);
 	void get_name_class(std::string&, std::string&, std::string&);
 	void add_keybinding(Binding&);
 	void remove_keybinding(Binding &);
 	void add_mousebinding(Binding&);
 	void remove_mousebinding(Binding &);
-	void add_desktop_modes(std::vector<std::string> &);
+	void add_desktop_layouts(std::vector<std::string> &);
 	void add_window_states(std::string &, std::string &, std::vector<std::string> &);
 	void add_default_desktop(std::string &, std::string &, int);
 	void add_menu(std::string &, std::ifstream &);
@@ -205,11 +205,11 @@ void conf::init()
 	darkcolordefs[Color::WindowBorderUrgent] 	= "DarkOrange";
 	darkcolordefs[Color::MenuBackground] 		= "DarkSlategrey";
 	darkcolordefs[Color::MenuBorder] 		= "gray20";
-	darkcolordefs[Color::MenuHighlight] 		= "SteelBlue4";
+	darkcolordefs[Color::MenuHighlight] 		= "SkyBlue4";
 	darkcolordefs[Color::MenuItemText] 		= "seashell";
 	darkcolordefs[Color::MenuItemTextSelected] 	= "ivory";
 	darkcolordefs[Color::MenuTitle] 		= "ivory";
-	darkcolordefs[Color::MenuTitleBackground] 	= "DarkOrange4";
+	darkcolordefs[Color::MenuTitleBackground] 	= "SteelBlue4";
 
 	if (!std::getenv("HOME")) {
 		std::cerr << "HOME is not defined in the environment!\n";
@@ -300,10 +300,10 @@ void conf::read_config()
 			debug = std::strtol(tokens[1].c_str(), NULL, 10);
 			continue;
 		}
-		if (!tokens[0].compare("desktop-modes")) {
-			std::vector<std::string> modes;
-			split_string(tokens[1], modes, ',');
-			add_desktop_modes(modes);
+		if (!tokens[0].compare("desktop-layouts")) {
+			std::vector<std::string> layouts;
+			split_string(tokens[1], layouts, ',');
+			add_desktop_layouts(layouts);
 			continue;
 		}
 		if (message_socket.empty() && !tokens[0].compare("message-socket")) {
@@ -356,13 +356,13 @@ void conf::read_config()
 				|| (!tokens[3].compare("Monocle"))
 				|| (!tokens[3].compare("HTiled"))
 				|| (!tokens[3].compare("VTiled")))
-					desktop_defs[index].mode = tokens[3];
+					desktop_defs[index].layout = tokens[3];
 			else {
 				long rows, cols;
-				parse_grid_mode(tokens[3], rows, cols);
+				parse_grid_layout(tokens[3], rows, cols);
 				if ((rows >= 1) && (rows <= 9)
 					&& (cols >= 1) && (cols <= 9))
-					desktop_defs[index].mode = tokens[3];
+					desktop_defs[index].layout = tokens[3];
 			}
 			if (tokens.size() < 5) continue;
 
@@ -576,44 +576,44 @@ void conf::remove_mousebinding(Binding &mb)
 	if (it != mousebindings.end()) mousebindings.erase(it);
 }
 
-void conf::add_desktop_modes(std::vector<std::string> &modes)
+void conf::add_desktop_layouts(std::vector<std::string> &layouts)
 {
 	long index = 0;
-	desktop_modes.clear();
-	for (std::string &mode : modes) {
-		if (!mode.compare("Stacked"))
-			desktop_modes.push_back(
-				DesktopMode("Stacked", Mode::Stacked, 0, 0));
-		else if (!mode.compare("Monocle"))
-			desktop_modes.push_back(
-				DesktopMode("Monocle", Mode::Monocle, 0, 0));
-		else if (!mode.compare("VTiled"))
-			desktop_modes.push_back(
-				DesktopMode("VTiled", Mode::VTiled, 0, 0));
-		else if (!mode.compare("HTiled"))
-			desktop_modes.push_back(
-				DesktopMode("HTiled", Mode::HTiled, 0, 0));
+	desktop_layouts.clear();
+	for (std::string &layout : layouts) {
+		if (!layout.compare("Stacked"))
+			desktop_layouts.push_back(
+				DesktopLayout("Stacked", Layout::Stacked, 0, 0));
+		else if (!layout.compare("Monocle"))
+			desktop_layouts.push_back(
+				DesktopLayout("Monocle", Layout::Monocle, 0, 0));
+		else if (!layout.compare("VTiled"))
+			desktop_layouts.push_back(
+				DesktopLayout("VTiled", Layout::VTiled, 0, 0));
+		else if (!layout.compare("HTiled"))
+			desktop_layouts.push_back(
+				DesktopLayout("HTiled", Layout::HTiled, 0, 0));
 		else {
 			long rows, cols;
-			parse_grid_mode(mode, rows, cols);
+			parse_grid_layout(layout, rows, cols);
 			if ((rows < 1) || (rows > 9)) continue;
 			if ((cols < 1) || (cols > 9)) continue;
-			desktop_modes.push_back(
-				DesktopMode(mode, Mode::Grid, rows, cols));
+			desktop_layouts.push_back(
+				DesktopLayout(layout, Layout::Grid, rows, cols));
 		}
 	}
-	if (desktop_modes.empty())
-		desktop_modes.push_back(
-				DesktopMode("Stacked", Mode::Stacked, 0, 0));
+	if (desktop_layouts.empty())
+		desktop_layouts.push_back(
+				DesktopLayout("Stacked", Layout::Stacked, 0, 0));
 }
 
-// Parse grid mode rows x columns
-void conf::parse_grid_mode(std::string &mode, long &rows, long &cols)
+// Parse grid layout rows x columns
+void conf::parse_grid_layout(std::string &layout, long &rows, long &cols)
 {
 	rows = 0;
 	cols = 0;
 	std::vector<std::string> values;
-	split_string(mode, values, 'x');
+	split_string(layout, values, 'x');
 	if (values.size() != 2) return;
 	rows = std::strtol(values[0].c_str(), NULL, 10);
 	cols = std::strtol(values[1].c_str(), NULL, 10);

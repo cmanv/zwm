@@ -14,9 +14,9 @@
 #debug-level		0
 
 # ----------------------------------------------------------------
-# List of active desktop modes. First mode is default.
+# List of active desktop layouts. First layout is default.
 # ----------------------------------------------------------------
-#desktop-modes		Stacked,Monocle,VTiled,2x2
+#desktop-layouts		Stacked,Monocle,VTiled,2x2
 
 # ----------------------------------------------------------------
 # Specify default options for the desktops.
@@ -101,11 +101,11 @@
 #color window-border-urgent	orange		DarOrange
 #color menu-background		seashell	DarkSlateGrey
 #color menu-border		SlateGray3	gray20
-#color menu-highlight		SlateGray2	SteelBlue4
+#color menu-highlight		SlateGray2	SkyBlue4
 #color menu-item-text	 	black		seashell
 #color menu-item-text-selected	black		ivory
 #color menu-title		black		ivory
-#color menu-title-background	SlateGray3	DarkOrange4
+#color menu-title-background	SlateGray3	SteelBlue4
 
 # ----------------------------------------------------------------
 # Key bindings

@@ -54,7 +54,7 @@ XScreen::XScreen(int id): m_screenid(id)
 	// Desktops
 	int index = 0;
 	for (DesktopDef &def : conf::desktop_defs)
-		m_desktoplist.push_back(Desktop(def.name, this, index++, def.mode,
+		m_desktoplist.push_back(Desktop(def.name, this, index++, def.layout,
 					def.master_split));
 
 	m_ndesktops = m_desktoplist.size();
@@ -352,20 +352,20 @@ void XScreen::close_desktop()
 	m_desktoplist[m_desktop_active].close(m_clientlist);
 }
 
-void XScreen::select_desktop_mode(long index)
+void XScreen::select_desktop_layout(long index)
 {
 	if (conf::debug) {
 		std::cout << timer::gettime() << " [XScreen:" << __func__ << "]\n";
 	}
-	m_desktoplist[m_desktop_active].select_mode(m_clientlist, index);
+	m_desktoplist[m_desktop_active].select_layout(m_clientlist, index);
 }
 
-void XScreen::rotate_desktop_mode(long direction)
+void XScreen::rotate_desktop_layout(long direction)
 {
 	if (conf::debug) {
 		std::cout << timer::gettime() << " [XScreen:" << __func__ << "]\n";
 	}
-	m_desktoplist[m_desktop_active].rotate_mode(m_clientlist, direction);
+	m_desktoplist[m_desktop_active].rotate_layout(m_clientlist, direction);
 }
 
 void XScreen::update_net_client_lists()
@@ -409,7 +409,7 @@ void XScreen::panel_clear_title()
 void XScreen::panel_update_desktop_name()
 {
 	if (!socket_out::defined()) return;
-	std::string message = "ws_name="
+	std::string message = "deskname="
 		+ m_desktoplist[m_desktop_active].get_name();
 	socket_out::send(message);
 }
@@ -430,7 +430,7 @@ void XScreen::panel_update_desktop_list()
 			ss << i+1 << separator;
 	}
 	std::string s(ss.str());
-	std::string message = "ws_list=" + s;
+	std::string message = "desklist=" + s;
 	socket_out::send(message);
 }
 

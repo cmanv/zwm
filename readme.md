@@ -13,7 +13,7 @@ zwm — a simple stacking / tiling window manager for X11
 # DESCRIPTION
 
 **zwm** is an hybrid stacking/tiling window manager for X11. It supports a stacking
-mode and 3 tiling modes. It features a number of configurable window manager
+layout and tiling layouts. It features a number of configurable window manager
 functions, workspaces and a configurable menu.
 It is also able to send and receive messages through sockets.
 
@@ -77,13 +77,13 @@ This section describes all options that can be set in the configuration file.
 > A non zero value causes the window manager to print debug information
 > on the standard output. Increasing its value increases verbosity. (default: 0)
 
-- **desktop-defaults** _number_ _name_ _mode_ _proportion_
+- **desktop-defaults** _number_ _name_ _layout_ _proportion_
 
-> Define the default name and tiling mode of the desktop_.
+> Define the default name and tiling layout of the desktop_.
 
 > * _number_ is the desktop number from 1 to 10.
 > * _name_ is a string to identify the desktop.
-> * _mode_ can be any of:
+> * _layout_ can be any of:
 
 > > * _Stacked_: Windows are stacked and can be moved/resized by the user.
 > > * _Monocle_: Only one window (maximized) is visible at a time.
@@ -92,12 +92,13 @@ This section describes all options that can be set in the configuration file.
 > > * _RxC_: Windows are arranged in a grid of _R_ rows and _C_ columns.
 > > The number of rows and columns can be anywhere from 1 to 9.
 
-> * _proportion_ is the proportion of the screeen used by the master window. (HTiled/VTiled modes only)
+> * _proportion_ is the proportion of the screeen used by the master window.
+(HTiled/VTiled layouts only)
 
-- **desktop-modes** _mode1_,_mode2,..
+- **desktop-layouts** _layout1_,_layout2,..
 
-> Define a comma separated list of active desktop modes. The order is used
-> to rotate mode with the functions _desktop-mode-next_ and _desktop-mode-prev_.
+> Define a comma separated list of active desktop layouts. The order is used
+> to rotate layouts with the functions _desktop-layout-next_ and _desktop-layout-prev_.
 
 > Default is : Stacked,Monocle,VTiled,HTiled
 
@@ -255,22 +256,22 @@ or mouse binding.
 - **desktop-client-menu**: Show the list of X11 clients. (keyboard driven).
 - **desktop-desktop-menu**: Show the list of active desktops. (keyboard driven).
 - **desktop-launcher-menu**: Show the launcher menu. (keyboard driven).
-- **desktop-mode-{_number_}**: Switch to mode _number_ (1-9).
-The _number_ refers to the order of appearance of the mode in **_desktop_modes_**.
-- **desktop-mode-next**: Switch the desktop to the next tiling mode in the order defined by _desktop-modes_.
-- **desktop-mode-prev**: Switch the desktop to the previous tiling mode in ther order defined by _desktop-modes_.
+- **desktop-layout-{_number_}**: Switch to layout _number_ (1-9).
+The _number_ refers to the order of appearance of the layout in **_desktop_layouts_**.
+- **desktop-layout-next**: Switch the desktop to the next layout in the order defined by _desktop-layouts_.
+- **desktop-layout-prev**: Switch the desktop to the previous layout in ther order defined by _desktop-layouts_.
 - **desktop-set-dark-theme**: Switch the window manager colors to the dark theme.
 - **desktop-set-light-theme**: Switch the window manager colors to the light theme.
 - **desktop-switch-{_number_}**: Go to desktop _number_.
 - **desktop-switch-last**: Move back to the last used desktop.
 - **desktop-switch-next**: Go to the next active desktop. Last desktop wraps to first.
 - **desktop-switch-prev**: Go to the previous active desktop. First desktop wraps to last.
-- **desktop-window-focus-next**: Move the focus to the next window. (All modes except Monocle)
-- **desktop-window-focus-prev**: Move the focus to the previous window. (All modes except Monocle)
+- **desktop-window-focus-next**: Move the focus to the next window. (All layouts except Monocle)
+- **desktop-window-focus-prev**: Move the focus to the previous window. (All layouts except Monocle)
 - **desktop-window-master-decr**: Decrease the proportion of the screen occupied by the master window. (HTiled, VTIled)
 - **desktop-window-master-incr**: Increase the proportion of the screen occupied by the master window. (HTiled, VTIled)
-- **desktop-window-rotate-next**: Rotate the position of the windows counterclockwise while keeping the focus at the same position. (All tiled modes)
-- **desktop-window-rotate-prev**: Rotate the position of the windows clockwise while keeping the focus at the same position. (All tiled modes)
+- **desktop-window-rotate-next**: Rotate the position of the windows counterclockwise while keeping the focus at the same position. (All tiled layouts)
+- **desktop-window-rotate-prev**: Rotate the position of the windows clockwise while keeping the focus at the same position. (All tiled layouts)
 - **desktop-window-swap-next**: Swap the position of the active window and the next window. (HTiled, VTiled)
 - **desktop-window-swap-prev**: Swap the position of the active window and the previous window. (HTiled, VTiled)
 - **exec**  _path_: Execute a program defined by _path_.
@@ -311,12 +312,12 @@ This sections list all key and mouse bindings defined by default.
 - **C-Return**	:	_terminal_
 - **CM-r**	:	_restart_
 - **CM-q**	:	_quit_
-- **M-1**	:	_desktop-mode-1_
-- **M-2**	:	_desktop-mode-2_
-- **M-3**	:	_desktop-mode-3_
-- **M-4**	:	_desktop-mode-4_
-- **M-Up**	:	_desktop-mode-next_
-- **M-Down**	:	_desktop-mode-prev_
+- **M-1**	:	_desktop-layout-1_
+- **M-2**	:	_desktop-layout-2_
+- **M-3**	:	_desktop-layout-3_
+- **M-4**	:	_desktop-layout-4_
+- **M-Up**	:	_desktop-layout-next_
+- **M-Down**	:	_desktop-layout-prev_
 - **CM-1**	:	_desktop-switch-1_
 - **CM-2**	:	_desktop-switch-2_
 - **CM-3**	:	_desktop-switch-3_
@@ -406,15 +407,15 @@ This is the list of messages that can be sent by the window manager:
 
 > Sent when there is no longer an active window.on the desktop.
 
-- _desktop\_name="desktop name"_
+- _deskname="desktop name"_
 
 > Sent when the active desktop has changed.
 
-- _desktop\_mode="desktop mode"_
+- _desklayout="desktop layout"_
 
-> Sent when the desktop mode has changed.
+> Sent when the desktop layout has changed.
 
-- _desktop\_list="space separated list of desktops numbers"_
+- _desklist="space separated list of desktops numbers"_
 
 > Sent where there is a change in the list of active desktops.
 > The active desktop number is prepended by a '*' in the list.

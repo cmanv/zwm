@@ -33,8 +33,8 @@ class Desktop {
 	std::string		 m_name;
 	XScreen			*m_screen;
 	long		 	 m_index;
-	long			 m_mode;
-	long			 m_mode_index;
+	long			 m_layout;
+	long			 m_layout_index;
 	float			 m_master_split;
 	long			 m_cols;
 	long			 m_rows;
@@ -48,9 +48,9 @@ public:
 	void			 show(std::vector<XClient*>&);
 	void			 hide(std::vector<XClient*>&);
 	void			 close(std::vector<XClient*>&);
-	void			 select_mode(std::vector<XClient*>&, long);
-	void			 rotate_mode(std::vector<XClient*>&, long);
-	void			 panel_update_mode();
+	void			 select_layout(std::vector<XClient*>&, long);
+	void			 rotate_layout(std::vector<XClient*>&, long);
+	void			 panel_update_layout();
 private:
 	void			 restack_windows(std::vector<XClient*>&);
 	void 			 tile_grid(std::vector<XClient*>&);

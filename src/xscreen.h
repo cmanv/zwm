@@ -94,8 +94,8 @@ public:
 	void	 			 ensure_clients_are_visible();
 	void	 			 cycle_windows(long);
 	void	 			 cycle_desktops(long);
-	void				 select_desktop_mode(long);
-	void 				 rotate_desktop_mode(long);
+	void				 select_desktop_layout(long);
+	void 				 rotate_desktop_layout(long);
 	void	 			 rotate_desktop_tiles(long);
 	void	 			 swap_desktop_tiles(long);
 	void 				 desktop_master_resize(long);

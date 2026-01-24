@@ -30,7 +30,7 @@
 
 struct DesktopDef {
 	std::string 	name;
-	std::string	mode;
+	std::string	layout;
 	float		master_split;
 };
 
@@ -42,13 +42,13 @@ struct DefaultDesktop {
 		:resname(n), resclass(c), index(i) {}
 };
 
-struct DesktopMode {
+struct DesktopLayout {
 	std::string	name;
-	long		mode;
+	long		layout;
 	long		rows;
 	long		cols;
-	DesktopMode(std::string n, long m, long r, long c)
-		:name(n), mode(m), rows(r), cols(c) {}
+	DesktopLayout(std::string n, long m, long r, long c)
+		:name(n), layout(m), rows(r), cols(c) {}
 };
 
 struct DefaultStates {
@@ -76,7 +76,7 @@ namespace conf {
 	extern int				 snapdist;
 	extern const int			 ndesktops;
 	extern std::vector<DesktopDef> 	 	 desktop_defs;
-	extern std::vector<DesktopMode> 	 desktop_modes;
+	extern std::vector<DesktopLayout> 	 desktop_layouts;
 	extern std::vector<std::string> 	 lightcolordefs;
 	extern std::vector<std::string> 	 darkcolordefs;
 	extern std::vector<Binding>		 keybindings;

@@ -40,17 +40,17 @@ std::vector<FuncDef> funcdefs = {
 	{ "desktop-client-menu", 	desktop_client_menu, EventType::Key},
 	{ "desktop-launcher-menu", 	desktop_launcher_menu, EventType::Key},
 	{ "desktop-list-menu", 		desktop_list_menu, EventType::Key},
-	{ "desktop-mode-1", 		desktop_select_mode, 0},
-	{ "desktop-mode-2", 		desktop_select_mode, 1},
-	{ "desktop-mode-3", 		desktop_select_mode, 2},
-	{ "desktop-mode-4", 		desktop_select_mode, 3},
-	{ "desktop-mode-5", 		desktop_select_mode, 4},
-	{ "desktop-mode-6", 		desktop_select_mode, 5},
-	{ "desktop-mode-7", 		desktop_select_mode, 6},
-	{ "desktop-mode-8", 		desktop_select_mode, 7},
-	{ "desktop-mode-9", 		desktop_select_mode, 8},
-	{ "desktop-mode-next", 		desktop_rotate_mode, 1},
-	{ "desktop-mode-prev", 		desktop_rotate_mode, -1},
+	{ "desktop-layout-1", 		desktop_select_layout, 0},
+	{ "desktop-layout-2", 		desktop_select_layout, 1},
+	{ "desktop-layout-3", 		desktop_select_layout, 2},
+	{ "desktop-layout-4", 		desktop_select_layout, 3},
+	{ "desktop-layout-5", 		desktop_select_layout, 4},
+	{ "desktop-layout-6", 		desktop_select_layout, 5},
+	{ "desktop-layout-7", 		desktop_select_layout, 6},
+	{ "desktop-layout-8", 		desktop_select_layout, 7},
+	{ "desktop-layout-9", 		desktop_select_layout, 8},
+	{ "desktop-layout-next", 		desktop_rotate_layout, 1},
+	{ "desktop-layout-prev", 		desktop_rotate_layout, -1},
 	{ "desktop-set-light-theme",	desktop_set_theme, Theme::Light},
 	{ "desktop-set-dark-theme",	desktop_set_theme, Theme::Dark},
 	{ "desktop-switch-1", 		desktop_switch, 0},
@@ -201,14 +201,14 @@ void wmfunc::desktop_master_resize(XScreen *screen, long increment)
 	screen->desktop_master_resize(increment);
 }
 
-void wmfunc::desktop_select_mode(XScreen *screen, long index)
+void wmfunc::desktop_select_layout(XScreen *screen, long index)
 {
-	screen->select_desktop_mode(index);
+	screen->select_desktop_layout(index);
 }
 
-void wmfunc::desktop_rotate_mode(XScreen *screen, long direction)
+void wmfunc::desktop_rotate_layout(XScreen *screen, long direction)
 {
-	screen->rotate_desktop_mode(direction);
+	screen->rotate_desktop_layout(direction);
 }
 
 void wmfunc::desktop_cycle(XScreen *screen, long direction)
