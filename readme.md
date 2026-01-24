@@ -1,6 +1,6 @@
-% ZWM(1) zwm version alpha16 | zwm user's manual
+% ZWM(1) zwm version alpha18 | zwm user's manual
 % cmanv
-% September 2025
+% January 2026
 
 # NAME
 
