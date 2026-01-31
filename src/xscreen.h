@@ -84,7 +84,7 @@ public:
 	void 				 panel_clear_title();
 	void 				 panel_update_desktop_list();
 	void 				 panel_update_desktop_name();
-	void				 menu_send_list_client();
+	void 				 panel_update_client_list();
 	void 				 show_desktop();
 	void 				 hide_desktop();
 	void 				 close_desktop();
@@ -99,6 +99,7 @@ public:
 	void	 			 rotate_desktop_tiles(long);
 	void	 			 swap_desktop_tiles(long);
 	void 				 desktop_master_resize(long);
+	void	 			 activate_client(long);
 	void	 			 switch_to_desktop(int);
 	void				 populate_client_menu(MenuDef&);
 	void				 run_client_menu(long);

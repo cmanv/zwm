@@ -34,6 +34,8 @@
 #include "wmfunc.h"
 
 namespace wmfunc {
+const long free_param = 99999;
+
 std::vector<FuncDef> funcdefs = {
 	{ "desktop-close", 		desktop_close},
 	{ "desktop-hide", 		desktop_hide},
@@ -49,8 +51,8 @@ std::vector<FuncDef> funcdefs = {
 	{ "desktop-layout-7", 		desktop_select_layout, 6},
 	{ "desktop-layout-8", 		desktop_select_layout, 7},
 	{ "desktop-layout-9", 		desktop_select_layout, 8},
-	{ "desktop-layout-next", 		desktop_rotate_layout, 1},
-	{ "desktop-layout-prev", 		desktop_rotate_layout, -1},
+	{ "desktop-layout-next", 	desktop_rotate_layout, 1},
+	{ "desktop-layout-prev", 	desktop_rotate_layout, -1},
 	{ "desktop-set-light-theme",	desktop_set_theme, Theme::Light},
 	{ "desktop-set-dark-theme",	desktop_set_theme, Theme::Dark},
 	{ "desktop-switch-1", 		desktop_switch, 0},
@@ -66,6 +68,7 @@ std::vector<FuncDef> funcdefs = {
 	{ "desktop-switch-last", 	desktop_switch_last},
 	{ "desktop-switch-next", 	desktop_cycle, 1},
 	{ "desktop-switch-prev", 	desktop_cycle, -1},
+	{ "activate-client", 		activate_client, free_param},
 	{ "desktop-window-focus-next", 	desktop_window_cycle, 1},
 	{ "desktop-window-focus-prev", 	desktop_window_cycle, -1},
 	{ "desktop-window-rotate-next",	desktop_rotate_tiles, 1},
@@ -175,6 +178,11 @@ void wmfunc::window_to_desktop(XClient *client, long index)
 	screen->move_client_to_desktop(client, index);
 }
 
+void wmfunc::activate_client(XScreen *screen, long windowid)
+{
+	screen->activate_client(windowid);
+}
+
 void wmfunc::desktop_switch(XScreen *screen, long index)
 {
 	screen->switch_to_desktop(index);
@@ -255,6 +263,7 @@ void wmfunc::set_wm_status(long status)
 {
 	wm::status = status;
 }
+
 
 void wmfunc::exec_term(long)
 {

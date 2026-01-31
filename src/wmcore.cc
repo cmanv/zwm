@@ -145,11 +145,14 @@ void wm::run()
 // Process message received on the listening socket
 static void wm::process_message()
 {
+	if (conf::debug) {
+		std::cout << timer::gettime() << " [wm::" << __func__ << "]\n";
+	}
 	std::istringstream iss(socket_in::get_message());
 
 	int id;
 	std::string screenid;
-	if (!std::getline(iss, screenid, ';'))
+	if (!std::getline(iss, screenid, ':'))
 		return;
 	try {
 		id = std::stoi(screenid);
@@ -168,15 +171,25 @@ static void wm::process_message()
 	if (!screen) return;
 
 	std::string wmfunction;
-	if (!std::getline(iss, wmfunction, ';'))
+	if (!std::getline(iss, wmfunction, '='))
 		return;
+
+	long param = 0;
+	std::string wmparam;
+	if (std::getline(iss, wmparam, ';')) {
+		param = std::stol(wmparam);
+	}
 
 	// Look if the wm function is defined and execute if found
 	for (wmfunc::FuncDef &funcdef : wmfunc::funcdefs) {
 		// Only screen functions will be performed
 		if ((funcdef.context == Context::Root) &&
 			!wmfunction.compare(funcdef.namefunc)) {
-			(*funcdef.fscreen)(screen, funcdef.param);
+			if (funcdef.param == wmfunc::free_param) {
+				(*funcdef.fscreen)(screen, param);
+			} else {
+				(*funcdef.fscreen)(screen, funcdef.param);
+			}
 			XFlush(display);
 			break;
 		}

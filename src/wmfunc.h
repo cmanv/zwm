@@ -30,6 +30,8 @@ class XClient;
 class XScreen;
 
 namespace wmfunc {
+	extern const long free_param;
+
 	struct FuncDef {
 		std::string 		namefunc;
 		Context			context;
@@ -71,6 +73,7 @@ namespace wmfunc {
 	void window_state(XClient *, long);
 	void window_to_desktop(XClient *, long);
 	void window_menu_label(XClient *, long);
+	void activate_client(XScreen *, long);
 	void desktop_switch(XScreen *, long);
 	void desktop_switch_last(XScreen *, long);
 	void desktop_hide(XScreen *, long);

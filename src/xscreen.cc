@@ -227,6 +227,7 @@ void XScreen::add_existing_clients()
 
 	panel_update_desktop_name();
 	panel_update_desktop_list();
+	panel_update_client_list();
 
 	// Obtain window where the pointer is positioned
 	XQueryPointer(wm::display, m_rootwin, &rwin, &cwin,
@@ -273,6 +274,7 @@ void XScreen::add_client(Window window)
 		}
 	}
 	panel_update_desktop_list();
+	panel_update_client_list();
 }
 
 bool XScreen::can_manage(Window w, bool query)
@@ -314,6 +316,7 @@ void XScreen::remove_client(XClient *client)
 
 	m_desktoplist[m_desktop_active].show(m_clientlist);
 	panel_update_desktop_list();
+	panel_update_client_list();
 }
 
 void XScreen::raise_client(XClient *client)
@@ -431,6 +434,30 @@ void XScreen::panel_update_desktop_list()
 	}
 	std::string s(ss.str());
 	std::string message = "desklist=" + s;
+	socket_out::send(message);
+}
+
+void XScreen::panel_update_client_list()
+{
+	if (!socket_out::defined()) return;
+	std::stringstream ss;
+	for (int i = -1; i < m_ndesktops; i++) {
+		for (XClient *client : m_clientlist) {
+			if (client->has_states(State::Ignored)) continue;
+			long index = client->get_desktop_index();
+			if (index != i) continue;
+			ss << "id=" << client->get_window() << "|";
+			ss << "res=" << client->get_res_name() << "|";
+			ss << "name=";
+			if (index < 0)
+				ss << "[s] " << client->get_name();
+			else
+				ss << "[" << index+1 << "] " << client->get_name();
+			ss << std::endl;
+		}
+	}
+	std::string s(ss.str());
+	std::string message = "clientlist=" + s;
 	socket_out::send(message);
 }
 
@@ -630,9 +657,11 @@ bool XScreen::desktop_urgent(long index)
 
 void XScreen::switch_to_desktop(int index)
 {
+	if (index == m_desktop_active) return;
 	if (conf::debug) {
 		std::cout << timer::gettime() << " [XScreen:" << __func__ << "]\n";
 	}
+
 	m_desktoplist[m_desktop_active].hide(m_clientlist);
 	m_desktoplist[index].show(m_clientlist);
 	m_desktop_last = m_desktop_active;
@@ -640,6 +669,22 @@ void XScreen::switch_to_desktop(int index)
 	ewmh::set_net_current_desktop(m_rootwin, m_desktop_active);
 	panel_update_desktop_name();
 	panel_update_desktop_list();
+}
+
+void XScreen::activate_client(long window)
+{
+	if (conf::debug) {
+		std::cout << timer::gettime() << " [XScreen:" << __func__
+			<< "(" << window << ")]\n";
+	}
+	XClient *client = find_client(window);
+	if (!client) return;
+
+	int index = client->get_desktop_index();
+	if (index != m_desktop_active)
+		switch_to_desktop(index);
+	client->warp_pointer();
+	client->raise_window();
 }
 
 void XScreen::run_launcher_menu(long type)

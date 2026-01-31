@@ -239,6 +239,7 @@ void XClient::update_net_wm_name()
 {
 	get_net_wm_name();
 	panel_update_title();
+	m_screen->panel_update_client_list();
 }
 
 void XClient::panel_update_title()
