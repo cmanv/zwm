@@ -448,16 +448,11 @@ void XScreen::panel_update_client_list()
 			if (index != i) continue;
 			ss << "id=" << client->get_window() << "|";
 			ss << "res=" << client->get_res_name() << "|";
-			ss << "name=";
-			if (index < 0)
-				ss << "[s] " << client->get_name();
-			else
-				ss << "[" << index+1 << "] " << client->get_name();
-			ss << std::endl;
+			ss << "desk=" << index+1 << "|";
+			ss << "name=" << client->get_name() << std::endl;
 		}
 	}
-	std::string s(ss.str());
-	std::string message = "clientlist=" + s;
+	std::string message = "clientlist=" + ss.str();
 	socket_out::send(message);
 }
 
