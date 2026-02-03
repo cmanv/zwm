@@ -405,7 +405,7 @@ void XScreen::set_net_desktop_names()
 void XScreen::panel_clear_title()
 {
 	if (!socket_out::defined()) return;
-	std::string message = "no_window_active";
+	std::string message = "no_active_client";
 	socket_out::send(message);
 }
 
@@ -421,19 +421,17 @@ void XScreen::panel_update_desktop_list()
 {
 	if (!socket_out::defined()) return;
 	std::stringstream ss;
-	char separator = '|';
 	for (int i = 0; i < m_ndesktops; i++) {
 		if (i == m_desktop_active)
-			ss << '+' << i+1 << separator;
+			ss << "desk=" << i+1 << "|state=active\n";
 		else if (desktop_empty(i))
 			continue;
 		else if (desktop_urgent(i))
-			ss << '!' << i+1 << separator;
+			ss << "desk=" << i+1 << "|state=urgent\n";
 		else
-			ss << i+1 << separator;
+			ss << "desk=" << i+1 << "|state=hidden\n";
 	}
-	std::string s(ss.str());
-	std::string message = "desklist=" + s;
+	std::string message = "desklist=" + ss.str();
 	socket_out::send(message);
 }
 

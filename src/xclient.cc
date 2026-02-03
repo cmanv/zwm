@@ -23,6 +23,7 @@
 #include <X11/Xatom.h>
 #include <algorithm>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 #include "timer.h"
@@ -245,7 +246,11 @@ void XClient::update_net_wm_name()
 void XClient::panel_update_title()
 {
 	if (!socket_out::defined()) return;
-	std::string message = "window_active=" + m_name;
+	std::stringstream ss;
+	ss << "id=" << m_window << "|";
+	ss << "desk=" << m_deskindex+1 << "|";
+	ss << "name=" << m_name;
+	std::string message = "active_client=" + ss.str();
 	socket_out::send(message);
 }
 
