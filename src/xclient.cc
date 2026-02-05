@@ -476,10 +476,6 @@ void XClient::set_window_active()
 		return;
 
 	XInstallColormap(wm::display, m_colormap);
-
-	if (has_state(State::Input) || !has_state(State::WMTakeFocus))
-		XSetInputFocus(wm::display, m_window, RevertToPointerRoot, CurrentTime);
-
 	if (has_state(State::WMTakeFocus))
 		wmh::send_client_message(m_window, wmh::hints[WM_TAKE_FOCUS],
 						wm::last_event_time);
