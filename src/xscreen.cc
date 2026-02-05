@@ -114,8 +114,8 @@ XScreen::XScreen(int id): m_screenid(id)
 
 	XSetWindowAttributes	 attr;
 	attr.cursor = wm::cursors[Pointer::ShapeNormal];
-	attr.event_mask = SubstructureRedirectMask|SubstructureNotifyMask|
-	    EnterWindowMask|LeaveWindowMask|PropertyChangeMask |ButtonPressMask;
+	attr.event_mask = SubstructureRedirectMask|SubstructureNotifyMask
+				|PropertyChangeMask|ButtonPressMask;
 	XChangeWindowAttributes(wm::display, m_rootwin, (CWEventMask | CWCursor), &attr);
 	if (wm::xrandr)
 		XRRSelectInput(wm::display, m_rootwin, RRScreenChangeNotifyMask);
@@ -275,6 +275,7 @@ void XScreen::add_client(Window window)
 			client->raise_window();
 		}
 	}
+	client->set_window_active();
 	panel_update_desktop_list();
 	panel_update_client_list();
 }

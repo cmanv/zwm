@@ -98,10 +98,6 @@ XClient::XClient(Window w, XScreen *s, bool existing): m_window(w), m_screen(s)
 	}
 	m_geom_stack = m_geom;
 
-	// Request some types of event from X server
-	XSelectInput(wm::display, m_window,
-		EnterWindowMask|LeaveWindowMask|PropertyChangeMask);
-
 	send_configure_event();
 	m_states = ewmh::get_net_wm_states(m_window, m_states);
 
@@ -164,8 +160,10 @@ void XClient::reparent_window()
 	XSetWindowAttributes wattr;
 	wattr.border_pixel = m_screen->get_pixel(Color::WindowBorderInactive);
 	wattr.override_redirect = True;
+
+	// Request some types of event from X server
 	wattr.event_mask = SubstructureRedirectMask|SubstructureNotifyMask
-		|ButtonPressMask|EnterWindowMask|LeaveWindowMask;
+		|PropertyChangeMask|ButtonPressMask|EnterWindowMask|LeaveWindowMask;
 
 	m_parent = XCreateWindow(wm::display, m_rootwin, m_geom.x, m_geom.y,
 			m_geom.w, m_geom.h, m_border_w,
@@ -368,7 +366,7 @@ void XClient::get_motif_hints()
 	if (!hints) return;
 
 	if ((hints->flags & Motif::HintDecorations) &&
-	    !(hints->decorations & Motif::DecorAll)) {
+		!(hints->decorations & Motif::DecorAll)) {
 		if (!(hints->decorations & Motif::DecorBorder)) {
 			set_states(State::NoTile|State::NoBorder);
 		}
@@ -473,7 +471,8 @@ void XClient::send_configure_event()
 
 void XClient::set_window_active()
 {
-	if (has_states(State::Docked)) return;
+	if (has_states(State::Docked))
+		return;
 
 	if (has_state(State::Input) || !has_state(State::WMTakeFocus))
 		XSetInputFocus(wm::display, m_window, RevertToPointerRoot, CurrentTime);
@@ -493,12 +492,13 @@ void XClient::set_window_active()
 
 void XClient::set_window_inactive()
 {
-	if (has_states(State::Docked)) return;
+	if (has_states(State::Docked))
+		return;
 
-	clear_states(State::Active);
-	draw_window_border();
 	XSetInputFocus(wm::display, PointerRoot, RevertToPointerRoot, CurrentTime);
 	ewmh::set_net_active_window(m_rootwin, None);
+	clear_states(State::Active);
+	draw_window_border();
 }
 
 void XClient::show_window()
@@ -853,7 +853,7 @@ void XClient::change_states(int action, Atom a, Atom b)
 {
 	for (const StateMap &sm : ewmh::statemaps) {
 		if (a != ewmh::hints[sm.atom] &&
-		    b != ewmh::hints[sm.atom])
+			b != ewmh::hints[sm.atom])
 			continue;
 		switch(action) {
 		case _NET_WM_STATE_ADD:

@@ -217,8 +217,7 @@ static void XEvents::enter_notify(XEvent *ee)
 
 	wm::last_event_time = e->time;
 	XClient *client = XScreen::find_client(e->window);
-	if (client)
-		client->set_window_active();
+	if (client) client->set_window_active();
 }
 
 static void XEvents::leave_notify(XEvent *ee)
@@ -230,9 +229,9 @@ static void XEvents::leave_notify(XEvent *ee)
 	}
 
 	wm::last_event_time = e->time;
+	if (e->mode != NotifyNormal) return;
 	XClient *client = XScreen::find_client(e->window);
-	if (client)
-		client->set_window_inactive();
+	if (client) client->set_window_inactive();
 }
 
 static void XEvents::expose(XEvent *ee)
@@ -244,8 +243,7 @@ static void XEvents::expose(XEvent *ee)
 	}
 
 	XClient *client = XScreen::find_client(e->window);
-	if ((client) && e->count == 0)
-		client->draw_window_border();
+	if ((client) && e->count == 0) client->draw_window_border();
 }
 
 static void XEvents::destroy_notify(XEvent *ee)
