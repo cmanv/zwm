@@ -39,6 +39,7 @@ namespace XEvents {
 	static void key_release(XEvent *);
 	static void button_press(XEvent *);
 	static void enter_notify(XEvent *);
+	static void leave_notify(XEvent *);
 	static void expose(XEvent *);
 	static void destroy_notify(XEvent *);
 	static void ummap_notify(XEvent *);
@@ -206,7 +207,6 @@ static void XEvents::button_press(XEvent *ee)
 	}
 }
 
-// Set the window active whenever the pointer enters
 static void XEvents::enter_notify(XEvent *ee)
 {
 	XCrossingEvent	*e = &ee->xcrossing;
@@ -219,6 +219,20 @@ static void XEvents::enter_notify(XEvent *ee)
 	XClient *client = XScreen::find_client(e->window);
 	if (client)
 		client->set_window_active();
+}
+
+static void XEvents::leave_notify(XEvent *ee)
+{
+	XCrossingEvent	*e = &ee->xcrossing;
+	if (conf::debug>2) {
+		std::cout << timer::gettime() << " [XEvents::" << __func__
+			<< "] window 0x" << std::hex << e->window << '\n';
+	}
+
+	wm::last_event_time = e->time;
+	XClient *client = XScreen::find_client(e->window);
+	if (client)
+		client->set_window_inactive();
 }
 
 static void XEvents::expose(XEvent *ee)
@@ -487,6 +501,9 @@ void XEvents::process(void)
 			break;
 		case EnterNotify:
 			enter_notify(&e);
+			break;
+		case LeaveNotify:
+			leave_notify(&e);
 			break;
 		case Expose:
 			expose(&e);

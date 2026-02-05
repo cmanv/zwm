@@ -94,6 +94,7 @@ public:
 	void			 configure_window(XConfigureRequestEvent *);
 	void			 draw_window_border();
 	void 			 set_window_active();
+	void 			 set_window_inactive();
 	void			 show_window();
 	void			 hide_window();
 	void			 close_window();

@@ -99,7 +99,8 @@ XClient::XClient(Window w, XScreen *s, bool existing): m_window(w), m_screen(s)
 	m_geom_stack = m_geom;
 
 	// Request some types of event from X server
-	XSelectInput(wm::display, m_window, EnterWindowMask|PropertyChangeMask);
+	XSelectInput(wm::display, m_window,
+		EnterWindowMask|LeaveWindowMask|PropertyChangeMask);
 
 	send_configure_event();
 	m_states = ewmh::get_net_wm_states(m_window, m_states);
@@ -163,8 +164,8 @@ void XClient::reparent_window()
 	XSetWindowAttributes wattr;
 	wattr.border_pixel = m_screen->get_pixel(Color::WindowBorderInactive);
 	wattr.override_redirect = True;
-	wattr.event_mask = SubstructureRedirectMask | SubstructureNotifyMask
-		| ButtonPressMask | EnterWindowMask;
+	wattr.event_mask = SubstructureRedirectMask|SubstructureNotifyMask
+		|ButtonPressMask|EnterWindowMask|LeaveWindowMask;
 
 	m_parent = XCreateWindow(wm::display, m_rootwin, m_geom.x, m_geom.y,
 			m_geom.w, m_geom.h, m_border_w,
@@ -472,19 +473,14 @@ void XClient::send_configure_event()
 
 void XClient::set_window_active()
 {
-	if (has_state(State::Hidden) || has_states(State::Docked))
-		return;
+	if (has_states(State::Docked)) return;
 
-	XInstallColormap(wm::display, m_colormap);
-	if (has_state(State::WMTakeFocus))
+	if (has_state(State::Input) || !has_state(State::WMTakeFocus))
+		XSetInputFocus(wm::display, m_window, RevertToPointerRoot, CurrentTime);
+	else if (has_state(State::WMTakeFocus))
 		wmh::send_client_message(m_window, wmh::hints[WM_TAKE_FOCUS],
 						wm::last_event_time);
-
-	XClient *prev_client = m_screen->get_active_client();
-	if (prev_client) {
-		prev_client->clear_states(State::Active);
-		prev_client->draw_window_border();
-	}
+	XInstallColormap(wm::display, m_colormap);
 
 	set_states(State::Active);
 	clear_states(State::Urgent);
@@ -493,6 +489,16 @@ void XClient::set_window_active()
 		m_screen->raise_client(this);
 	ewmh::set_net_active_window(m_rootwin, m_window);
 	panel_update_title();
+}
+
+void XClient::set_window_inactive()
+{
+	if (has_states(State::Docked)) return;
+
+	clear_states(State::Active);
+	draw_window_border();
+	XSetInputFocus(wm::display, PointerRoot, RevertToPointerRoot, CurrentTime);
+	ewmh::set_net_active_window(m_rootwin, None);
 }
 
 void XClient::show_window()

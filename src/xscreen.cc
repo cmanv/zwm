@@ -114,8 +114,8 @@ XScreen::XScreen(int id): m_screenid(id)
 
 	XSetWindowAttributes	 attr;
 	attr.cursor = wm::cursors[Pointer::ShapeNormal];
-	attr.event_mask = SubstructureRedirectMask | SubstructureNotifyMask |
-	    EnterWindowMask | PropertyChangeMask | ButtonPressMask;
+	attr.event_mask = SubstructureRedirectMask|SubstructureNotifyMask|
+	    EnterWindowMask|LeaveWindowMask|PropertyChangeMask |ButtonPressMask;
 	XChangeWindowAttributes(wm::display, m_rootwin, (CWEventMask | CWCursor), &attr);
 	if (wm::xrandr)
 		XRRSelectInput(wm::display, m_rootwin, RRScreenChangeNotifyMask);
@@ -246,7 +246,9 @@ void XScreen::add_existing_clients()
 
 void XScreen::add_client(Window window)
 {
-	if (!can_manage(window, false)) return;
+	if (!can_manage(window, false)) {
+		return;
+	}
 	if (conf::debug) {
 		std::cout << timer::gettime() << " [XScreen:" << __func__ << "]\n";
 	}
