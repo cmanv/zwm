@@ -474,11 +474,18 @@ void XClient::set_window_active()
 	if (has_states(State::Docked))
 		return;
 
+	if (conf::debug>1) {
+		std::cout << timer::gettime() << " [XClient::" << __func__
+			<< "] Activate window 0x" << std::hex << m_window
+			<< std::endl;
+	}
+
 	if (has_state(State::Input) || !has_state(State::WMTakeFocus))
 		XSetInputFocus(wm::display, m_window, RevertToPointerRoot, CurrentTime);
 	else if (has_state(State::WMTakeFocus))
 		wmh::send_client_message(m_window, wmh::hints[WM_TAKE_FOCUS],
 						wm::last_event_time);
+	ewmh::set_net_active_window(m_rootwin, m_window);
 	XInstallColormap(wm::display, m_colormap);
 
 	set_states(State::Active);
@@ -486,7 +493,6 @@ void XClient::set_window_active()
 	draw_window_border();
 	if (!has_state(State::Tiled))
 		m_screen->raise_client(this);
-	ewmh::set_net_active_window(m_rootwin, m_window);
 	panel_update_title();
 }
 
@@ -495,10 +501,16 @@ void XClient::set_window_inactive()
 	if (has_states(State::Docked))
 		return;
 
-	XSetInputFocus(wm::display, PointerRoot, RevertToPointerRoot, CurrentTime);
-	ewmh::set_net_active_window(m_rootwin, None);
+	if (conf::debug>1) {
+		std::cout << timer::gettime() << " [XClient::" << __func__
+			<< "] Inactivate window 0x" << std::hex << m_window
+			<< std::endl;
+	}
+
 	clear_states(State::Active);
 	draw_window_border();
+	XSetInputFocus(wm::display, PointerRoot, RevertToPointerRoot, CurrentTime);
+	ewmh::set_net_active_window(m_rootwin, None);
 }
 
 void XClient::show_window()

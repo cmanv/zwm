@@ -210,9 +210,16 @@ static void XEvents::button_press(XEvent *ee)
 static void XEvents::enter_notify(XEvent *ee)
 {
 	XCrossingEvent	*e = &ee->xcrossing;
-	if (conf::debug>2) {
+	if ((e->detail == NotifyAncestor) || (e->detail == NotifyInferior))
+		return;
+
+	if (conf::debug >2) {
 		std::cout << timer::gettime() << " [XEvents::" << __func__
-			<< "] window 0x" << std::hex << e->window << '\n';
+			<< "] window 0x" << std::hex << e->window
+			<< " Subwindow 0x" << std::hex << e->subwindow
+			<< " Mode=" << e->mode
+			<< " Detail=" << e->detail
+			<< std::endl;
 	}
 
 	wm::last_event_time = e->time;
@@ -223,13 +230,20 @@ static void XEvents::enter_notify(XEvent *ee)
 static void XEvents::leave_notify(XEvent *ee)
 {
 	XCrossingEvent	*e = &ee->xcrossing;
-	if (conf::debug>2) {
+	if (e->mode != NotifyNormal) return;
+	if ((e->detail == NotifyAncestor) || (e->detail == NotifyInferior))
+		return;
+
+	if (conf::debug >2) {
 		std::cout << timer::gettime() << " [XEvents::" << __func__
-			<< "] window 0x" << std::hex << e->window << '\n';
+			<< "] window 0x" << std::hex << e->window
+			<< " Subwindow 0x" << std::hex << e->subwindow
+			<< " Mode=" << e->mode
+			<< " Detail=" << e->detail
+			<< std::endl;
 	}
 
 	wm::last_event_time = e->time;
-	if (e->mode != NotifyNormal) return;
 	XClient *client = XScreen::find_client(e->window);
 	if (client) client->set_window_inactive();
 }
