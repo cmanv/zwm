@@ -98,6 +98,8 @@ XClient::XClient(Window w, XScreen *s, bool existing): m_window(w), m_screen(s)
 	}
 	m_geom_stack = m_geom;
 
+	XSelectInput(wm::display, m_window, PropertyChangeMask);
+
 	send_configure_event();
 	m_states = ewmh::get_net_wm_states(m_window, m_states);
 
@@ -162,8 +164,8 @@ void XClient::reparent_window()
 	wattr.override_redirect = True;
 
 	// Request some types of event from X server
-	wattr.event_mask = SubstructureRedirectMask|SubstructureNotifyMask
-		|PropertyChangeMask|ButtonPressMask|EnterWindowMask|LeaveWindowMask;
+	wattr.event_mask = SubstructureRedirectMask|SubstructureNotifyMask|
+			ButtonPressMask|EnterWindowMask|LeaveWindowMask;
 
 	m_parent = XCreateWindow(wm::display, m_rootwin, m_geom.x, m_geom.y,
 			m_geom.w, m_geom.h, m_border_w,
