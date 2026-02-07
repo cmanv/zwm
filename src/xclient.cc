@@ -42,19 +42,13 @@ const long XClient::MouseMask	= ButtonReleaseMask|PointerMotionMask;
 XClient::XClient(Window w, XScreen *s, bool existing): m_window(w), m_screen(s)
 {
 	XWindowAttributes	 wattr;
-
 	m_removed = false;
-	m_ignore_unmap = false;
 
 	if (conf::debug) {
 		std::cout << timer::gettime() << " [XClient::" << __func__
 			<< "] Create Client window 0x" << std::hex << m_window
 			<< std::endl;
 	}
-
-	// For existing clients, reparent sends an unmap request which should be ignored.
-	if (existing)
-		m_ignore_unmap = true;
 
 	m_rootwin = m_screen->get_window();
 	m_border_w = conf::stacked_border;
@@ -216,15 +210,6 @@ bool XClient::has_window(Window w)
 	if (w == None) return false;
 	if (w == m_window) return true;
 	if (w == m_parent) return true;
-	return false;
-}
-
-bool XClient::ignore_unmap()
-{
-	if (m_ignore_unmap) {
-		m_ignore_unmap = false;
-		return true;
-	}
 	return false;
 }
 

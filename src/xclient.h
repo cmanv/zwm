@@ -56,7 +56,6 @@ class XClient {
 	int			 m_border_w;
 	int			 m_border_orig;
 	bool			 m_removed;
-	bool			 m_ignore_unmap;
 	std::string		 m_name;
 	std::string		 m_res_class;
 	std::string		 m_res_name;
@@ -82,7 +81,6 @@ public:
 	std::string		&get_res_name() { return m_res_name; }
 	std::string		&get_res_class() { return m_res_class; }
 	void			 set_removed() { m_removed = true; }
-	bool 			 ignore_unmap();
 	bool			 has_window(Window);
 	void			 assign_to_desktop(long);
 	void			 get_net_wm_name();
