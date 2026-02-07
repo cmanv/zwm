@@ -479,7 +479,7 @@ void XClient::set_window_active()
 	clear_states(State::Urgent);
 	draw_window_border();
 	if (!has_state(State::Tiled))
-		m_screen->raise_client(this);
+		m_screen->raise_window(this);
 	panel_update_title();
 }
 
@@ -534,7 +534,7 @@ void XClient::close_window()
 void XClient::raise_window()
 {
 	if (!has_state(State::Tiled))
-		m_screen->raise_client(this);
+		m_screen->raise_window(this);
 	XRaiseWindow(wm::display, m_parent);
 }
 

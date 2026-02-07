@@ -389,7 +389,7 @@ void Menu::switch_to_client()
 		client->clear_states(State::Hidden);
 
 	if (client->has_state(State::Tiled))
-		m_screen->raise_client(client);
+		m_screen->raise_window(client);
 	else
 		client->raise_window();
 

@@ -79,7 +79,7 @@ public:
 	void 				 remove_client(XClient *);
 	void 				 update_net_client_lists();
 	void 				 move_client_to_desktop(XClient *, long);
-	void 				 raise_client(XClient *);
+	void 				 raise_window(XClient *);
 	void 				 set_net_desktop_names();
 	void 				 panel_clear_title();
 	void 				 panel_update_desktop_list();

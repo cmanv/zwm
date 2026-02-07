@@ -322,7 +322,7 @@ void XScreen::remove_client(XClient *client)
 	panel_update_client_list();
 }
 
-void XScreen::raise_client(XClient *client)
+void XScreen::raise_window(XClient *client)
 {
 	if (m_cycling) return; 	// Dont change order of clients while cycling
 	auto it = std::find(m_clientlist.begin(), m_clientlist.end(), client);
@@ -676,11 +676,21 @@ void XScreen::activate_client(long window)
 	XClient *client = find_client(window);
 	if (!client) return;
 
+	if (client->has_state(State::Hidden))
+		client->clear_states(State::Hidden);
+
+	if (client->has_state(State::Tiled))
+		raise_window(client);
+	else
+		client->raise_window();
+
 	int index = client->get_desktop_index();
-	if (index != m_desktop_active)
+	if ((index != -1) && (index != m_desktop_active))
 		switch_to_desktop(index);
+	else {
+		show_desktop();
+	}
 	client->warp_pointer();
-	client->raise_window();
 }
 
 void XScreen::run_launcher_menu(long type)
