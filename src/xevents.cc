@@ -42,7 +42,7 @@ namespace XEvents {
 	static void leave_notify(XEvent *);
 	static void expose(XEvent *);
 	static void destroy_notify(XEvent *);
-	static void ummap_notify(XEvent *);
+	static void unmap_notify(XEvent *);
 	static void map_request(XEvent *);
 	static void configure_request(XEvent *);
 	static void property_notify(XEvent *);
@@ -229,10 +229,10 @@ static void XEvents::leave_notify(XEvent *ee)
 {
 	XCrossingEvent	*e = &ee->xcrossing;
 
-	if (e->mode != NotifyNormal) return;
-	if ((e->detail == NotifyAncestor) ||
-	    (e->detail == NotifyVirtual) ||
-	    (e->detail == NotifyInferior))
+	if (e->mode != NotifyNormal)
+		return;
+
+	if ((e->detail == NotifyAncestor) || (e->detail == NotifyInferior))
 		return;
 
 	if (conf::debug>2) {
@@ -276,26 +276,16 @@ static void XEvents::destroy_notify(XEvent *ee)
 	}
 }
 
-static void XEvents::ummap_notify(XEvent *ee)
+static void XEvents::unmap_notify(XEvent *ee)
 {
 	XUnmapEvent		*e = &ee->xunmap;
 	if (conf::debug>2) {
 		std::cout << timer::gettime() << " [XEvents::" << __func__
 			<< "] window 0x" << std::hex << e->window << '\n';
 	}
-
-	XClient *client = XScreen::find_client(e->window);
-	if (client) {
-		// Client is already unmapped
-		if (client->has_state(State::Hidden)) return;
-
-		// notification from a send or configure event
-		if ((e->send_event) || (e->from_configure)) {
-			wmh::set_wm_state(e->window, WithdrawnState);
-		} else if (!client->ignore_unmap()) {
-			XScreen *screen = client->get_screen();
-			screen->remove_client(client);
-		}
+	if (!e->send_event) return;
+	if (XScreen::find_client(e->window)) {
+		wmh::set_wm_state(e->window, WithdrawnState);
 	}
 }
 
@@ -525,7 +515,7 @@ void XEvents::process(void)
 			destroy_notify(&e);
 			break;
 		case UnmapNotify:
-			ummap_notify(&e);
+			unmap_notify(&e);
 			break;
 		case MapRequest:
 			map_request(&e);
