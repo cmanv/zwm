@@ -210,10 +210,8 @@ static void XEvents::button_press(XEvent *ee)
 static void XEvents::enter_notify(XEvent *ee)
 {
 	XCrossingEvent	*e = &ee->xcrossing;
-	if ((e->detail == NotifyAncestor) || (e->detail == NotifyInferior))
-		return;
 
-	if (conf::debug >2) {
+	if (conf::debug>2) {
 		std::cout << timer::gettime() << " [XEvents::" << __func__
 			<< "] window 0x" << std::hex << e->window
 			<< " Subwindow 0x" << std::hex << e->subwindow
@@ -230,11 +228,14 @@ static void XEvents::enter_notify(XEvent *ee)
 static void XEvents::leave_notify(XEvent *ee)
 {
 	XCrossingEvent	*e = &ee->xcrossing;
+
 	if (e->mode != NotifyNormal) return;
-	if ((e->detail == NotifyAncestor) || (e->detail == NotifyInferior))
+	if ((e->detail == NotifyAncestor) ||
+	    (e->detail == NotifyVirtual) ||
+	    (e->detail == NotifyInferior))
 		return;
 
-	if (conf::debug >2) {
+	if (conf::debug>2) {
 		std::cout << timer::gettime() << " [XEvents::" << __func__
 			<< "] window 0x" << std::hex << e->window
 			<< " Subwindow 0x" << std::hex << e->subwindow
