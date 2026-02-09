@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 
 	wm::set_param_restart(argc, argv);
 
-	while ((ch = getopt(argc, argv, "D:c:m:t:hdpv")) != -1) {
+	while ((ch = getopt(argc, argv, "D:c:m:hdpv")) != -1) {
 		switch (ch) {
 		case 'D':
 			wm::displayname = optarg;
@@ -56,9 +56,6 @@ int main(int argc, char **argv)
 			break;
 		case 'm':
 			conf::message_socket = optarg;
-			break;
-		case 't':
-			conf::default_theme = optarg;
 			break;
 		case 'h':
 			usage(0);

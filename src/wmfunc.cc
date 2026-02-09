@@ -49,8 +49,6 @@ std::vector<FuncDef> funcdefs = {
 	{ "desktop-layout-9", 		desktop_select_layout, 8},
 	{ "desktop-layout-next", 	desktop_rotate_layout, 1},
 	{ "desktop-layout-prev", 	desktop_rotate_layout, -1},
-	{ "desktop-set-light-theme",	desktop_set_theme, Theme::Light},
-	{ "desktop-set-dark-theme",	desktop_set_theme, Theme::Dark},
 	{ "desktop-switch-1", 		desktop_switch, 0},
 	{ "desktop-switch-2", 		desktop_switch, 1},
 	{ "desktop-switch-3", 		desktop_switch, 2},
@@ -229,11 +227,6 @@ void wmfunc::desktop_rotate_tiles(XScreen *screen, long direction)
 void wmfunc::desktop_swap_tiles(XScreen *screen, long direction)
 {
 	screen->swap_desktop_tiles(direction);
-}
-
-void wmfunc::desktop_set_theme(XScreen *screen, long theme)
-{
-	screen->set_theme(theme);
 }
 
 void wmfunc::set_wm_status(long status)

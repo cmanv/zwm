@@ -121,7 +121,6 @@ namespace conf {
 		{ "M-5",	"window-raise" },
 	};
 
-	std::string	default_theme = "";
 	std::string	user_config = "";
 	std::string	wmname = "ZWM";
 	std::string 	propfont = "Mono:size=12";
@@ -132,8 +131,7 @@ namespace conf {
 	std::string	shutdownscript = "";
 	std::string 	install_prefix(INSTALL_PREFIX);
 
-	std::vector<std::string> lightcolordefs;
-	std::vector<std::string> darkcolordefs;
+	std::vector<std::string> colordefs;
 
 	int			debug = 0;
 	const int		ndesktops = desktop_defs.size();
@@ -176,19 +174,12 @@ void conf::init()
 		if (mb.valid) mousebindings.push_back(mb);
 	}
 
-	lightcolordefs.resize(Color::NumColors);
-	lightcolordefs[Color::Foreground]		= "white";
-	lightcolordefs[Color::Background]		= "black";
-	lightcolordefs[Color::WindowBorderActive] 	= "tan";
-	lightcolordefs[Color::WindowBorderInactive] 	= "SlateGray4";
-	lightcolordefs[Color::WindowBorderUrgent] 	= "orange";
-
-	darkcolordefs.resize(Color::NumColors);
-	darkcolordefs[Color::Foreground]		= "black";
-	darkcolordefs[Color::Background]		= "Gray70";
-	darkcolordefs[Color::WindowBorderActive] 	= "ForestGreen";
-	darkcolordefs[Color::WindowBorderInactive] 	= "DarkSlateGrey";
-	darkcolordefs[Color::WindowBorderUrgent] 	= "DarkOrange";
+	colordefs.resize(Color::NumColors);
+	colordefs[Color::PropForeground]	= "white";
+	colordefs[Color::PropBackground]	= "black";
+	colordefs[Color::WindowBorderActive] 	= "tan";
+	colordefs[Color::WindowBorderInactive] 	= "SlateGray4";
+	colordefs[Color::WindowBorderUrgent] 	= "red";
 
 	if (!std::getenv("HOME")) {
 		std::cerr << "HOME is not defined in the environment!\n";
@@ -239,19 +230,6 @@ void conf::init()
 		}
 	}
 	read_config();
-
-	if (!default_theme.empty()) return;
-	default_theme = "light";
-	if (std::getenv("THEME_STATE_FILE")) {
-		std::string line;
-		std::ifstream theme_file(std::getenv("THEME_STATE_FILE"));
-		if (theme_file.is_open()) {
-			if (std::getline(theme_file, line)) {
-				if (!line.compare("dark")) default_theme = "dark";
-			}
-			theme_file.close();
-		}
-	}
 
 	return;
 }
@@ -338,26 +316,16 @@ void conf::read_config()
 		}
 		if (!tokens[0].compare("color")) {
 			if (tokens.size() < 3) continue;
-			if (!tokens[1].compare("foreground")) {
-				lightcolordefs[Color::Foreground] = tokens[2];
-				if (tokens.size() > 3)
-					darkcolordefs[Color::Foreground] = tokens[3];
-			} else if (!tokens[1].compare("background")) {
-				lightcolordefs[Color::Background] = tokens[2];
-				if (tokens.size() > 3)
-					darkcolordefs[Color::Background] = tokens[3];
+			if (!tokens[1].compare("prop-foreground")) {
+				colordefs[Color::PropForeground] = tokens[2];
+			} else if (!tokens[1].compare("prop-background")) {
+				colordefs[Color::PropBackground] = tokens[2];
 			} else if (!tokens[1].compare("window-border-active")) {
-				lightcolordefs[Color::WindowBorderActive] = tokens[2];
-				if (tokens.size() > 3)
-					darkcolordefs[Color::WindowBorderActive] = tokens[3];
+				colordefs[Color::WindowBorderActive] = tokens[2];
 			} else if (!tokens[1].compare("window-border-inactive")) {
-				lightcolordefs[Color::WindowBorderInactive] = tokens[2];
-				if (tokens.size() > 3)
-					darkcolordefs[Color::WindowBorderInactive] = tokens[3];
+				colordefs[Color::WindowBorderInactive] = tokens[2];
 			} else if (!tokens[1].compare("window-border-urgent")) {
-				lightcolordefs[Color::WindowBorderUrgent] = tokens[2];
-				if (tokens.size() > 3)
-					darkcolordefs[Color::WindowBorderUrgent] = tokens[3];
+				colordefs[Color::WindowBorderUrgent] = tokens[2];
 			}
 			continue;
 		}

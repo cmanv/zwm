@@ -84,7 +84,6 @@ namespace wmfunc {
 	void desktop_swap_tiles(XScreen *, long);
 	void desktop_cycle(XScreen *, long);
 	void desktop_window_cycle(XScreen *, long);
-	void desktop_set_theme(XScreen *, long);
 	void exec_term(long);
 	void set_wm_status(long);
 	void exec_cmd(std::string&);

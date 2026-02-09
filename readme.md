@@ -1,6 +1,6 @@
 % ZWM(1) zwm version alpha18 | zwm user's manual
 % cmanv
-% January 2026
+% February 2026
 
 # NAME
 
@@ -8,7 +8,7 @@ zwm — a simple stacking / tiling window manager for X11
 
 # SYNOPSIS
 
-**zwm** \[-D display\] \[-c configfile\] \[-m socket\] \[-t theme\] \[-hdpv\]
+**zwm** \[-D display\] \[-c configfile\] \[-m socket\] \[-hdpv\]
 
 # DESCRIPTION
 
@@ -29,10 +29,6 @@ zwm — a simple stacking / tiling window manager for X11
 > Soecify a socket on which the window manager will send some status messages. This
 overrides any value defined in the configuration file. If this is unset no messages
 are sent.
-
-**-t** _theme_
-
-> Use _theme_ (dark/light) at startup. _light_ is the default.
 
 **-h**
 
@@ -199,8 +195,6 @@ or mouse binding.
 The _number_ refers to the order of appearance of the layout in **_desktop_layouts_**.
 - **desktop-layout-next**: Switch the desktop to the next layout in the order defined by _desktop-layouts_.
 - **desktop-layout-prev**: Switch the desktop to the previous layout in ther order defined by _desktop-layouts_.
-- **desktop-set-dark-theme**: Switch the window manager colors to the dark theme.
-- **desktop-set-light-theme**: Switch the window manager colors to the light theme.
 - **desktop-switch-{_number_}**: Go to desktop _number_.
 - **desktop-switch-last**: Move back to the last used desktop.
 - **desktop-switch-next**: Go to the next active desktop. Last desktop wraps to first.

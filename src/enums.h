@@ -124,14 +124,9 @@ enum Motif {
 	DecorMaximize	= (1L << 6),
 };
 
-enum Theme {
-	Light,
-	Dark
-};
-
 enum Color {
-	Foreground,
-	Background,
+	PropForeground,
+	PropBackground,
 	WindowBorderActive,
 	WindowBorderInactive,
 	WindowBorderUrgent,

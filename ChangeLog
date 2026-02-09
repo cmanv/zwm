@@ -1,3 +1,9 @@
+2026-02-09
+	* Retire le code pour les menus
+	* Retire les modes dark/light
+	* Gère les événements leave-notify
+	* Version alpha19
+
 2026-01-13
 	* Bordergap adapts to dock height and position.
 	* Version alpha18
@@ -11,7 +17,6 @@
 	* Version alpha16
 
 2025-08-19
-	* Supprime les liste de clients dans l'objet Desktop.
 	* Supprime les liste de clients dans l'objet Desktop.
 	* Supprime stickylist
 	* Ajout des fonctions desktop-swap-*

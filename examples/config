@@ -73,13 +73,13 @@
 #prop-font 		"Mono:size=12"
 
 # ----------------------------------------------------------------
-# Colors: first value for light theme, second value for dark theme
+# Colors
 # ----------------------------------------------------------------
-#color foreground		white		white
-#color background		black		black
-#color window-border-active	tan		ForestGreen
-#color window-border-inactive	SlateGrey4	DarkSlateGrey
-#color window-border-urgent	orange		DarOrange
+#color prop-foreground		white
+#color prop-background		black
+#color window-border-active	tan
+#color window-border-inactive	SlateGrey4
+#color window-border-urgent	red
 
 # ----------------------------------------------------------------
 # Key bindings

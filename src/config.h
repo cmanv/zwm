@@ -61,7 +61,6 @@ struct DefaultStates {
 namespace conf {
 	extern std::string 			 command_socket;
 	extern std::string 			 message_socket;
-	extern std::string 			 default_theme;
 	extern std::string 			 propfont;
 	extern std::string 			 startupscript;
 	extern std::string 			 shutdownscript;
@@ -75,8 +74,7 @@ namespace conf {
 	extern const int			 ndesktops;
 	extern std::vector<DesktopDef> 	 	 desktop_defs;
 	extern std::vector<DesktopLayout> 	 desktop_layouts;
-	extern std::vector<std::string> 	 lightcolordefs;
-	extern std::vector<std::string> 	 darkcolordefs;
+	extern std::vector<std::string> 	 colordefs;
 	extern std::vector<Binding>		 keybindings;
 	extern std::vector<Binding>  		 mousebindings;
 	extern std::vector<DefaultDesktop>	 defdesktoplist;

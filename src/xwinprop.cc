@@ -29,8 +29,8 @@ XWinProp::XWinProp(XScreen *screen, Window parent)
 {
 	unsigned long pixel;
 	m_font = screen->get_prop_font();
-	m_color = screen->get_color(Color::Foreground);
-	pixel = screen->get_pixel(Color::Background);
+	m_color = screen->get_color(Color::PropForeground);
+	pixel = screen->get_pixel(Color::PropBackground);
 	m_window = XCreateSimpleWindow(wm::display, parent, 0, 0, 1, 1, 0,
 					pixel, pixel);
 	m_xftdraw = XftDrawCreate(wm::display, m_window, screen->get_visual(),
