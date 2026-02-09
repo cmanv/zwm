@@ -72,7 +72,6 @@ namespace wmfunc {
 	void window_hide(XClient *, long);
 	void window_state(XClient *, long);
 	void window_to_desktop(XClient *, long);
-	void window_menu_label(XClient *, long);
 	void activate_client(XScreen *, long);
 	void desktop_switch(XScreen *, long);
 	void desktop_switch_last(XScreen *, long);
@@ -86,9 +85,6 @@ namespace wmfunc {
 	void desktop_cycle(XScreen *, long);
 	void desktop_window_cycle(XScreen *, long);
 	void desktop_set_theme(XScreen *, long);
-	void desktop_launcher_menu(XScreen *, long);
-	void desktop_client_menu(XScreen *, long);
-	void desktop_list_menu(XScreen *, long);
 	void exec_term(long);
 	void set_wm_status(long);
 	void exec_cmd(std::string&);

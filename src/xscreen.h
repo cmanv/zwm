@@ -26,7 +26,6 @@
 #include <X11/Xlib.h>
 #include <string>
 #include <vector>
-#include "menu.h"
 #include "geometry.h"
 
 class Desktop;
@@ -50,7 +49,7 @@ class XScreen {
 	long				 m_theme;
 	std::vector<XftColor>		 m_darktheme;
 	std::vector<XftColor>		 m_lighttheme;
-	XftFont				*m_menufont;
+	XftFont				*m_propfont;
 public:
 	XScreen(int);
 	~XScreen();
@@ -62,7 +61,7 @@ public:
 	long			 	 get_last_desktop() const { return m_desktop_last; }
 	std::vector<XClient*> 		&get_clients() { return m_clientlist; }
 	std::vector<Desktop> 		&get_desktops() { return m_desktoplist; }
-	XftFont				*get_menu_font() { return m_menufont; }
+	XftFont				*get_prop_font() { return m_propfont; }
 	long	 		 	 get_num_desktops() const { return m_ndesktops; }
 	Geometry	 		 get_view() const { return m_view; }
 	bool			 	 is_cycling() const { return m_cycling; }
@@ -101,11 +100,6 @@ public:
 	void 				 desktop_master_resize(long);
 	void	 			 activate_client(long);
 	void	 			 switch_to_desktop(int);
-	void				 populate_client_menu(MenuDef&);
-	void				 run_client_menu(long);
-	void				 populate_desktop_menu(MenuDef&);
-	void				 run_desktop_menu(long);
-	void				 run_launcher_menu(long);
 	static XClient			*find_active_client();
 	static XClient			*find_client(Window);
 	static XScreen			*find_screen(Window);

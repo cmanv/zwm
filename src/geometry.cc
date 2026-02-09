@@ -136,27 +136,6 @@ void Geometry::set_pos(Position p)
 	y = p.y;
 }
 
-void Geometry::set_menu_placement(Position p, Geometry &area, int border)
-{
-	x = p.x;
-	y = p.y;
-	if (x + w + 2 * border > area.x + area.w)
-		x = area.x + area.w - w - 2 * border;
-	if (y + h + 2 * border > area.y + area.h)
-		y = area.y + area.h - h - 2 * border;
-}
-
-void Geometry::set_menu_placement(Geometry &parent, Geometry &area, int ypos, int border)
-{
-	int placement = 1;
-	x = parent.x + parent.w - 2 * border;
-	y = parent.y + ypos;
-	if (x + w > area.x + area.w)
-		x = parent.x - w + 2 * border;
-	if (y + h > area.y + area.h)
-		y = area.y + area.h - h;
-}
-
 void Geometry::set_placement(Position p, Geometry &area, int border)
 {
 	int xpos = std::max(std::max(p.x, area.x) - w / 2, area.x) + 10;

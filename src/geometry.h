@@ -76,8 +76,6 @@ struct Geometry {
 	bool	 	intersects(Geometry &, int);
 	void 	 	set_pos(int, int);
 	void 	 	set_pos(Position);
-	void 		set_menu_placement(Position, Geometry &, int);
-	void 		set_menu_placement(Geometry &, Geometry &, int, int);
 	void 		set_placement(Position, Geometry &, int);
 	void 		set_user_placement(Geometry&, int);
 	void 		adjust_for_maximized(Geometry&, int);

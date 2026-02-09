@@ -31,7 +31,6 @@
 #include "binding.h"
 #include "config.h"
 #include "desktop.h"
-#include "menu.h"
 #include "socket.h"
 #include "timer.h"
 #include "wmcore.h"
@@ -77,11 +76,11 @@ XScreen::XScreen(int id): m_screenid(id)
 		ewmh::set_net_current_desktop(m_rootwin, m_desktop_active);
 
 	// fonts
-	m_menufont = XftFontOpenName(wm::display, m_screenid, conf::menufont.c_str());
-	if (!m_menufont) {
+	m_propfont = XftFontOpenName(wm::display, m_screenid, conf::propfont.c_str());
+	if (!m_propfont) {
 		std::cerr << timer::gettime() << " [XScreen::" << __func__
-				<< "] Cant open font name '" << conf::menufont << "'\n";
-		m_menufont = XftFontOpenName(wm::display, m_screenid, "Mono:size=10");
+				<< "] Cant open font name '" << conf::propfont << "'\n";
+		m_propfont = XftFontOpenName(wm::display, m_screenid, "Mono:size=12");
 	}
 
 	// Light theme colors
@@ -143,7 +142,7 @@ XScreen::~XScreen()
 		    DefaultColormap(wm::display, m_screenid),
 		    &color);
 
-	XftFontClose(wm::display, m_menufont);
+	XftFontClose(wm::display, m_propfont);
 	XUngrabKey(wm::display, AnyKey, AnyModifier, m_rootwin);
 }
 
@@ -691,89 +690,6 @@ void XScreen::activate_client(long window)
 		show_desktop();
 	}
 	client->warp_pointer();
-}
-
-void XScreen::run_launcher_menu(long type)
-{
-	if (conf::debug) {
-		std::cout << timer::gettime() << " [XScreen:" << __func__ << "]\n";
-	}
-	std::string menu = conf::menu_launcher_label;
-	auto isLauncherMenu = [menu] (MenuDef mdef)
-			{ return (!mdef.label.compare(menu)); };
-	auto it = std::find_if(conf::menulist.begin(),conf::menulist.end(), isLauncherMenu);
-	if (it == conf::menulist.end()) return;
-
-	Menu launcher_menu(this, *it);
-	if (type == EventType::Key)
-		launcher_menu.run_key();
-	else
-		launcher_menu.run();
-}
-
-void XScreen::populate_client_menu(MenuDef &menudef)
-{
-	menudef.items.clear();
-	for (int i = -1; i < m_ndesktops; i++) {
-		for (XClient *client : m_clientlist) {
-			if (client->has_states(State::Ignored)) continue;
-			long index = client->get_desktop_index();
-			if (index != i) continue;
-			char ws = '+';
-			if (client->has_state(State::Active)) ws = '*';
-			if (client->has_state(State::Hidden)) ws = '_';
-			if (client->has_state(State::Urgent)) ws = '!';
-			std::stringstream ss;
-			if (index < 0)
-				ss << "[s] " << ws  << ' ' << client->get_name();
-			else
-				ss << "[" << index+1 << "] " << ws << ' '
-					<< client->get_name();
-
-			std::string s(ss.str().substr(0,127));
-			menudef.items.push_back(MenuItem(s, client));
-		}
-	}
-}
-
-void XScreen::run_client_menu(long type)
-{
-	if (conf::debug) {
-		std::cout << timer::gettime() << " [XScreen:" << __func__ << "]\n";
-	}
-	MenuDef menudef(conf::menu_client_label, MenuType::Client);
-	populate_client_menu(menudef);
-	Menu client_menu(this, menudef);
-	if (type == EventType::Key)
-		client_menu.run_key();
-	else
-		client_menu.run();
-}
-
-void XScreen::populate_desktop_menu(MenuDef &menudef)
-{
-	menudef.items.clear();
-	for (int i = 0; i < m_ndesktops; i++) {
-		if (desktop_empty(i)) continue;
-		std::stringstream ss;
-		ss << "[" << m_desktoplist[i].get_name() << "]";
-		std::string s(ss.str());
-		menudef.items.push_back(MenuItem(s,i));
-	}
-}
-
-void XScreen::run_desktop_menu(long type)
-{
-	if (conf::debug) {
-		std::cout << timer::gettime() << " [XScreen:" << __func__ << "]\n";
-	}
-	MenuDef menudef(conf::menu_desktop_label, MenuType::Desktop);
-	populate_desktop_menu(menudef);
-	Menu desktop_menu(this, menudef);
-	if (type == EventType::Key)
-		desktop_menu.run_key();
-	else
-		desktop_menu.run();
 }
 
 XClient *XScreen::find_active_client()

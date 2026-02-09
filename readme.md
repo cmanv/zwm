@@ -12,10 +12,7 @@ zwm — a simple stacking / tiling window manager for X11
 
 # DESCRIPTION
 
-**zwm** is an hybrid stacking/tiling window manager for X11. It supports a stacking
-layout and tiling layouts. It features a number of configurable window manager
-functions, workspaces and a configurable menu.
-It is also able to send and receive messages through sockets.
+**zwm** is an hybrid stacking/tiling window manager for X11.
 
 # COMMAND LINE OPTIONS
 
@@ -67,9 +64,7 @@ This section describes all options that can be set in the configuration file.
 
 > The elements can be:
 
-> _menu-background_, _menu-border_, _menu-highlight_,
-> _menu-item-text_, _menu-item-text-selected_, _menu-title_,
-> _menu-title-background_, _window-border-active_,
+> _background_, _foreground_, _window-border-active_,
 > _window-border-inactive_, _window-border-urgent_
 
 - **debug-level** _level_
@@ -108,22 +103,9 @@ This section describes all options that can be set in the configuration file.
 > connect to send IPC messages.This can be overriden by a command line argument.
 > (default is unset)
 
-- **menu-font** _font_
+- **prop-font** _font_
 
-> Sets the font of the text in menus. (default: "Mono:size=10")
-
-- **menu-client-label** _text_
-
-> Sets the label of the client menu. (default is "X Clients")
-
-- **menu-desktop-label** _text_
-
-> Sets the label of the active desktops menu. (default is "Active desktops")
-
-- **menu-launcher-label** _text_
-
-> Sets the label of the launcher menu. (default is "Launchers").
-> To define the launcher menu, see the _MENU DEFINITIONS_ section.
+> Sets the font of the text in prop windows. (default: "Mono:size=12")
 
 - **shutdown-script** _path_
 
@@ -176,46 +158,6 @@ based on its _instance_/_class_ properties.
 
 > - _sticky_: The window appears on all desktops.
 
-## MENU DEFINITIONS
-
-These options allows to define a menu hierarchy that can be activated by
-the _menu-launcher_ function. The label of the top level menu must match
-the _menu-launcher-label_ option. (Default: "Launchers")
-
-Any menu can contains a list of commands and submenus. A menu
-definition starts by _menu-start_ statement, followed by a list
-of _menu-item_ statements, and ends with a _menu-end_ stetement.
-
-> _menu-start_ _text_
-
-> _menu-item_ _text_ _function_ \[_arg_\]
-
-> ,,,
-
-> _menu-end_
-
-- **menu-start** _text_
-
-> Starts the definition of a menu with label _text_. This must be followed by a
-series of _menu-item_ lines and end with a _menu-end_ line.
-
-- **menu-item**  _text function \[arg\]_
-
-> Define an item in a menu. The _text_ is the label of the menu item.
-> The _function_ and _arg_ are usually one of these:
-
-> - _exec_ _path_: Execute the program at the specified _path_.
-
-> - _menu_  _text_: Open a menu as a submenu. _text_ is the label of a defined menu.
-
-> - _quit_: Terminates the window manager application.
-
-> - _restart_: Restarts the window manager application. Any changes in the configuration file will be applied.
-
-* **menu-end**
-
-> Ends the definition of the menu.
-
 ## BINDING OPTIONS
 
 These options allow to bind or unbind a key/buttpn shortcut to a window manager function.
@@ -253,9 +195,6 @@ or mouse binding.
 
 - **desktop-close**: Close all windows on the desktop.
 - **desktop-hide**: Hide all windows on the desktop.
-- **desktop-client-menu**: Show the list of X11 clients. (keyboard driven).
-- **desktop-desktop-menu**: Show the list of active desktops. (keyboard driven).
-- **desktop-launcher-menu**: Show the launcher menu. (keyboard driven).
 - **desktop-layout-{_number_}**: Switch to layout _number_ (1-9).
 The _number_ refers to the order of appearance of the layout in **_desktop_layouts_**.
 - **desktop-layout-next**: Switch the desktop to the next layout in the order defined by _desktop-layouts_.
@@ -275,9 +214,6 @@ The _number_ refers to the order of appearance of the layout in **_desktop_layou
 - **desktop-window-swap-next**: Swap the position of the active window and the next window. (HTiled, VTiled)
 - **desktop-window-swap-prev**: Swap the position of the active window and the previous window. (HTiled, VTiled)
 - **exec**  _path_: Execute a program defined by _path_.
-- **client-menu**: Shows the list of X clients (pointer driver).
-- **desktop-menu**: Show the list of active desktops (pointer driven).
-- **launcher-menu**: Show the launcher menu. (pointer driven).
 - **quit**: Terminate the window manager.
 - **restart**: Restart the window manager.
 - **terminal**: Open the default terminal.
@@ -368,9 +304,6 @@ This sections list all key and mouse bindings defined by default.
 
 ## Mouse buttons bindings
 
-- **1**	:	_client-menu_
-- **2**	:	_desktop-menu_
-- **3**	:	_launcher-menu_
 - **M+1**:	_window-move_
 - **M+3**:	_window-resize_
 - **M+4**:	_window-lower_

@@ -130,16 +130,11 @@ enum Theme {
 };
 
 enum Color {
+	Foreground,
+	Background,
 	WindowBorderActive,
 	WindowBorderInactive,
 	WindowBorderUrgent,
-	MenuBackground,
-	MenuBorder,
-	MenuHighlight,
-	MenuItemText,
-	MenuItemTextSelected,
-	MenuTitle,
-	MenuTitleBackground,
 	NumColors
 };
 
@@ -190,11 +185,5 @@ enum class Context {
 	FuncCall,
 	Root,
 	Window,
-};
-
-enum class MenuType {
-	Client,
-	Desktop,
-	Launcher
 };
 #endif // _ENUMS_H_

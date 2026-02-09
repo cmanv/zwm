@@ -8,10 +8,6 @@ zwm \(em a simple stacking / tiling window manager for X11
 [\-hdpv]
 .SH DESCRIPTION
 \f[B]zwm\f[R] is an hybrid stacking/tiling window manager for X11.
-It supports a stacking layout and tiling layouts.
-It features a number of configurable window manager functions,
-workspaces and a configurable menu.
-It is also able to send and receive messages through sockets.
 .SH COMMAND LINE OPTIONS
 \f[B]\-D\f[R] \f[I]display\f[R]
 .RS
@@ -83,11 +79,9 @@ The elements can be:
 .RE
 .RS
 .PP
-\f[I]menu\-background\f[R], \f[I]menu\-border\f[R],
-\f[I]menu\-highlight\f[R], \f[I]menu\-item\-text\f[R],
-\f[I]menu\-item\-text\-selected\f[R], \f[I]menu\-title\f[R],
-\f[I]menu\-title\-background\f[R], \f[I]window\-border\-active\f[R],
-\f[I]window\-border\-inactive\f[R], \f[I]window\-border\-urgent\f[R]
+\f[I]background\f[R], \f[I]foreground\f[R],
+\f[I]window\-border\-active\f[R], \f[I]window\-border\-inactive\f[R],
+\f[I]window\-border\-urgent\f[R]
 .RE
 .IP \(bu 2
 \f[B]debug\-level\f[R] \f[I]level\f[R]
@@ -160,33 +154,11 @@ line argument.
 (default is unset)
 .RE
 .IP \(bu 2
-\f[B]menu\-font\f[R] \f[I]font\f[R]
+\f[B]prop\-font\f[R] \f[I]font\f[R]
 .RS
 .PP
-Sets the font of the text in menus.
-(default: \(dqMono:size=10\(dq)
-.RE
-.IP \(bu 2
-\f[B]menu\-client\-label\f[R] \f[I]text\f[R]
-.RS
-.PP
-Sets the label of the client menu.
-(default is \(dqX Clients\(dq)
-.RE
-.IP \(bu 2
-\f[B]menu\-desktop\-label\f[R] \f[I]text\f[R]
-.RS
-.PP
-Sets the label of the active desktops menu.
-(default is \(dqActive desktops\(dq)
-.RE
-.IP \(bu 2
-\f[B]menu\-launcher\-label\f[R] \f[I]text\f[R]
-.RS
-.PP
-Sets the label of the launcher menu.
-(default is \(dqLaunchers\(dq).
-To define the launcher menu, see the \f[I]MENU DEFINITIONS\f[R] section.
+Sets the font of the text in prop windows.
+(default: \(dqMono:size=12\(dq)
 .RE
 .IP \(bu 2
 \f[B]shutdown\-script\f[R] \f[I]path\f[R]
@@ -276,74 +248,6 @@ windows only).
 .IP \(bu 2
 \f[I]sticky\f[R]: The window appears on all desktops.
 .RE
-.SS MENU DEFINITIONS
-These options allows to define a menu hierarchy that can be activated by
-the \f[I]menu\-launcher\f[R] function.
-The label of the top level menu must match the
-\f[I]menu\-launcher\-label\f[R] option.
-(Default: \(dqLaunchers\(dq)
-.PP
-Any menu can contains a list of commands and submenus.
-A menu definition starts by \f[I]menu\-start\f[R] statement, followed by
-a list of \f[I]menu\-item\f[R] statements, and ends with a
-\f[I]menu\-end\f[R] stetement.
-.RS
-.PP
-\f[I]menu\-start\f[R] \f[I]text\f[R]
-.RE
-.RS
-.PP
-\f[I]menu\-item\f[R] \f[I]text\f[R] \f[I]function\f[R] [\f[I]arg\f[R]]
-.RE
-.RS
-.PP
-,,,
-.RE
-.RS
-.PP
-\f[I]menu\-end\f[R]
-.RE
-.IP \(bu 2
-\f[B]menu\-start\f[R] \f[I]text\f[R]
-.RS
-.PP
-Starts the definition of a menu with label \f[I]text\f[R].
-This must be followed by a series of \f[I]menu\-item\f[R] lines and end
-with a \f[I]menu\-end\f[R] line.
-.RE
-.IP \(bu 2
-\f[B]menu\-item\f[R] \f[I]text function [arg]\f[R]
-.RS
-.PP
-Define an item in a menu.
-The \f[I]text\f[R] is the label of the menu item.
-The \f[I]function\f[R] and \f[I]arg\f[R] are usually one of these:
-.RE
-.RS
-.IP \(bu 2
-\f[I]exec\f[R] \f[I]path\f[R]: Execute the program at the specified
-\f[I]path\f[R].
-.RE
-.RS
-.IP \(bu 2
-\f[I]menu\f[R] \f[I]text\f[R]: Open a menu as a submenu.
-\f[I]text\f[R] is the label of a defined menu.
-.RE
-.RS
-.IP \(bu 2
-\f[I]quit\f[R]: Terminates the window manager application.
-.RE
-.RS
-.IP \(bu 2
-\f[I]restart\f[R]: Restarts the window manager application.
-Any changes in the configuration file will be applied.
-.RE
-.IP \(bu 2
-\f[B]menu\-end\f[R]
-.RS
-.PP
-Ends the definition of the menu.
-.RE
 .SS BINDING OPTIONS
 These options allow to bind or unbind a key/buttpn shortcut to a window
 manager function.
@@ -397,15 +301,6 @@ through a key or mouse binding.
 \f[B]desktop\-close\f[R]: Close all windows on the desktop.
 .IP \(bu 2
 \f[B]desktop\-hide\f[R]: Hide all windows on the desktop.
-.IP \(bu 2
-\f[B]desktop\-client\-menu\f[R]: Show the list of X11 clients.
-(keyboard driven).
-.IP \(bu 2
-\f[B]desktop\-desktop\-menu\f[R]: Show the list of active desktops.
-(keyboard driven).
-.IP \(bu 2
-\f[B]desktop\-launcher\-menu\f[R]: Show the launcher menu.
-(keyboard driven).
 .IP \(bu 2
 \f[B]desktop\-layout\-{\f[BI]number\f[B]}\f[R]: Switch to layout
 \f[I]number\f[R] (1\-9).
@@ -469,14 +364,6 @@ window and the previous window.
 .IP \(bu 2
 \f[B]exec\f[R] \f[I]path\f[R]: Execute a program defined by
 \f[I]path\f[R].
-.IP \(bu 2
-\f[B]client\-menu\f[R]: Shows the list of X clients (pointer driver).
-.IP \(bu 2
-\f[B]desktop\-menu\f[R]: Show the list of active desktops (pointer
-driven).
-.IP \(bu 2
-\f[B]launcher\-menu\f[R]: Show the launcher menu.
-(pointer driven).
 .IP \(bu 2
 \f[B]quit\f[R]: Terminate the window manager.
 .IP \(bu 2
@@ -678,12 +565,6 @@ This sections list all key and mouse bindings defined by default.
 .IP \(bu 2
 \f[B]SM\-x\f[R] : \f[I]window\-close\f[R]
 .SS Mouse buttons bindings
-.IP \(bu 2
-\f[B]1\f[R] : \f[I]client\-menu\f[R]
-.IP \(bu 2
-\f[B]2\f[R] : \f[I]desktop\-menu\f[R]
-.IP \(bu 2
-\f[B]3\f[R] : \f[I]launcher\-menu\f[R]
 .IP \(bu 2
 \f[B]M+1\f[R]: \f[I]window\-move\f[R]
 .IP \(bu 2

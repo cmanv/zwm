@@ -1,6 +1,6 @@
 # ----------------------------------------------------------------
 # zwm configuration file
-# cmanv - August 2025
+# cmanv - February 2026
 
 # ----------------------------------------------------------------
 # Terminal program (default: xterm)
@@ -68,44 +68,18 @@
 #app-default-state	gcr-prompter	notile,noresize,sticky
 
 # ----------------------------------------------------------------
-# Menu font and labels
+# Font for prop windows
 # ----------------------------------------------------------------
-#menu-font 		"Mono:size=10"
-#menu-launcher-label 	"Launchers"
-#menu-client-label 	"X11 clients"
-#menu-desktop-label 	"Active desktops"
-
-# ----------------------------------------------------------------
-# Definition of the menus. (unset by default)
-# ----------------------------------------------------------------
-#menu-start "Launchers"
-#menu-item  "Terminal"	exec xterm
-#menu-item  "Clients"	menu "X11 clients"
-#menu-item  "Desktops"	menu "Active desktops"
-#menu-item  "Quit"	menu "Quit"
-#menu-end
-
-# ----------------------------------------------------------------
-# Definition of submenu "Quit"
-# ----------------------------------------------------------------
-#menu-start "Quit"
-#menu-item  "Restart"	restart
-#menu-item  "Quit"	quit
-#menu-end
+#prop-font 		"Mono:size=12"
 
 # ----------------------------------------------------------------
 # Colors: first value for light theme, second value for dark theme
 # ----------------------------------------------------------------
+#color foreground		white		white
+#color background		black		black
 #color window-border-active	tan		ForestGreen
 #color window-border-inactive	SlateGrey4	DarkSlateGrey
 #color window-border-urgent	orange		DarOrange
-#color menu-background		seashell	DarkSlateGrey
-#color menu-border		SlateGray3	gray20
-#color menu-highlight		SlateGray2	SkyBlue4
-#color menu-item-text	 	black		seashell
-#color menu-item-text-selected	black		ivory
-#color menu-title		black		ivory
-#color menu-title-background	SlateGray3	SteelBlue4
 
 # ----------------------------------------------------------------
 # Key bindings
@@ -185,9 +159,6 @@
 # To disable all mouse bindings use: unbind-mouse all
 # ----------------------------------------------------------------
 #unbind-mouse all
-#bind-mouse 1		menu-client
-#bind-mouse 2		menu-desktop
-#bind-mouse 3		menu-launcher
 #bind-mouse M-1		window-move
 #bind-mouse M-3		window-resize
 #bind-mouse M-4		window-lower

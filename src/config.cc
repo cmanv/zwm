@@ -31,7 +31,6 @@
 #include "wmfunc.h"
 #include "binding.h"
 #include "xclient.h"
-#include "menu.h"
 #include "version.h"
 #include "config.h"
 
@@ -116,9 +115,6 @@ namespace conf {
 	};
 
 	std::vector<BindingDef> mousebinding_defs = {
-		{ "1",		"menu-client" },
-		{ "2",		"menu-desktop" },
-		{ "3",		"menu-launcher" },
 		{ "M-1",	"window-move" },
 		{ "M-3",	"window-resize" },
 		{ "M-4",	"window-lower" },
@@ -128,10 +124,7 @@ namespace conf {
 	std::string	default_theme = "";
 	std::string	user_config = "";
 	std::string	wmname = "ZWM";
-	std::string 	menufont = "Mono:size=12";
-	std::string	menu_client_label = "X Clients";
-	std::string	menu_desktop_label = "Active desktops";
-	std::string	menu_launcher_label = "Launchers";
+	std::string 	propfont = "Mono:size=12";
 	std::string	command_socket = "";
 	std::string	message_socket = "";
 	std::string	terminal = "xterm";
@@ -144,7 +137,6 @@ namespace conf {
 
 	int			debug = 0;
 	const int		ndesktops = desktop_defs.size();
-	int			menu_border = 2;
 	int			tiled_border = 2;
 	int			stacked_border = 4;
 	int			moveamount = 10;
@@ -154,11 +146,9 @@ namespace conf {
 	std::vector<Binding>		mousebindings;
 	std::vector<DefaultDesktop>	defdesktoplist;
 	std::vector<DefaultStates>	defstateslist;
-	std::vector<MenuDef>		menulist;
 
 	void read_config();
 	void read_bindings();
-	void read_menus();
 
 	bool get_line(std::ifstream &, std::string &);
 	int  get_tokens(std::string &, std::vector<std::string> &);
@@ -172,7 +162,6 @@ namespace conf {
 	void add_desktop_layouts(std::vector<std::string> &);
 	void add_window_states(std::string &, std::string &, std::vector<std::string> &);
 	void add_default_desktop(std::string &, std::string &, int);
-	void add_menu(std::string &, std::ifstream &);
 }
 
 void conf::init()
@@ -188,28 +177,18 @@ void conf::init()
 	}
 
 	lightcolordefs.resize(Color::NumColors);
+	lightcolordefs[Color::Foreground]		= "white";
+	lightcolordefs[Color::Background]		= "black";
 	lightcolordefs[Color::WindowBorderActive] 	= "tan";
 	lightcolordefs[Color::WindowBorderInactive] 	= "SlateGray4";
 	lightcolordefs[Color::WindowBorderUrgent] 	= "orange";
-	lightcolordefs[Color::MenuBackground] 		= "seashell";
-	lightcolordefs[Color::MenuBorder] 		= "SlateGray3";
-	lightcolordefs[Color::MenuHighlight] 		= "SlateGray2";
-	lightcolordefs[Color::MenuItemText] 		= "black";
-	lightcolordefs[Color::MenuItemTextSelected] 	= "black";
-	lightcolordefs[Color::MenuTitle] 		= "black";
-	lightcolordefs[Color::MenuTitleBackground] 	= "SlateGray3";
 
 	darkcolordefs.resize(Color::NumColors);
+	darkcolordefs[Color::Foreground]		= "black";
+	darkcolordefs[Color::Background]		= "Gray70";
 	darkcolordefs[Color::WindowBorderActive] 	= "ForestGreen";
 	darkcolordefs[Color::WindowBorderInactive] 	= "DarkSlateGrey";
 	darkcolordefs[Color::WindowBorderUrgent] 	= "DarkOrange";
-	darkcolordefs[Color::MenuBackground] 		= "DarkSlategrey";
-	darkcolordefs[Color::MenuBorder] 		= "gray20";
-	darkcolordefs[Color::MenuHighlight] 		= "SkyBlue4";
-	darkcolordefs[Color::MenuItemText] 		= "seashell";
-	darkcolordefs[Color::MenuItemTextSelected] 	= "ivory";
-	darkcolordefs[Color::MenuTitle] 		= "ivory";
-	darkcolordefs[Color::MenuTitleBackground] 	= "SteelBlue4";
 
 	if (!std::getenv("HOME")) {
 		std::cerr << "HOME is not defined in the environment!\n";
@@ -260,8 +239,6 @@ void conf::init()
 		}
 	}
 	read_config();
-	menulist.push_back(MenuDef(menu_client_label, MenuType::Client));
-	menulist.push_back(MenuDef(menu_desktop_label, MenuType::Desktop));
 
 	if (!default_theme.empty()) return;
 	default_theme = "light";
@@ -330,20 +307,8 @@ void conf::read_config()
 			terminal = tokens[1];
 			continue;
 		}
-		if (!tokens[0].compare("menu-font")) {
-			menufont = tokens[1];
-			continue;
-		}
-		if (!tokens[0].compare("menu-client-label")) {
-			menu_client_label = tokens[1];
-			continue;
-		}
-		if (!tokens[0].compare("menu-desktop-label")) {
-			menu_desktop_label = tokens[1];
-			continue;
-		}
-		if (!tokens[0].compare("menu-launcher-label")) {
-			menu_launcher_label = tokens[1];
+		if (!tokens[0].compare("prop-font")) {
+			propfont = tokens[1];
 			continue;
 		}
 		if (!tokens[0].compare("desktop-defaults")) {
@@ -373,7 +338,15 @@ void conf::read_config()
 		}
 		if (!tokens[0].compare("color")) {
 			if (tokens.size() < 3) continue;
-			if (!tokens[1].compare("window-border-active")) {
+			if (!tokens[1].compare("foreground")) {
+				lightcolordefs[Color::Foreground] = tokens[2];
+				if (tokens.size() > 3)
+					darkcolordefs[Color::Foreground] = tokens[3];
+			} else if (!tokens[1].compare("background")) {
+				lightcolordefs[Color::Background] = tokens[2];
+				if (tokens.size() > 3)
+					darkcolordefs[Color::Background] = tokens[3];
+			} else if (!tokens[1].compare("window-border-active")) {
 				lightcolordefs[Color::WindowBorderActive] = tokens[2];
 				if (tokens.size() > 3)
 					darkcolordefs[Color::WindowBorderActive] = tokens[3];
@@ -385,39 +358,7 @@ void conf::read_config()
 				lightcolordefs[Color::WindowBorderUrgent] = tokens[2];
 				if (tokens.size() > 3)
 					darkcolordefs[Color::WindowBorderUrgent] = tokens[3];
-			} else if (!tokens[1].compare("menu-background")) {
-				lightcolordefs[Color::MenuBackground] = tokens[2];
-				if (tokens.size() > 3)
-					darkcolordefs[Color::MenuBackground] = tokens[3];
-			} else if (!tokens[1].compare("menu-border")) {
-				lightcolordefs[Color::MenuBorder] = tokens[2];
-				if (tokens.size() > 3)
-					darkcolordefs[Color::MenuBorder] = tokens[3];
-			} else if (!tokens[1].compare("menu-item-text")) {
-				lightcolordefs[Color::MenuItemText] = tokens[2];
-				if (tokens.size() > 3)
-					darkcolordefs[Color::MenuItemText] = tokens[3];
-			} else if (!tokens[1].compare("menu-item-text-selected")) {
-				lightcolordefs[Color::MenuItemTextSelected] = tokens[2];
-				if (tokens.size() > 3)
-					darkcolordefs[Color::MenuItemTextSelected] = tokens[3];
-			} else if (!tokens[1].compare("menu-highlight")) {
-				lightcolordefs[Color::MenuHighlight] = tokens[2];
-				if (tokens.size() > 3)
-					darkcolordefs[Color::MenuHighlight] = tokens[3];
-			} else if (!tokens[1].compare("menu-title")) {
-				lightcolordefs[Color::MenuTitle] = tokens[2];
-				if (tokens.size() > 3)
-					darkcolordefs[Color::MenuTitle] = tokens[3];
-			} else if (!tokens[1].compare("menu-title-background")) {
-				lightcolordefs[Color::MenuTitleBackground] = tokens[2];
-				if (tokens.size() > 3)
-					darkcolordefs[Color::MenuTitleBackground] = tokens[3];
 			}
-			continue;
-		}
-		if (!tokens[0].compare("menu-start")) {
-			add_menu(tokens[1], config_file);
 			continue;
 		}
 		if (!tokens[0].compare("unbind-key")) {
@@ -650,30 +591,4 @@ void conf::add_default_desktop(std::string &rname, std::string &rclass, int inde
 	auto it = std::find_if(defdesktoplist.begin(), defdesktoplist.end(), isDefaultDesktop);
 	if (it != defdesktoplist.end()) defdesktoplist.erase(it);
 	defdesktoplist.push_back(DefaultDesktop(rname, rclass, index));
-}
-
-void conf::add_menu(std::string &label, std::ifstream &configfile)
-{
-	MenuDef 		 menudef(label, MenuType::Launcher);
-	std::vector<std::string> tokens;
-	std::string 		 line;
-
-	while (get_line(configfile, line)) {
-		if (!get_tokens(line, tokens)) continue;
-		if (!tokens[0].compare("menu-end")) break;
-		if (tokens[0].compare("menu-item")) continue;
-		if ((tokens.size() == 3) && (!tokens[2].compare("restart") ||
-			!tokens[2].compare("quit"))) {
-			MenuItem item(tokens[1], tokens[2]);
-			menudef.items.push_back(item);
-			continue;
-		}
-		if ((tokens.size() >= 4) && (!tokens[2].compare("exec") ||
-			!tokens[2].compare("restart") ||
-			!tokens[2].compare("menu"))) {
-			MenuItem item(tokens[1], tokens[2], tokens[3]);
-			menudef.items.push_back(item);
-		}
-	}
-	menulist.push_back(menudef);
 }

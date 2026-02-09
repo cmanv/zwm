@@ -26,7 +26,6 @@
 #include <vector>
 #include "process.h"
 #include "config.h"
-#include "menu.h"
 #include "desktop.h"
 #include "xclient.h"
 #include "xscreen.h"
@@ -39,9 +38,6 @@ const long free_param = 99999;
 std::vector<FuncDef> funcdefs = {
 	{ "desktop-close", 		desktop_close},
 	{ "desktop-hide", 		desktop_hide},
-	{ "desktop-client-menu", 	desktop_client_menu, EventType::Key},
-	{ "desktop-launcher-menu", 	desktop_launcher_menu, EventType::Key},
-	{ "desktop-list-menu", 		desktop_list_menu, EventType::Key},
 	{ "desktop-layout-1", 		desktop_select_layout, 0},
 	{ "desktop-layout-2", 		desktop_select_layout, 1},
 	{ "desktop-layout-3", 		desktop_select_layout, 2},
@@ -109,10 +105,6 @@ std::vector<FuncDef> funcdefs = {
 	{ "window-toggle-fullscreen", 	window_state, State::FullScreen},
 	{ "window-toggle-sticky", 	window_state, State::Sticky},
 	{ "window-toggle-tiled", 	window_state, State::NoTile},
-
-	{ "client-menu", 		desktop_client_menu, EventType::Button},
-	{ "desktop-menu", 		desktop_list_menu, EventType::Button},
-	{ "launcher-menu",		desktop_launcher_menu, EventType::Button},
 
 	{ "terminal", 			exec_term},
 	{ "restart", 			set_wm_status, IsRestarting},
@@ -244,26 +236,10 @@ void wmfunc::desktop_set_theme(XScreen *screen, long theme)
 	screen->set_theme(theme);
 }
 
-void wmfunc::desktop_launcher_menu(XScreen *screen, long type)
-{
-	screen->run_launcher_menu(type);
-}
-
-void wmfunc::desktop_client_menu(XScreen *screen, long type)
-{
-	screen->run_client_menu(type);
-}
-
-void wmfunc::desktop_list_menu(XScreen *screen, long type)
-{
-	screen->run_desktop_menu(type);
-}
-
 void wmfunc::set_wm_status(long status)
 {
 	wm::status = status;
 }
-
 
 void wmfunc::exec_term(long)
 {

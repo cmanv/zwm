@@ -26,7 +26,6 @@
 #include <string>
 #include "enums.h"
 #include "binding.h"
-#include "menu.h"
 
 struct DesktopDef {
 	std::string 	name;
@@ -63,7 +62,7 @@ namespace conf {
 	extern std::string 			 command_socket;
 	extern std::string 			 message_socket;
 	extern std::string 			 default_theme;
-	extern std::string 			 menufont;
+	extern std::string 			 propfont;
 	extern std::string 			 startupscript;
 	extern std::string 			 shutdownscript;
 	extern std::string			 user_config;
@@ -71,7 +70,6 @@ namespace conf {
 	extern int				 debug;
 	extern int				 stacked_border;
 	extern int				 tiled_border;
-	extern int				 menu_border;
 	extern int				 moveamount;
 	extern int				 snapdist;
 	extern const int			 ndesktops;
@@ -81,13 +79,9 @@ namespace conf {
 	extern std::vector<std::string> 	 darkcolordefs;
 	extern std::vector<Binding>		 keybindings;
 	extern std::vector<Binding>  		 mousebindings;
-	extern std::vector<MenuDef>		 menulist;
 	extern std::vector<DefaultDesktop>	 defdesktoplist;
 	extern std::vector<DefaultStates>	 defstateslist;
 	extern std::string			 terminal;
-	extern std::string			 menu_client_label;
-	extern std::string			 menu_desktop_label;
-	extern std::string			 menu_launcher_label;
 	void 	init();
 }
 #endif // _CONFIG_H_
