@@ -414,7 +414,7 @@ static void XEvents::client_message(XEvent *e)
 	} else if (xev->message_type == ewmh::hints[_NET_WM_DESKTOP]) {
 		if ((client = XScreen::find_client(xev->window)) != NULL) {
 			long index = xev->data.l[0];
-			if (index == (unsigned long)-1)
+			if (index == (long)-1)
 				client->set_states(State::Sticky);
 			else {
 				if (index >= 0 && index < conf::ndesktops) {

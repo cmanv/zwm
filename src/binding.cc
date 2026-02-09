@@ -46,9 +46,9 @@ Binding::Binding( BindingDef& binddef, long eventtype)
 	keycombo = binddef.keycombo;
 	std::string symbol;
 
- 	int pos = keycombo.find('-');
+	unsigned int pos = keycombo.find('-');
 	if (pos != keycombo.npos) {
-		for (int i=0; i<pos; i++) {
+		for (unsigned int i=0; i<pos; i++) {
 			bool modkey = false;
 			for (ModKeyDef &def : modkey_defs) {
 				if (keycombo[i] == def.ch) {

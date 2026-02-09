@@ -308,8 +308,7 @@ void ewmh::delete_net_virtual_roots(Window rootwin)
 
 void ewmh::set_net_desktop_names(Window rootwin, std::vector<std::string> &names)
 {
-	unsigned long	 n = 9;
-	int 		 i = 0, ndesks = 0;
+	unsigned long	 i = 0, n = 9, ndesks = 0;
 	unsigned char	*prop;
 
 	// Let desktop names be overwritten if _NET_DESKTOP_NAMES is set.

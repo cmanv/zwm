@@ -441,7 +441,7 @@ int conf::split_string(std::string &str, std::vector<std::string> &tokens, char 
 
 void conf::get_name_class(std::string &s, std::string &rname, std::string &rclass)
 {
-	int pos = s.find(":");
+	unsigned long pos = s.find(":");
 	if (pos != s.npos) {
 		rname = s.substr(0, pos);
 		rclass = s.substr(pos+1);
@@ -487,7 +487,6 @@ void conf::remove_mousebinding(Binding &mb)
 
 void conf::add_desktop_layouts(std::vector<std::string> &layouts)
 {
-	long index = 0;
 	desktop_layouts.clear();
 	for (std::string &layout : layouts) {
 		if (!layout.compare("Stacked"))

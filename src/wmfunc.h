@@ -34,7 +34,6 @@ namespace wmfunc {
 
 	struct FuncDef {
 		std::string 		namefunc;
-		Context			context;
 		union {
 			void		(*fcall)(long);
 			void		(*flaunch)(std::string&);
@@ -42,6 +41,7 @@ namespace wmfunc {
 			void		(*fscreen)(XScreen *, long);
 			void		(*froot)(XScreen *);
 		};
+		Context			context;
 		long			param;
 		FuncDef(const char *n, void (*f)(XScreen *), Context c)
 			:namefunc(n), froot(f), context(c) {}

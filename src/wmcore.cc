@@ -90,15 +90,15 @@ void wm::run()
 
 	int n = 0;
 	struct kevent watch[2];
-	int xfd = ConnectionNumber(display);
-	if (xfd == -1) {
+	long xfd = ConnectionNumber(display);
+	if (xfd == -1L) {
 		std::cerr << " [wm::" << __func__ << "] bad X connection number\n";
 		exit(1);
 	}
 	EV_SET(&watch[n++], xfd, EVFILT_READ, EV_ADD, 0, 0, 0);
 
-	int sfd = socket_in::init(conf::command_socket);
-	if (sfd == -1) {
+	long sfd = socket_in::init(conf::command_socket);
+	if (sfd == -1L) {
 		std::cerr << " [wm::" << __func__ << "] error creating socket "
 			<< conf::command_socket << std::endl;
 		exit(1);
@@ -121,9 +121,9 @@ void wm::run()
 				<< std::strerror(errno) << std::endl;
 		}
 		for (int i=0; i<nev; i++) {
-			if (events[i].ident == xfd)
+			if (events[i].ident == (unsigned long)xfd)
 				XEvents::process();
-			else if (events[i].ident == sfd) {
+			else if (events[i].ident == (unsigned long)sfd) {
 				process_message();
 			}
 		}
@@ -260,7 +260,7 @@ static void wm::wm_shutdown()
 	socket_out::clear();
 }
 
-static int  wm::start_error_handler(Display *display, XErrorEvent *e)
+static int  wm::start_error_handler(Display *, XErrorEvent *)
 {
 	std::cerr << "root window unavailable - perhaps another wm is running?\n";
 	exit(1);

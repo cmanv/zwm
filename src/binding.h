@@ -53,7 +53,7 @@ struct Binding {
 	unsigned int		modmask;
 	union {
 		KeySym		keysym;
-		int		button;
+		unsigned int	button;
 	};
 	Context			context;
 	union {

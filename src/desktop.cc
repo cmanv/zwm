@@ -42,7 +42,7 @@ Desktop::Desktop(std::string &name, XScreen *screen, long index,
 	m_index = index;
 	m_master_split = split;
 	m_layout_index = 0;
-	for (int i = 0; i < conf::desktop_layouts.size(); i++) {
+	for (unsigned long i = 0; i < conf::desktop_layouts.size(); i++) {
 		if (!layout_name.compare(conf::desktop_layouts[i].name)) {
 			m_layout_index = i;
 			break;
@@ -256,7 +256,8 @@ void Desktop::restack_windows(std::vector<XClient*>&clientlist)
 
 void Desktop::select_layout(std::vector<XClient*> &clientlist, long index)
 {
-	if ((index < 0) || (index >= conf::desktop_layouts.size())) return;
+	if ((index < 0) || (index >= (long)conf::desktop_layouts.size()))
+		return;
 	m_layout_index = index;
 	m_layout = conf::desktop_layouts[index].layout;
 	m_cols = conf::desktop_layouts[index].cols;
@@ -279,8 +280,11 @@ void Desktop::select_layout(std::vector<XClient*> &clientlist, long index)
 void Desktop::rotate_layout(std::vector<XClient*> &clientlist, long direction)
 {
 	m_layout_index += direction;
-	if (m_layout_index == conf::desktop_layouts.size()) m_layout_index = 0;
-	else if (m_layout_index < 0) m_layout_index = conf::desktop_layouts.size() - 1;
+	if (m_layout_index == (long)conf::desktop_layouts.size())
+		m_layout_index = 0;
+	else if (m_layout_index < 0)
+		m_layout_index = conf::desktop_layouts.size() - 1;
+
 	m_layout =  conf::desktop_layouts[m_layout_index].layout;
 	m_cols =  conf::desktop_layouts[m_layout_index].cols;
 	m_rows =  conf::desktop_layouts[m_layout_index].rows;
