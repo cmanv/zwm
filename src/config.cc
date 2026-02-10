@@ -193,7 +193,7 @@ void conf::init()
 	} else {
 		socket_path = std::getenv("HOME") + std::string("/.cache");
 	}
-	socket_path = socket_path + "/" + APP_NAME;
+	socket_path = socket_path + "/" + PROJECT_NAME;
 	std::filesystem::path sockdir(socket_path);
 	if (!std::filesystem::exists(sockdir)) {
 		create_directory(sockdir);
@@ -207,7 +207,7 @@ void conf::init()
 	} else {
 		config_path = std::getenv("HOME") + std::string("/.config");
 	}
-	config_path = config_path + "/" + APP_NAME;
+	config_path = config_path + "/" + PROJECT_NAME;
 	std::filesystem::path confdir(config_path);
 	if (!std::filesystem::exists(confdir)) {
 		create_directory(confdir);
@@ -220,7 +220,7 @@ void conf::init()
 		// Copy example config file if one does not exist at standard location
 		if (!std::filesystem::exists(user_config)) {
 			std::string install_path = install_prefix + "/share/examples/"
-						+ APP_NAME;
+						+ PROJECT_NAME;
 			std::filesystem::path default_config(install_path + "/config");
 			try {
 				std::filesystem::copy_file(default_config, user_config);

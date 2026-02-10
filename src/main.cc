@@ -31,8 +31,8 @@
 #include "config.h"
 #include "wmcore.h"
 
-static std::string appname(APP_NAME);
-static std::string version(APP_VERSION);
+static std::string appname(PROJECT_NAME);
+static std::string version(PROJECT_VERSION);
 static void	 show_version(void);
 static void	 usage(int);
 static void	 signal_handler(int);

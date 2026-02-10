@@ -1,31 +1,22 @@
 cmake_minimum_required (VERSION 3.20)
-
-# Project identification
-project ("zwm")
+project ("zwm" VERSION 0.19)
 find_package(X11 REQUIRED)
 find_package(Freetype REQUIRED)
-include(GNUInstallDirs)
 
-set(APP_NAME "zwm")
-set(APP_VERSION "alpha19")
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 17)
-message (STATUS "*** Building ${APP_NAME} ${APP_VERSION} ***")
-
-# Include files
-include_directories(/usr/local/include ${X11_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS})
-
-# Project config file
-configure_file(${zwm_SOURCE_DIR}/src/version.h.in ${zwm_BINARY_DIR}/src/version.h)
-add_definitions(-I ${zwm_BINARY_DIR}/src)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_compile_options(-O2 -Wall -Wextra)
 
-# Linker options
-link_libraries(-L/usr/local/lib -lm ${X11_LIBRARIES} ${X11_Xft_LIB} ${X11_Xrandr_LIB} ${FREETYPE_LIBRARIES})
+include_directories(${X11_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS})
+include_directories(${CMAKE_BINARY_DIR}/src)
 
-# Project sub-directories
+link_libraries(-lm ${X11_LIBRARIES} ${X11_Xft_LIB})
+link_libraries(${X11_Xrandr_LIB} ${FREETYPE_LIBRARIES})
+
+configure_file(${CMAKE_SOURCE_DIR}/src/version.h.in ${CMAKE_BINARY_DIR}/src/version.h)
 add_subdirectory(src)
 
-# Additional files
+include(GNUInstallDirs)
 install(FILES man/zwm.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
 install(FILES examples/config DESTINATION share/examples/${APP_NAME})
+message (STATUS "<<< ${PROJECT_NAME} version ${PROJECT_VERSION} is configured. >>>")
