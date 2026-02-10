@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.20)
-project ("zwm" VERSION 0.19)
+project(zwm VERSION 0.19)
 find_package(X11 REQUIRED)
 find_package(Freetype REQUIRED)
 
@@ -22,5 +22,5 @@ set_target_properties (zwm PROPERTIES LINKER_LANGUAGE C)
 include(GNUInstallDirs)
 install(TARGETS zwm DESTINATION bin)
 install(FILES man/zwm.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
-install(FILES examples/config DESTINATION share/examples/${APP_NAME})
+install(FILES examples/config DESTINATION share/examples/${PROJECT_NAME})
 message (STATUS "<<< ${PROJECT_NAME} version ${PROJECT_VERSION} is configured. >>>")
