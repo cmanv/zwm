@@ -219,7 +219,7 @@ void conf::init()
 
 		// Copy example config file if one does not exist at standard location
 		if (!std::filesystem::exists(user_config)) {
-			std::string install_path = install_prefix + "/share/doc/"
+			std::string install_path = install_prefix + "/share/examples/"
 						+ APP_NAME;
 			std::filesystem::path default_config(install_path + "/config");
 			try {
