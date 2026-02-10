@@ -27,7 +27,7 @@
 #include <iostream>
 #include "timer.h"
 #include "config.h"
-#include "binding.h"
+#include "bind.h"
 #include "wmhints.h"
 #include "wmcore.h"
 #include "xclient.h"
@@ -89,8 +89,8 @@ static void XEvents::key_press(XEvent *ee)
 
 	e->state &= ~IgnoreModMask;
 
-	Binding *kb = NULL;
-	for (Binding& ckb : conf::keybindings) {
+	Bind *kb = NULL;
+	for (Bind& ckb : conf::keybindings) {
 		if (!client && ckb.context == Context::Window)
 			continue;
 
@@ -183,8 +183,8 @@ static void XEvents::button_press(XEvent *ee)
 	XClient	*client = XScreen::find_client(e->window);
 	e->state &= ~IgnoreModMask;
 
-	Binding *mb = NULL;
-	for (Binding& cmb : conf::mousebindings) {
+	Bind *mb = NULL;
+	for (Bind& cmb : conf::mousebindings) {
 		if (e->button != cmb.button || e->state != cmb.modmask) continue;
 		if (client && cmb.context == Context::Root) continue;
 		if (!client && cmb.context == Context::Window) continue;

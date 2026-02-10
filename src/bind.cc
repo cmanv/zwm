@@ -28,9 +28,9 @@
 #include "config.h"
 #include "wmcore.h"
 #include "wmfunc.h"
-#include "binding.h"
+#include "bind.h"
 
-std::vector<ModKeyDef> Binding::modkey_defs = {
+std::vector<ModKeyDef> Bind::modkey_defs = {
 	{ 'S',  ShiftMask },
 	{ 'C',  ControlMask },
 	{ 'M',  Mod1Mask },
@@ -38,7 +38,7 @@ std::vector<ModKeyDef> Binding::modkey_defs = {
 	{ '5',  Mod5Mask }
 };
 
-Binding::Binding( BindingDef& binddef, long eventtype)
+Bind::Bind( BindDef& binddef, long eventtype)
 {
 	valid = false;
 	modmask = 0;
@@ -113,11 +113,11 @@ Binding::Binding( BindingDef& binddef, long eventtype)
 		}
 	}
 	if (!valid) {
-		std::cerr << timer::gettime() << " [Binding::" << __func__ << "] function ("
+		std::cerr << timer::gettime() << " [Bind::" << __func__ << "] function ("
 			<< binddef.namefunc << ") is not defined!\n";
 	}
 	else if (conf::debug) {
-		std::cout << timer::gettime() << " [Binding::" << __func__ << "] define {"
+		std::cout << timer::gettime() << " [Bind::" << __func__ << "] define {"
 			<< keycombo << "} -> " << function << "(" << path << ")\n";
 	}
 }

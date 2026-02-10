@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef _BINDING_H_
-#define _BINDING_H_
+#ifndef _BIND_H_
+#define _BIND_H_
 #include <X11/Xlib.h>
 #include <string>
 #include "enums.h"
@@ -35,19 +35,19 @@ struct ModKeyDef {
 	ModKeyDef(char c, int m): ch(c), mask(m) {}
 };
 
-struct BindingDef {
+struct BindDef {
 	std::string		keycombo;
 	std::string		namefunc;
 	std::string		path;
-	BindingDef() {}
-	BindingDef(std::string &k, std::string &f, std::string &p)
+	BindDef() {}
+	BindDef(std::string &k, std::string &f, std::string &p)
 		: keycombo(k), namefunc(f), path(p) {}
-	BindingDef(std::string &k, std::string &f): keycombo(k), namefunc(f) {}
-	BindingDef(const char *k, const char *f): keycombo(k), namefunc(f) {}
-	BindingDef(std::string &k): keycombo(k), namefunc("None") {}
+	BindDef(std::string &k, std::string &f): keycombo(k), namefunc(f) {}
+	BindDef(const char *k, const char *f): keycombo(k), namefunc(f) {}
+	BindDef(std::string &k): keycombo(k), namefunc("None") {}
 };
 
-struct Binding {
+struct Bind {
 	std::string		keycombo;
 	std::string		function;
 	unsigned int		modmask;
@@ -67,6 +67,6 @@ struct Binding {
 	std::string		path;
 	bool			valid;
 	static std::vector<ModKeyDef> modkey_defs;
-	Binding(BindingDef&, long);
+	Bind(BindDef&, long);
 };
-#endif // BINDING_H_
+#endif // BIND_H_

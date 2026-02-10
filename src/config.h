@@ -25,7 +25,7 @@
 #include <vector>
 #include <string>
 #include "enums.h"
-#include "binding.h"
+#include "bind.h"
 
 struct DesktopDef {
 	std::string 	name;
@@ -75,8 +75,8 @@ namespace conf {
 	extern std::vector<DesktopDef> 	 	 desktop_defs;
 	extern std::vector<DesktopLayout> 	 desktop_layouts;
 	extern std::vector<std::string> 	 colordefs;
-	extern std::vector<Binding>		 keybindings;
-	extern std::vector<Binding>  		 mousebindings;
+	extern std::vector<Bind>		 keybindings;
+	extern std::vector<Bind>  		 mousebindings;
 	extern std::vector<DefaultDesktop>	 defdesktoplist;
 	extern std::vector<DefaultStates>	 defstateslist;
 	extern std::string			 terminal;

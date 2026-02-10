@@ -28,7 +28,7 @@
 #include <vector>
 #include "timer.h"
 #include "socket.h"
-#include "binding.h"
+#include "bind.h"
 #include "config.h"
 #include "wmhints.h"
 #include "wmcore.h"
@@ -173,7 +173,7 @@ void XClient::reparent_window()
 	XReparentWindow(wm::display, m_window, m_parent, 0, 0);
 
 	// Grab mouse bindings in the parent window
-	for (Binding& mb : conf::mousebindings) {
+	for (Bind& mb : conf::mousebindings) {
 		if (mb.context != Context::Window) continue;
 		for (auto mod : wm::ignore_mods)
 			XGrabButton(wm::display, mb.button, (mb.modmask | mod),

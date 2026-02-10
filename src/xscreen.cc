@@ -28,7 +28,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include "binding.h"
+#include "bind.h"
 #include "config.h"
 #include "desktop.h"
 #include "socket.h"
@@ -133,7 +133,7 @@ void XScreen::grab_keybindings()
 		std::cout << timer::gettime() << " [XScreen:" << __func__ << "]\n";
 	}
 	XUngrabKey(wm::display, AnyKey, AnyModifier, m_rootwin);
-	for (Binding& kb : conf::keybindings) {
+	for (Bind& kb : conf::keybindings) {
 		KeyCode kc = XKeysymToKeycode(wm::display, kb.keysym);
 		if (!kc) {
 			std::cerr << timer::gettime() << " XScreen::" << __func__

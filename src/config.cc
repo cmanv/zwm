@@ -29,7 +29,7 @@
 #include <string>
 #include <vector>
 #include "wmfunc.h"
-#include "binding.h"
+#include "bind.h"
 #include "xclient.h"
 #include "version.h"
 #include "config.h"
@@ -55,7 +55,7 @@ namespace conf {
 		{ "HTiled",  Layout::HTiled, 0, 0 },
 	};
 
-	std::vector<BindingDef>	keybinding_defs = {
+	std::vector<BindDef>	keybinding_defs = {
 		{ "CM-1",	"desktop-switch-1" },
 		{ "CM-2",	"desktop-switch-2" },
 		{ "CM-3",	"desktop-switch-3" },
@@ -114,7 +114,7 @@ namespace conf {
 		{ "CM-q",	"quit" },
 	};
 
-	std::vector<BindingDef> mousebinding_defs = {
+	std::vector<BindDef> mousebinding_defs = {
 		{ "M-1",	"window-move" },
 		{ "M-3",	"window-resize" },
 		{ "M-4",	"window-lower" },
@@ -140,8 +140,8 @@ namespace conf {
 	int			moveamount = 10;
 	int			snapdist = 9;
 
-	std::vector<Binding>		keybindings;
-	std::vector<Binding>		mousebindings;
+	std::vector<Bind>		keybindings;
+	std::vector<Bind>		mousebindings;
 	std::vector<DefaultDesktop>	defdesktoplist;
 	std::vector<DefaultStates>	defstateslist;
 
@@ -153,10 +153,10 @@ namespace conf {
 	int  split_string(std::string &, std::vector<std::string> &, char);
 	void parse_grid_layout(std::string &, long &, long &);
 	void get_name_class(std::string&, std::string&, std::string&);
-	void add_keybinding(Binding&);
-	void remove_keybinding(Binding &);
-	void add_mousebinding(Binding&);
-	void remove_mousebinding(Binding &);
+	void add_keybinding(Bind&);
+	void remove_keybinding(Bind &);
+	void add_mousebinding(Bind&);
+	void remove_mousebinding(Bind &);
 	void add_desktop_layouts(std::vector<std::string> &);
 	void add_window_states(std::string &, std::string &, std::vector<std::string> &);
 	void add_default_desktop(std::string &, std::string &, int);
@@ -164,13 +164,13 @@ namespace conf {
 
 void conf::init()
 {
-	for (BindingDef& def : keybinding_defs) {
-		Binding kb(def, EventType::Key);
+	for (BindDef& def : keybinding_defs) {
+		Bind kb(def, EventType::Key);
 		if (kb.valid) keybindings.push_back(kb);
 	}
 
-	for (BindingDef& def : mousebinding_defs) {
-		Binding mb(def, EventType::Button);
+	for (BindDef& def : mousebinding_defs) {
+		Bind mb(def, EventType::Button);
 		if (mb.valid) mousebindings.push_back(mb);
 	}
 
@@ -333,8 +333,8 @@ void conf::read_config()
 			if (!tokens[1].compare("all")) {
 				keybindings.clear();
 			} else {
-				BindingDef bdef(tokens[1]);
-				Binding kb(bdef, EventType::Key);
+				BindDef bdef(tokens[1]);
+				Bind kb(bdef, EventType::Key);
 				remove_keybinding(kb);
 			}
 			continue;
@@ -343,33 +343,33 @@ void conf::read_config()
 			if (!tokens[1].compare("all")) {
 				mousebindings.clear();
 			} else {
-				BindingDef bdef(tokens[1]);
-				Binding mb(bdef, EventType::Button);
+				BindDef bdef(tokens[1]);
+				Bind mb(bdef, EventType::Button);
 				remove_mousebinding(mb);
 			}
 			continue;
 		}
 		if (tokens.size() < 3) continue;
 		if (!tokens[0].compare("bind-key")) {
-			BindingDef bdef;
+			BindDef bdef;
 			if (!tokens[2].compare("exec")) {
 				if (tokens.size() < 4) continue;
-				bdef = BindingDef(tokens[1], tokens[2], tokens[3]);
+				bdef = BindDef(tokens[1], tokens[2], tokens[3]);
 			} else
-				bdef = BindingDef(tokens[1], tokens[2]);
-			Binding kb(bdef, EventType::Key);
+				bdef = BindDef(tokens[1], tokens[2]);
+			Bind kb(bdef, EventType::Key);
 			if (kb.valid)
 				add_keybinding(kb);
 			continue;
 		}
 		if (!tokens[0].compare("bind-mouse")) {
-			BindingDef bdef;
+			BindDef bdef;
 			if (!tokens[2].compare("exec")) {
 				if (tokens.size() < 4) continue;
-				bdef = BindingDef(tokens[1], tokens[2], tokens[3]);
+				bdef = BindDef(tokens[1], tokens[2], tokens[3]);
 			} else
-				bdef = BindingDef(tokens[1], tokens[2]);
-			Binding mb(bdef, EventType::Button);
+				bdef = BindDef(tokens[1], tokens[2]);
+			Bind mb(bdef, EventType::Button);
 			if (mb.valid)
 				add_mousebinding(mb);
 			continue;
@@ -451,35 +451,35 @@ void conf::get_name_class(std::string &s, std::string &rname, std::string &rclas
 	}
 }
 
-void conf::add_keybinding(Binding &kb)
+void conf::add_keybinding(Bind &kb)
 {
-	auto isCombo = [kb](Binding b) { return ((kb.modmask == b.modmask)
+	auto isCombo = [kb](Bind b) { return ((kb.modmask == b.modmask)
 			&& (kb.keysym == b.keysym)); };
 	auto it = std::find_if(keybindings.begin(), keybindings.end(), isCombo);
 	if (it != keybindings.end()) keybindings.erase(it);
 	keybindings.push_back(kb);
 }
 
-void conf::remove_keybinding(Binding &kb)
+void conf::remove_keybinding(Bind &kb)
 {
-	auto isCombo = [kb](Binding b) { return ((kb.modmask == b.modmask)
+	auto isCombo = [kb](Bind b) { return ((kb.modmask == b.modmask)
 			&& (kb.keysym == b.keysym)); };
 	auto it = std::find_if(keybindings.begin(), keybindings.end(), isCombo);
 	if (it != keybindings.end()) keybindings.erase(it);
 }
 
-void conf::add_mousebinding(Binding &mb)
+void conf::add_mousebinding(Bind &mb)
 {
-	auto isCombo = [mb](Binding b) { return ((mb.modmask == b.modmask)
+	auto isCombo = [mb](Bind b) { return ((mb.modmask == b.modmask)
 			&& (mb.button == b.button)); };
 	auto it = std::find_if(mousebindings.begin(), mousebindings.end(), isCombo);
 	if (it != mousebindings.end()) mousebindings.erase(it);
 	mousebindings.push_back(mb);
 }
 
-void conf::remove_mousebinding(Binding &mb)
+void conf::remove_mousebinding(Bind &mb)
 {
-	auto isCombo = [mb](Binding b) { return ((mb.modmask == b.modmask)
+	auto isCombo = [mb](Bind b) { return ((mb.modmask == b.modmask)
 			&& (mb.button == b.button)); };
 	auto it = std::find_if(mousebindings.begin(), mousebindings.end(), isCombo);
 	if (it != mousebindings.end()) mousebindings.erase(it);
