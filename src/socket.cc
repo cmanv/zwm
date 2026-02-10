@@ -46,8 +46,8 @@ int socket_in::init(std::string &name)
 	memset(&hint, 0, sizeof(hint));
 	hint.ai_socktype = SOCK_STREAM;
 
-	unsigned long pos = name.find(":");
-	if (pos != name.npos) {
+	size_t pos = name.find(":");
+	if (pos != std::string::npos) {
 		std::string hostname = name.substr(0, pos);
 		std::string port = name.substr(pos+1);
 		hint.ai_family = AF_UNSPEC;
@@ -134,8 +134,8 @@ void socket_out::init(std::string &socket_name)
 	hint.ai_socktype = SOCK_STREAM;
 
 	if (valid_addr) freeaddrinfo(address);
-	unsigned long pos = socket_name.find(":");
-	if (pos != socket_name.npos) {
+	size_t pos = socket_name.find(":");
+	if (pos != std::string::npos) {
 		std::string hostname = socket_name.substr(0, pos);
 		std::string port = socket_name.substr(pos+1);
 		hint.ai_family = AF_UNSPEC;

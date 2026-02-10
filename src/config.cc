@@ -441,8 +441,8 @@ int conf::split_string(std::string &str, std::vector<std::string> &tokens, char 
 
 void conf::get_name_class(std::string &s, std::string &rname, std::string &rclass)
 {
-	unsigned long pos = s.find(":");
-	if (pos != s.npos) {
+	size_t pos = s.find(":");
+	if (pos != std::string::npos) {
 		rname = s.substr(0, pos);
 		rclass = s.substr(pos+1);
 	} else {
