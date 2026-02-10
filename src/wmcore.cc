@@ -121,9 +121,9 @@ void wm::run()
 				<< std::strerror(errno) << std::endl;
 		}
 		for (int i=0; i<nev; i++) {
-			if (events[i].ident == (uintptr_t)xfd)
+			if ((long)events[i].ident == xfd)
 				XEvents::process();
-			else if (events[i].ident == (uintptr_t)sfd) {
+			else if ((long)events[i].ident == sfd) {
 				process_message();
 			}
 		}

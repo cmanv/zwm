@@ -229,10 +229,7 @@ static void XEvents::leave_notify(XEvent *ee)
 {
 	XCrossingEvent	*e = &ee->xcrossing;
 
-	if (e->mode != NotifyNormal)
-		return;
-
-	if ((e->detail == NotifyAncestor) || (e->detail == NotifyInferior))
+	if ((e->mode != NotifyNormal) || (e->detail == NotifyInferior))
 		return;
 
 	if (conf::debug>2) {
