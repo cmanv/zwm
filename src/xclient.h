@@ -53,8 +53,8 @@ class XClient {
 	Geometry 		 m_geom_save;
 	Position		 m_ptr;
 	SizeHints		 m_hints;
-	int			 m_border_w;
-	int			 m_border_orig;
+	size_t			 m_border_w;
+	size_t			 m_border_orig;
 	bool			 m_removed;
 	std::string		 m_name;
 	std::string		 m_res_class;

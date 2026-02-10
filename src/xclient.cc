@@ -201,7 +201,7 @@ void XClient::draw_window_border()
 	else
 		pixel = m_screen->get_pixel(Color::WindowBorderInactive);
 
-	XSetWindowBorderWidth(wm::display, m_parent, (unsigned int)m_border_w);
+	XSetWindowBorderWidth(wm::display, m_parent, m_border_w);
 	XSetWindowBorder(wm::display, m_parent, pixel | (0xffu << 24));
 }
 

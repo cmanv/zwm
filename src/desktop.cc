@@ -42,7 +42,7 @@ Desktop::Desktop(std::string &name, XScreen *screen, long index,
 	m_index = index;
 	m_master_split = split;
 	m_layout_index = 0;
-	for (unsigned long i = 0; i < conf::desktop_layouts.size(); i++) {
+	for (size_t i = 0; i < conf::desktop_layouts.size(); i++) {
 		if (!layout_name.compare(conf::desktop_layouts[i].name)) {
 			m_layout_index = i;
 			break;

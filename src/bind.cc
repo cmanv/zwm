@@ -48,7 +48,7 @@ Bind::Bind( BindDef& binddef, long eventtype)
 
 	size_t pos = keycombo.find('-');
 	if (pos != std::string::npos) {
-		for (unsigned int i=0; i<pos; i++) {
+		for (size_t i=0; i<pos; i++) {
 			bool modkey = false;
 			for (ModKeyDef &def : modkey_defs) {
 				if (keycombo[i] == def.ch) {

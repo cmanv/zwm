@@ -135,9 +135,9 @@ namespace conf {
 
 	int			debug = 0;
 	const int		ndesktops = desktop_defs.size();
-	int			tiled_border = 2;
-	int			stacked_border = 4;
-	int			moveamount = 10;
+	size_t			tiled_border = 2;
+	size_t			stacked_border = 4;
+	size_t			moveamount = 10;
 	int			snapdist = 9;
 
 	std::vector<Bind>		keybindings;

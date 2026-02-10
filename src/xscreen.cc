@@ -178,7 +178,7 @@ void XScreen::add_existing_clients()
 	}
 
 	if (XQueryTree(wm::display, m_rootwin, &w0, &w1, &wins, &nwins)) {
-		for (unsigned int i = 0; i < nwins; i++)
+		for (size_t i = 0; i < nwins; i++)
 			if (can_manage(wins[i], true))
 				m_clientlist.push_back(new XClient(wins[i], this, true));
 		XFree(wins);

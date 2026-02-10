@@ -67,9 +67,9 @@ namespace conf {
 	extern std::string			 user_config;
 	extern std::string			 wmname;
 	extern int				 debug;
-	extern int				 stacked_border;
-	extern int				 tiled_border;
-	extern int				 moveamount;
+	extern size_t				 stacked_border;
+	extern size_t				 tiled_border;
+	extern size_t				 moveamount;
 	extern int				 snapdist;
 	extern const int			 ndesktops;
 	extern std::vector<DesktopDef> 	 	 desktop_defs;
