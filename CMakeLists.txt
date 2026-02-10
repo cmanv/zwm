@@ -10,13 +10,17 @@ add_compile_options(-O2 -Wall -Wextra)
 include_directories(${X11_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS})
 include_directories(${CMAKE_BINARY_DIR}/src)
 
+configure_file(${CMAKE_SOURCE_DIR}/src/version.h.in ${CMAKE_BINARY_DIR}/src/version.h)
+
 link_libraries(-lm ${X11_LIBRARIES} ${X11_Xft_LIB})
 link_libraries(${X11_Xrandr_LIB} ${FREETYPE_LIBRARIES})
 
-configure_file(${CMAKE_SOURCE_DIR}/src/version.h.in ${CMAKE_BINARY_DIR}/src/version.h)
-add_subdirectory(src)
+file (GLOB sources src/*.cc)
+add_executable (zwm ${sources})
+set_target_properties (zwm PROPERTIES LINKER_LANGUAGE C)
 
 include(GNUInstallDirs)
+install(TARGETS zwm DESTINATION bin)
 install(FILES man/zwm.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
 install(FILES examples/config DESTINATION share/examples/${APP_NAME})
 message (STATUS "<<< ${PROJECT_NAME} version ${PROJECT_VERSION} is configured. >>>")
