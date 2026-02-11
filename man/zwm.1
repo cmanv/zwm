@@ -607,21 +607,8 @@ Message sent when the active desktop has changed.
 Message sent when the active desktop layout has changed.
 .RE
 .IP \(bu 2
-\f[I]desklist=\f[R]
-.RS 2
-.RS
-.PP
-\f[I]desk=desktop number!state=desktop state value\(rsn\f[R]
-.PD 0
-.P
-.PD
-\f[I]desk=desktop number!state=desktop state value\(rsn\f[R]
-.PD 0
-.P
-.PD
-\&...
-.RE
-.RE
+\f[I]desklist=<desk=desktop number!state=desktop state value\(rsn
+desk=desktop number!state=desktop state value\(rsn ..>\f[R]
 .RS
 .PP
 Message sent where there is a change in the list of active desktops.
@@ -629,15 +616,9 @@ The desktop state value can be either \f[I]active\f[R],\f[I]urgent\f[R]
 or \f[I]hidden\f[R].
 .RE
 .IP \(bu 2
-\f[I]clientlist=\f[R]
-.RS 2
-.RS
-.PP
-\f[I]id=window number!res=instance|desk=desktop
-number|name=title\(rsn\f[R] \f[I]id=window
-number!res=instance|desk=desktop number|name=title\(rsn\f[R] ...
-.RE
-.RE
+\f[I]clientlist=<id=window number!res=instance|desk=desktop
+number|name=title\(rsn id=window number!res=instance|desk=desktop
+number|name=title\(rsn ..>\f[R]
 .RS
 .PP
 Message sent where there is a change in the list of managed windows.

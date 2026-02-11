@@ -342,18 +342,12 @@ This is the list of messages that can be sent by the window manager:
 
 > Message sent when the active desktop layout has changed.
 
-- _desklist=_
->	_desk=desktop number!state=desktop state value\n_			
->	_desk=desktop number!state=desktop state value\n_			
->	...
+- _desklist=<desk=desktop number!state=desktop state value\n desk=desktop number!state=desktop state value\n ..\>_
 
 > Message sent where there is a change in the list of active desktops. The desktop
 > state value can be either _active_,_urgent_ or _hidden_.
 
-- _clientlist=_
->	_id=window number!res=instance|desk=desktop number|name=title\n_
->	_id=window number!res=instance|desk=desktop number|name=title\n_
->	...
+- _clientlist=<id=window number!res=instance|desk=desktop number|name=title\n id=window number!res=instance|desk=desktop number|name=title\n ..\>_
 
 > Message sent where there is a change in the list of managed windows.
 
