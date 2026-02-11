@@ -236,7 +236,7 @@ void XClient::panel_update_title()
 	ss << "id=" << m_window << "|";
 	ss << "desk=" << m_deskindex+1 << "|";
 	ss << "name=" << m_name;
-	std::string message = "active_client=" + ss.str();
+	std::string message = "active_window=" + ss.str();
 	socket_out::send(message);
 }
 

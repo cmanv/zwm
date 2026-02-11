@@ -377,7 +377,7 @@ void XScreen::set_net_desktop_names()
 void XScreen::panel_clear_title()
 {
 	if (!socket_out::defined()) return;
-	std::string message = "no_active_client";
+	std::string message = "no_active_window=";
 	socket_out::send(message);
 }
 

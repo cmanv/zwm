@@ -326,26 +326,36 @@ The window manager can send status messages to a UNIX socket. This can be useful
 
 This is the list of messages that can be sent by the window manager:
 
-- _window\_active="current title of active windowa"_
+- _active\_window=<Title of the active window\>_
 
-> Sent when there is a change of active window title.
+> Message sent when there is a change of title for the active window.
 
-- _no\_window\_active=_
+- _no\_active\_window=_
 
-> Sent when there is no longer an active window.on the desktop.
+> Message sent when there is no longer an active window.on the desktop.
 
-- _deskname="desktop name"_
+- _deskname=<Name of the current desktop\>_
 
-> Sent when the active desktop has changed.
+> Message sent when the active desktop has changed.
 
-- _desklayout="desktop layout"_
+- _desklayout=<Name of the current desktop layout\>_
 
-> Sent when the desktop layout has changed.
+> Message sent when the active desktop layout has changed.
 
-- _desklist="space separated list of desktops numbers"_
+- _desklist=_
+>	_desk=desktop number!state=desktop state value\n_			
+>	_desk=desktop number!state=desktop state value\n_			
+>	...
 
-> Sent where there is a change in the list of active desktops.
-> The active desktop number is prepended by a '*' in the list.
+> Message sent where there is a change in the list of active desktops. The desktop
+> state value can be either _active_,_urgent_ or _hidden_.
+
+- _clientlist=_
+>	_id=window number!res=instance|desk=desktop number|name=title\n_
+>	_id=window number!res=instance|desk=desktop number|name=title\n_
+>	...
+
+> Message sent where there is a change in the list of managed windows.
 
 To activate this feature, set _message-socket_ to the path of the destination socket in the configuration file. Alternatively, use the _-m_ command line option to specify its value. If used, the command line option overrides the value defined in the configuration file.
 

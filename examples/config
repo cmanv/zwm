@@ -76,7 +76,7 @@
 # Colors
 # ----------------------------------------------------------------
 #color prop-foreground		white
-#color prop-background		black
+#color prop-background		gray40
 #color window-border-active	tan
 #color window-border-inactive	SlateGrey4
 #color window-border-urgent	red

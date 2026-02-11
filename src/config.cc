@@ -176,7 +176,7 @@ void conf::init()
 
 	colordefs.resize(Color::NumColors);
 	colordefs[Color::PropForeground]	= "white";
-	colordefs[Color::PropBackground]	= "black";
+	colordefs[Color::PropBackground]	= "gray40";
 	colordefs[Color::WindowBorderActive] 	= "tan";
 	colordefs[Color::WindowBorderInactive] 	= "SlateGray4";
 	colordefs[Color::WindowBorderUrgent] 	= "red";

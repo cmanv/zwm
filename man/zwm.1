@@ -583,35 +583,64 @@ This can be useful for some programs such as status bars.
 .PP
 This is the list of messages that can be sent by the window manager:
 .IP \(bu 2
-\f[I]window_active=\(dqcurrent title of active windowa\(dq\f[R]
+\f[I]active_window=<Title of the active window>\f[R]
 .RS
 .PP
-Sent when there is a change of active window title.
+Message sent when there is a change of title for the active window.
 .RE
 .IP \(bu 2
-\f[I]no_window_active=\f[R]
+\f[I]no_active_window=\f[R]
 .RS
 .PP
-Sent when there is no longer an active window.on the desktop.
+Message sent when there is no longer an active window.on the desktop.
 .RE
 .IP \(bu 2
-\f[I]deskname=\(dqdesktop name\(dq\f[R]
+\f[I]deskname=<Name of the current desktop>\f[R]
 .RS
 .PP
-Sent when the active desktop has changed.
+Message sent when the active desktop has changed.
 .RE
 .IP \(bu 2
-\f[I]desklayout=\(dqdesktop layout\(dq\f[R]
+\f[I]desklayout=<Name of the current desktop layout>\f[R]
 .RS
 .PP
-Sent when the desktop layout has changed.
+Message sent when the active desktop layout has changed.
 .RE
 .IP \(bu 2
-\f[I]desklist=\(dqspace separated list of desktops numbers\(dq\f[R]
+\f[I]desklist=\f[R]
+.RS 2
 .RS
 .PP
-Sent where there is a change in the list of active desktops.
-The active desktop number is prepended by a \(aq*\(aq in the list.
+\f[I]desk=desktop number!state=desktop state value\(rsn\f[R]
+.PD 0
+.P
+.PD
+\f[I]desk=desktop number!state=desktop state value\(rsn\f[R]
+.PD 0
+.P
+.PD
+\&...
+.RE
+.RE
+.RS
+.PP
+Message sent where there is a change in the list of active desktops.
+The desktop state value can be either \f[I]active\f[R],\f[I]urgent\f[R]
+or \f[I]hidden\f[R].
+.RE
+.IP \(bu 2
+\f[I]clientlist=\f[R]
+.RS 2
+.RS
+.PP
+\f[I]id=window number!res=instance|desk=desktop
+number|name=title\(rsn\f[R] \f[I]id=window
+number!res=instance|desk=desktop number|name=title\(rsn\f[R] ...
+.RE
+.RE
+.RS
+.PP
+Message sent where there is a change in the list of managed windows.
 .RE
 .PP
 To activate this feature, set \f[I]message\-socket\f[R] to the path of
