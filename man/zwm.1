@@ -578,53 +578,62 @@ The accepted format of the command is:
 .PP
 Any message not complying with the format will be ignored.
 .SS Message socket:
-The window manager can send status messages to a UNIX socket.
+The window manager can send JSON formatted messages to a UNIX socket.
 This can be useful for some programs such as status bars.
 .PP
-This is the list of messages that can be sent by the window manager:
+The following are the type of messages that can be sent by the window
+manager:
 .IP \(bu 2
-\f[I]active_window=<Title of the active window>\f[R]
+Messages sent when there is a change of title for the active window.
 .RS
 .PP
-Message sent when there is a change of title for the active window.
+The message key is \f[I]active_window\f[R].
+The message value is the title of the active window.
 .RE
 .IP \(bu 2
-\f[I]no_active_window=\f[R]
+Messages sent when there is no longer an active window.on the desktop.
 .RS
 .PP
-Message sent when there is no longer an active window.on the desktop.
+The message key is \f[I]no_active_window\f[R].
+the message value is empty.
 .RE
 .IP \(bu 2
-\f[I]deskname=<Name of the current desktop>\f[R]
+Messages sent when the active desktop has changed.
 .RS
 .PP
-Message sent when the active desktop has changed.
+The message key is \f[I]deskname\f[R].
+The message value is the name of the current desktop.
 .RE
 .IP \(bu 2
-\f[I]desklayout=<Name of the current desktop layout>\f[R]
+Messages sent when the active desktop layout has changed.
 .RS
 .PP
-Message sent when the active desktop layout has changed.
+The message key is \f[I]desklayout\f[R].
+The message value is the name of the current desktop layout.
 .RE
 .IP \(bu 2
-\f[I]desklist=<desk=desktop number!state=desktop state value\(rsn
-desk=desktop number!state=desktop state value\(rsn ..>\f[R]
+Messages sent where there is a change in the list of active desktops.
 .RS
 .PP
-Message sent where there is a change in the list of active desktops.
-The desktop state value can be either \f[I]active\f[R],\f[I]urgent\f[R]
-or \f[I]hidden\f[R].
+The message key is \f[I]desklist\f[R].
+The message value is a list of active desktops.
+Each desktop containes the desktop number (key \f[I]desknum\f[R]) and
+the desktop state (key \f[I]state\f[R]).
+The state value can be either \f[I]active\f[R],\f[I]urgent\f[R] or
+\f[I]hidden\f[R].
 .RE
 .IP \(bu 2
-\f[I]clientlist=<id=window number!res=instance|desk=desktop
-number|name=title\(rsn id=window number!res=instance|desk=desktop
-number|name=title\(rsn ..>\f[R]
+Messages sent where there is a change in the list of managed windows.
 .RS
 .PP
-Message sent where there is a change in the list of managed windows.
+The message key is \f[I]clientlist\f[R].
+The message value is a list of managed clients.
+Each client contains the window id (key \f[I]window\f[R]), the window
+instance (key \f[I]instance\f[R]), the desktop number (key
+\f[I]desknum\f[R]) and the window title (key \f[I]name\f[R]).
 .RE
 .PP
-To activate this feature, set \f[I]message\-socket\f[R] to the path of
+To activate these messages, set \f[I]message\-socket\f[R] to the path of
 the destination socket in the configuration file.
 Alternatively, use the \f[I]\-m\f[R] command line option to specify its
 value.

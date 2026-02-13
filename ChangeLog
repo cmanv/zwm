@@ -1,4 +1,8 @@
-2026-02-09
+2026-02-13
+	* Use JSON as message format.
+	* Version 0.20 
+
+r026-02-09
 	* Retire le code pour les menus
 	* Retire les modes dark/light
 	* Gère les événements leave-notify

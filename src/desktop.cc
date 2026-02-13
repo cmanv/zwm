@@ -220,8 +220,9 @@ void Desktop::show(std::vector<XClient*> &clientlist)
 void Desktop::panel_update_layout()
 {
 	if (!socket_out::defined()) return;
-	std::string message = "desklayout="
-				+ conf::desktop_layouts[m_layout_index].name;
+	std::string message = "{\"desklayout\":\""
+				+ conf::desktop_layouts[m_layout_index].name
+				+ "\"}";
 	socket_out::send(message);
 }
 

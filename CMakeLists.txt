@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.20)
-project(zwm VERSION 0.19)
+project(zwm VERSION 0.20)
 find_package(X11 REQUIRED)
 find_package(Freetype REQUIRED)
 

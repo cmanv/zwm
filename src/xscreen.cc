@@ -25,6 +25,7 @@
 #include <X11/Xft/Xft.h>
 #include <algorithm>
 #include <iostream>
+#include <regex>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -377,15 +378,17 @@ void XScreen::set_net_desktop_names()
 void XScreen::panel_clear_title()
 {
 	if (!socket_out::defined()) return;
-	std::string message = "no_active_window=";
+	std::string message = "{\"no_active_window\":\"\"}";
 	socket_out::send(message);
 }
 
 void XScreen::panel_update_desktop_name()
 {
 	if (!socket_out::defined()) return;
-	std::string message = "deskname="
-		+ m_desktoplist[m_desktop_active].get_name();
+	std::string str = m_desktoplist[m_desktop_active].get_name();
+	str = std::regex_replace(str, std::regex("\\\\"), "\\$&");
+	str = std::regex_replace(str, std::regex("\""), "\\$&");
+	std::string message = "{\"deskname\":\"" + str + "\"}";
 	socket_out::send(message);
 }
 
@@ -393,17 +396,25 @@ void XScreen::panel_update_desktop_list()
 {
 	if (!socket_out::defined()) return;
 	std::stringstream ss;
+	bool first = true;
 	for (int i = 0; i < m_ndesktops; i++) {
-		if (i == m_desktop_active)
-			ss << "desk=" << i+1 << "|state=active\n";
-		else if (desktop_empty(i))
+		if (desktop_empty(i))
 			continue;
+		if (!first) ss << ",";
+		ss << "{\"desknum\":\"" << i+1 << "\",";
+		if (i == m_desktop_active)
+			ss << "\"state\":\"active\"}";
 		else if (desktop_urgent(i))
-			ss << "desk=" << i+1 << "|state=urgent\n";
+			ss << "\"state\":\"urgent\"}";
 		else
-			ss << "desk=" << i+1 << "|state=hidden\n";
+			ss << "\"state\":\"hidden\"}";
+		first = false;
 	}
-	std::string message = "desklist=" + ss.str();
+	std::string message = "{\"desklist\":[" + ss.str() + "]}";
+	if (conf::debug>1) {
+		std::cout << timer::gettime() << " [XScreen:" << __func__ << "]\n";
+		std::cout << "message = [" << message << "]\n";
+	}
 	socket_out::send(message);
 }
 
@@ -411,18 +422,28 @@ void XScreen::panel_update_client_list()
 {
 	if (!socket_out::defined()) return;
 	std::stringstream ss;
+	bool first = true;
 	for (int i = -1; i < m_ndesktops; i++) {
 		for (XClient *client : m_clientlist) {
 			if (client->has_states(State::Ignored)) continue;
 			long index = client->get_desktop_index();
 			if (index != i) continue;
-			ss << "id=" << client->get_window() << "|";
-			ss << "res=" << client->get_res_name() << "|";
-			ss << "desk=" << index+1 << "|";
-			ss << "name=" << client->get_name() << std::endl;
+			if (!first) ss << ",";
+			ss << "{\"window\":\"" << client->get_window() << "\",";
+			ss << "\"instance\":\"" << client->get_res_name() << "\",";
+			ss << "\"desknum\":\"" << index+1 << "\",";
+			std::string str = client->get_name();
+			str = std::regex_replace(str, std::regex("\\\\"), "\\$&");
+			str = std::regex_replace(str, std::regex("\""), "\\$&");
+			ss << "\"name\":\"" + str + "\"}";
+			first = false;
 		}
 	}
-	std::string message = "clientlist=" + ss.str();
+	std::string message = "{\"clientlist\":[" + ss.str() + "]}";
+	if (conf::debug>1) {
+		std::cout << timer::gettime() << " [XScreen:" << __func__ << "]\n";
+		std::cout << "message = [" << message << "]\n";
+	}
 	socket_out::send(message);
 }
 

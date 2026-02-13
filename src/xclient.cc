@@ -23,6 +23,7 @@
 #include <X11/Xatom.h>
 #include <algorithm>
 #include <iostream>
+#include <regex>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -233,10 +234,13 @@ void XClient::panel_update_title()
 {
 	if (!socket_out::defined()) return;
 	std::stringstream ss;
-	ss << "id=" << m_window << "|";
-	ss << "desk=" << m_deskindex+1 << "|";
-	ss << "name=" << m_name;
-	std::string message = "active_window=" + ss.str();
+	ss << "\"window\":\"" << m_window << "\",";
+	ss << "\"desknum\":\"" << m_deskindex+1 << "\",";
+	std::string str = m_name;
+	str = std::regex_replace(str, std::regex("\\\\"), "\\$&");
+	str = std::regex_replace(str, std::regex("\""), "\\$&");
+	ss << "\"name\":\"" + str + "\"";
+	std::string message = "{\"active_window\":{" + ss.str() + "}}";
 	socket_out::send(message);
 }
 

@@ -322,36 +322,45 @@ Any message not complying with the format will be ignored.
 
 ## Message socket:
 
-The window manager can send status messages to a UNIX socket. This can be useful for some programs such as status bars.
+The window manager can send JSON formatted messages to a UNIX socket. This can be useful for some programs such as status bars.
 
-This is the list of messages that can be sent by the window manager:
+The following are the type of messages that can be sent by the window manager:
 
-- _active\_window=<Title of the active window\>_
+- Messages sent when there is a change of title for the active window.
 
-> Message sent when there is a change of title for the active window.
+> The message key is _active\_window_.
+> The message value is the title of the active window.
 
-- _no\_active\_window=_
+- Messages sent when there is no longer an active window.on the desktop.
 
-> Message sent when there is no longer an active window.on the desktop.
+> The message key is _no\_active\_window_. the message value is empty.
 
-- _deskname=<Name of the current desktop\>_
+- Messages sent when the active desktop has changed.
 
-> Message sent when the active desktop has changed.
+> The message key is _deskname_.
+> The message value is the name of the current desktop.
 
-- _desklayout=<Name of the current desktop layout\>_
+- Messages sent when the active desktop layout has changed.
 
-> Message sent when the active desktop layout has changed.
+> The message key is _desklayout_.
+> The message value is the name of the current desktop layout.
 
-- _desklist=<desk=desktop number!state=desktop state value\n desk=desktop number!state=desktop state value\n ..\>_
+- Messages sent where there is a change in the list of active desktops.
 
-> Message sent where there is a change in the list of active desktops. The desktop
-> state value can be either _active_,_urgent_ or _hidden_.
+> The message key is _desklist_. The message value is a list of active desktops.
+> Each desktop containes the desktop number (key _desknum_)
+> and the desktop state (key _state_).
+> The state value can be either _active_,_urgent_ or _hidden_.
 
-- _clientlist=<id=window number!res=instance|desk=desktop number|name=title\n id=window number!res=instance|desk=desktop number|name=title\n ..\>_
+- Messages sent where there is a change in the list of managed windows.
 
-> Message sent where there is a change in the list of managed windows.
+> The message key is _clientlist_.
+> The message value is a list of managed clients.
+> Each client contains the window id (key _window_),
+> the window instance (key _instance_),
+> the desktop number (key _desknum_) and the window title (key _name_).
 
-To activate this feature, set _message-socket_ to the path of the destination socket in the configuration file. Alternatively, use the _-m_ command line option to specify its value. If used, the command line option overrides the value defined in the configuration file.
+To activate these messages, set _message-socket_ to the path of the destination socket in the configuration file. Alternatively, use the _-m_ command line option to specify its value. If used, the command line option overrides the value defined in the configuration file.
 
 # FILES
 
