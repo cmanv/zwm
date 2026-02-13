@@ -1,4 +1,4 @@
-% ZWM(1) zwm version alpha19 | zwm user's manual
+% ZWM(1) zwm version 0.20 | zwm user's manual
 % cmanv
 % February 2026
 
