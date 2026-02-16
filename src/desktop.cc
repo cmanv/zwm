@@ -23,6 +23,7 @@
 #include <X11/Xlib.h>
 #include <algorithm>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 #include "timer.h"
@@ -220,9 +221,23 @@ void Desktop::show(std::vector<XClient*> &clientlist)
 void Desktop::panel_update_layout()
 {
 	if (!socket_out::defined()) return;
-	std::string message = "{\"desklayout\":\""
-				+ conf::desktop_layouts[m_layout_index].name
-				+ "\"}";
+	std::stringstream ss;
+	int i = 0;
+	for (auto layout : conf::desktop_layouts) {
+		if (i > 0) ss << ",";
+		ss << "{\"name\":\"" << layout.name << "\",";
+		if (i == m_layout_index) {
+			ss << "\"active\":\"1\"}";
+		} else {
+			ss << "\"active\":\"0\"}";
+		}
+		i++;
+	}
+	std::string message = "{\"layouts\":[" + ss.str() + "]}";
+	if (conf::debug>1) {
+		std::cout << timer::gettime() << " [Desktop::" << __func__ << "]\n";
+		std::cout << "message = [" << message << "]\n";
+	}
 	socket_out::send(message);
 }
 
