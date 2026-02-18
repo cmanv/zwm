@@ -605,11 +605,14 @@ The message key is \f[I]deskname\f[R].
 The message value is the name of the current desktop.
 .RE
 .IP \(bu 2
-Messages sent when the active desktop layout has changed.
+Messages sent whenever the layout or the active desktop has changed.
 .RS
 .PP
-The message key is \f[I]desklayout\f[R].
-The message value is the name of the current desktop layout.
+The message key is \f[I]layouts\f[R].
+The message value is the list of defined layouts.
+Each layout contains the layout name (key \f[I]name\f[R]) and whether
+the layout is active.
+(key \f[I]active\f[R], value 0/1)
 .RE
 .IP \(bu 2
 Messages sent where there is a change in the list of active desktops.

@@ -340,10 +340,11 @@ The following are the type of messages that can be sent by the window manager:
 > The message key is _deskname_.
 > The message value is the name of the current desktop.
 
-- Messages sent when the active desktop layout has changed.
+- Messages sent whenever the layout or the active desktop has changed.
 
-> The message key is _desklayout_.
-> The message value is the name of the current desktop layout.
+> The message key is _layouts_. The message value is the list of defined layouts.
+> Each layout contains the layout name (key _name_) and whether the layout is active.
+> (key _active_, value 0/1)
 
 - Messages sent where there is a change in the list of active desktops.
 
