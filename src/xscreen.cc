@@ -398,7 +398,7 @@ void XScreen::panel_update_desktop_list()
 	std::stringstream ss;
 	bool first = true;
 	for (int i = 0; i < m_ndesktops; i++) {
-		if (desktop_empty(i))
+		if (desktop_empty(i) && (i != m_desktop_active))
 			continue;
 		if (!first) ss << ",";
 		ss << "{\"desknum\":\"" << i+1 << "\",";
